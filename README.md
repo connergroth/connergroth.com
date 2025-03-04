@@ -1,6 +1,6 @@
 # Conner Groth Portfolio Website
 
-A personal portfolio website showcasing my projects, skills, and experience as a Computer Science student at CU Boulder.
+A personal portfolio website showcasing my projects, skills, and experience.
 
 ## Features
 
