@@ -8,21 +8,68 @@ function toggleMenu() {
 
 // Page loading animation
 window.addEventListener("load", function () {
-  // Handle page loader
+  // Handle page loader with smoother transition
   const loader = document.querySelector(".loader-wrapper");
   if (loader) {
-    loader.style.opacity = "0";
     setTimeout(() => {
-      loader.style.display = "none";
-    }, 500);
+      loader.style.opacity = "0";
+      setTimeout(() => {
+        loader.style.display = "none";
+
+        // Animate initial elements after loader disappears
+        setTimeout(() => {
+          document.querySelectorAll(".reveal-element").forEach((el, index) => {
+            el.style.setProperty("--reveal-index", index % 5);
+            setTimeout(() => {
+              el.classList.add("active");
+            }, 100);
+          });
+        }, 300);
+      }, 500);
+    }, 300); // Small delay for better perceived performance
   }
 
   // Initialize dark mode from localStorage
   initTheme();
 
   // Call initial animations
-  animateOnScroll();
+  revealOnScroll();
+  highlightNavOnScroll();
+
+  // PROJECTS SECTION INITIALIZATION
+  // Initialize project card animations
+  revealProjects();
+
+  // Setup project image animations
+  setupProjectImageAnimations();
+
+  // Setup mobile touch events
+  setupMobileTouchEvents();
 });
+
+// Calculate the correct scroll offset based on navbar height
+function getScrollOffset() {
+  const navHeight = document.querySelector("nav").offsetHeight;
+  return navHeight + 20; // Add some extra padding
+}
+
+// Add reveal-on-scroll animation
+function revealOnScroll() {
+  const reveals = document.querySelectorAll(".reveal-element");
+
+  reveals.forEach((element, index) => {
+    // Set custom reveal index for staggered animations
+    element.style.setProperty("--reveal-index", index % 5);
+
+    const windowHeight = window.innerHeight;
+    const elementTop = element.getBoundingClientRect().top;
+    const elementVisible = 150;
+
+    if (elementTop < windowHeight - elementVisible) {
+      element.classList.add("active");
+    }
+  });
+}
 
 // Check for saved theme preference or set based on user preference
 function initTheme() {
@@ -85,12 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Calculate the correct scroll offset based on navbar height
-function getScrollOffset() {
-  const navHeight = document.querySelector("nav").offsetHeight;
-  return navHeight + 20; // Add some extra padding
-}
-
 // Enhanced smooth scrolling for a better user experience
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
@@ -98,18 +139,27 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
 
       const targetId = this.getAttribute("href");
-      if (targetId === "#") return; // Ignore empty anchors
+      if (targetId === "#") {
+        // For the logo, scroll to top with animation
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+        return;
+      }
 
       const targetElement = document.querySelector(targetId);
 
       if (targetElement) {
         // Highlight active nav item
-        document.querySelectorAll(".nav-links a").forEach((a) => {
-          a.classList.remove("active");
-        });
+        document
+          .querySelectorAll(".nav-links a, .menu-links a")
+          .forEach((a) => {
+            a.classList.remove("active");
+          });
         this.classList.add("active");
 
-        // Calculate offset
+        // Calculate offset with improved positioning
         const offset = getScrollOffset();
         const targetPosition =
           targetElement.getBoundingClientRect().top + window.pageYOffset;
@@ -128,54 +178,61 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
-
-  // Add active class to nav items based on scroll position
-  function highlightNavOnScroll() {
-    const sections = document.querySelectorAll("section");
-    const navLinks = document.querySelectorAll(".nav-links a, .menu-links a");
-    const scrollPosition = window.scrollY;
-    const offset = getScrollOffset();
-
-    sections.forEach((section) => {
-      const sectionTop = section.offsetTop - offset;
-      const sectionHeight = section.offsetHeight;
-      const sectionId = section.getAttribute("id");
-
-      if (
-        scrollPosition >= sectionTop &&
-        scrollPosition < sectionTop + sectionHeight
-      ) {
-        navLinks.forEach((link) => {
-          link.classList.remove("active");
-          if (link.getAttribute("href") === `#${sectionId}`) {
-            link.classList.add("active");
-          }
-        });
-      }
-    });
-  }
-
-  window.addEventListener("scroll", highlightNavOnScroll);
-
-  // Initial highlight on page load
-  setTimeout(highlightNavOnScroll, 100);
 });
 
-// Add scroll event for adding a shadow to the nav when scrolling
+// Enhanced scroll handling
 window.addEventListener("scroll", function () {
   const desktop = document.getElementById("desktop-nav");
   const hamburger = document.getElementById("hamburger-nav");
+  const scrollY = window.scrollY;
 
+  // Update scroll progress
   updateScrollProgress();
 
-  if (window.scrollY > 50) {
+  // Enhanced navbar transition
+  if (scrollY > 50) {
     if (desktop) desktop.classList.add("scrolled");
     if (hamburger) hamburger.classList.add("scrolled");
   } else {
     if (desktop) desktop.classList.remove("scrolled");
     if (hamburger) hamburger.classList.remove("scrolled");
   }
+
+  // Call reveal animation
+  revealOnScroll();
+
+  // Call project reveal animation
+  revealProjects();
+
+  // Highlight active nav section
+  highlightNavOnScroll();
 });
+
+// Improved navigation highlighting
+function highlightNavOnScroll() {
+  const sections = document.querySelectorAll("section");
+  const navLinks = document.querySelectorAll(".nav-links a, .menu-links a");
+  const scrollPosition = window.scrollY;
+  const offset = getScrollOffset();
+
+  sections.forEach((section) => {
+    const sectionTop = section.offsetTop - offset - 100; // Added extra offset for better UX
+    const sectionHeight = section.offsetHeight;
+    const sectionId = section.getAttribute("id");
+
+    if (
+      scrollPosition >= sectionTop &&
+      scrollPosition < sectionTop + sectionHeight
+    ) {
+      navLinks.forEach((link) => {
+        link.classList.remove("active");
+        if (link.getAttribute("href") === `#${sectionId}`) {
+          link.classList.add("active");
+        }
+      });
+    }
+  });
+}
 
 // Update scroll progress bar
 function updateScrollProgress() {
@@ -206,10 +263,7 @@ const animateOnScroll = () => {
   });
 };
 
-// Call animate on scroll when scrolling
-window.addEventListener("scroll", animateOnScroll);
-
-// Form validation for contact form
+// Form validation for contact form with enhanced feedback
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("contact-form");
   if (form) {
@@ -246,49 +300,158 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (valid) {
-        // Show success message
+        // Show success message with animation
         const successMessage = document.createElement("div");
-        successMessage.className = "success-message";
+        successMessage.className = "success-message reveal-element";
         successMessage.textContent =
           "Message sent successfully! I'll get back to you soon.";
         form.appendChild(successMessage);
 
-        // Reset form
-        form.reset();
-
-        // Remove success message after 5 seconds
+        // Trigger animation
         setTimeout(() => {
-          successMessage.remove();
+          successMessage.classList.add("active");
+        }, 10);
+
+        // Reset form with animation
+        const inputs = form.querySelectorAll("input, textarea");
+        inputs.forEach((input) => {
+          input.style.transition = "all 0.3s ease";
+          input.style.opacity = "0";
+          setTimeout(() => {
+            input.value = "";
+            input.style.opacity = "1";
+          }, 300);
+        });
+
+        // Remove success message after 5 seconds with fade out
+        setTimeout(() => {
+          successMessage.style.opacity = "0";
+          setTimeout(() => {
+            successMessage.remove();
+          }, 500);
         }, 5000);
       }
     });
   }
-
-  function markInvalid(field, message) {
-    field.classList.add("invalid");
-    const errorElement = field.nextElementSibling;
-
-    if (errorElement && errorElement.classList.contains("error-message")) {
-      errorElement.textContent = message;
-    } else {
-      const error = document.createElement("div");
-      error.className = "error-message";
-      error.textContent = message;
-      field.parentNode.insertBefore(error, field.nextSibling);
-    }
-  }
-
-  function markValid(field) {
-    field.classList.remove("invalid");
-    const errorElement = field.nextElementSibling;
-    if (errorElement && errorElement.classList.contains("error-message")) {
-      errorElement.textContent = "";
-    }
-  }
-
-  function isValidEmail(email) {
-    const re =
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-  }
 });
+
+function markInvalid(field, message) {
+  field.classList.add("invalid");
+  const errorElement = field.nextElementSibling;
+
+  if (errorElement && errorElement.classList.contains("error-message")) {
+    errorElement.textContent = message;
+  } else {
+    const error = document.createElement("div");
+    error.className = "error-message";
+    error.textContent = message;
+    error.style.opacity = "0";
+    field.parentNode.insertBefore(error, field.nextSibling);
+
+    // Animate error message appearance
+    setTimeout(() => {
+      error.style.transition = "opacity 0.3s ease";
+      error.style.opacity = "1";
+    }, 10);
+  }
+
+  // Add shake animation to invalid field
+  field.classList.add("shake");
+  setTimeout(() => {
+    field.classList.remove("shake");
+  }, 500);
+}
+
+function markValid(field) {
+  field.classList.remove("invalid");
+  const errorElement = field.nextElementSibling;
+  if (errorElement && errorElement.classList.contains("error-message")) {
+    errorElement.style.opacity = "0";
+    setTimeout(() => {
+      errorElement.textContent = "";
+    }, 300);
+  }
+}
+
+function isValidEmail(email) {
+  const re =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+}
+
+// PROJECTS SECTION FUNCTIONS
+
+// Enhanced reveal animation for projects
+function revealProjects() {
+  const projectCards = document.querySelectorAll(".project-card");
+
+  projectCards.forEach((card, index) => {
+    // Remove the initial reveal class to make cards visible by default
+    card.classList.remove("reveal");
+
+    // Set transition delay for staggered animation
+    card.style.transitionDelay = `${index * 100}ms`;
+
+    // Add active class immediately
+    card.classList.add("active");
+  });
+}
+
+// Ensure projects are revealed on initial load
+document.addEventListener("DOMContentLoaded", function () {
+  // Call reveal immediately
+  revealProjects();
+});
+
+// Create animation for project images on hover
+function setupProjectImageAnimations() {
+  const projectImages = document.querySelectorAll(".project-img-container");
+  projectImages.forEach((container) => {
+    container.addEventListener("mouseenter", function () {
+      const img = this.querySelector(".project-img");
+      if (img) img.style.transform = "scale(1.1)";
+    });
+
+    container.addEventListener("mouseleave", function () {
+      const img = this.querySelector(".project-img");
+      if (img) img.style.transform = "scale(1)";
+    });
+  });
+}
+
+// Setup touch events for mobile devices
+function setupMobileTouchEvents() {
+  const projectCards = document.querySelectorAll(".project-card-inner");
+
+  projectCards.forEach((card) => {
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    card.addEventListener(
+      "touchstart",
+      function (e) {
+        touchStartX = e.changedTouches[0].screenX;
+      },
+      false
+    );
+
+    card.addEventListener(
+      "touchend",
+      function (e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe(this);
+      },
+      false
+    );
+
+    function handleSwipe(element) {
+      if (touchStartX - touchEndX > 50) {
+        // Swiped left
+        element.style.transform = "rotateY(180deg)";
+      } else if (touchEndX - touchStartX > 50) {
+        // Swiped right
+        element.style.transform = "rotateY(0deg)";
+      }
+    }
+  });
+}
