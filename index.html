@@ -4,40 +4,94 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conner Groth Portfolio</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="mediaqueries.css">
+    <title>Conner Groth | Computer Science Student & Developer</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Portfolio of Conner Groth, a Computer Science student at CU Boulder specializing in software development, machine learning, and web technologies.">
+    <meta name="keywords" content="Conner Groth, portfolio, computer science, software development, CU Boulder">
+    <meta name="author" content="Conner Groth">
+    
+    <!-- Open Graph tags for social media sharing -->
+    <meta property="og:title" content="Conner Groth | Computer Science Portfolio">
+    <meta property="og:description" content="Portfolio showcasing projects and skills in software development, AI, and web technologies.">
+    <meta property="og:image" content="./assets/connerpfp.png">
+    <meta property="og:url" content="https://connergroth.me">
+    
+    <!-- Favicon (add a favicon.png to your assets folder) -->
+    <link rel="icon" type="image/png" href="./assets/connerpfp.png">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./mediaqueries.css">
 </head>
 <body>
+    <!-- Page loader -->
+    <div class="loader-wrapper">
+        <div class="loader"></div>
+    </div>
+    
+    <!-- Scroll progress indicator -->
+    <div class="progress-container">
+        <div id="progress-bar" class="progress-bar"></div>
+    </div>
+    
+    <!-- SINGLE NAVBAR STRUCTURE WITH DESKTOP AND MOBILE VERSIONS -->
+    <!-- Desktop Navigation (hidden on mobile) -->
     <nav id="desktop-nav">
         <div class="logo">Conner Groth</div>
-        <div>
+        <div class="nav-right">
             <ul class="nav-links">
                 <li><a href="#about">About</a></li>
                 <li><a href="#experience">Experience</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
+            <!-- Dark Mode Toggle -->
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" />
+                    <div class="slider round">
+                        <span class="moon-icon">🌙</span>
+                        <span class="sun-icon">☀️</span>
+                    </div>
+                </label>
+            </div>
         </div>
     </nav>
+
+    <!-- Mobile Navigation (hidden on desktop) -->
     <nav id="hamburger-nav">
         <div class="logo">Conner Groth</div>
-        <div class="hamburger-menu">
-            <div class="hamburger-icon" onclick="toggleMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
+        <div class="nav-right">
+            <!-- Dark Mode Toggle Mobile -->
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox-mobile">
+                    <input type="checkbox" id="checkbox-mobile" />
+                    <div class="slider round">
+                        <span class="moon-icon">🌙</span>
+                        <span class="sun-icon">☀️</span>
+                    </div>
+                </label>
             </div>
-            <div class="menu-links">
-                <ul>
-                    <li><a href="#about" onclick="toggleMenu()">About</a></li>
-                    <li><a href="#experience" onclick="toggleMenu()">Experience</a></li>
-                    <li><a href="#projects" onclick="toggleMenu()">Projects</a></li>
-                    <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
-                </ul>
+            <div class="hamburger-menu">
+                <div class="hamburger-icon" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="menu-links">
+                    <ul>
+                        <li><a href="#about" onclick="toggleMenu()">About</a></li>
+                        <li><a href="#experience" onclick="toggleMenu()">Experience</a></li>
+                        <li><a href="#projects" onclick="toggleMenu()">Projects</a></li>
+                        <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
+    
+    <!-- PROFILE SECTION -->
     <section id="profile">
         <div class="section__pic-container">
             <img src="./assets/connerpfp.png" alt="Conner Groth profile picture">
@@ -73,50 +127,95 @@
             </div>
         </div>
     </section>
+    
+    <!-- ABOUT SECTION -->
     <section id="about">
         <p class="section__text__p1">Get To Know More</p>
         <h1 class="title">About Me</h1>
         <div class="section-container">
-            <div class="section__pic-container">
-                <img 
-                    src="./assets/ConnerPic2.jpg" 
-                    alt="Profile picture"
-                    class="about-pic"
-                >
+            <!-- Description Container -->
+            <div class="about-description-container">
+                <h2>Who I Am</h2>
+                <p>I am a second-year Computer Science student at the University of Colorado Boulder in the School of Engineering & Applied Science. My passion lies at the intersection of technology and innovation, with specific interests in software development, machine learning, and web technologies.</p>
+                <p>I'm driven to create intuitive, efficient applications that solve real-world problems. My academic journey has equipped me with strong analytical skills and a solid foundation in computer science principles, while my ongoing projects allow me to apply these skills in practical scenarios.</p>
+                <p>When I'm not coding, you can find me exploring the beautiful trails around Boulder or diving into the latest tech developments.</p>
             </div>
-            <div class="about-details-container">
-                <div class="about-containers">
-                    <div class="details-container">
-                        <img 
-                            src="./assets/experience.png" 
-                            alt="Experience icon"
-                            class="icon"
-                        >
-                        <h3>Relevant Coursework</h3>
-                        <p> • Data Structures & Algorithms
-                        <p> • Software Development Methods & Tools
-                        <p> • Computer Systems
-                        <br> • Starting Computing 
-                        </p>
+            
+            <!-- Education Containers -->
+            <div class="education-containers">
+                <!-- CS Degree Container -->
+                <div class="education-card">
+                    <div class="education-logo">
+                        <img src="./assets/culogo.png" alt="CU Boulder Logo" onerror="this.src='./assets/gradcap.png'">
                     </div>
-                    <div class="details-container">
-                        <img 
-                            src="./assets/gradcap.png" 
-                            alt="Education icon"
-                            class="icon"
-                        >
-                        <h3>Education</h3>
-                        <p> Bachelor of Science - BS, Computer Science
-                        <br> Expected: 2027    
-                        </p>
+                    <div class="education-details">
+                        <h3>Bachelor of Science</h3>
+                        <h4>Computer Science</h4>
+                        <p>University of Colorado Boulder</p>
+                        <p>School of Engineering & Applied Science</p>
+                        <p>Expected: 2027</p>
+                        <p class="education-courses">Key Courses: Data Structures & Algorithms, Software Development Methods & Tools, Computer Systems</p>
                     </div>
                 </div>
-                <div class="text-container">
-                    <p>I am a second-year Computer Science student at the 
-                    University of Colorado Boulder in the School of Engineering & Applied Science.
-                    My interests include software development, machine learning, and web technologies.
-                    I'm passionate about creating intuitive, efficient applications that solve real-world problems.
-                    </p>
+                
+                <!-- Business Minor Container -->
+                <div class="education-card">
+                    <div class="education-logo">
+                        <img src="./assets/culogo.png" alt="CU Boulder Business School Logo" onerror="this.src='./assets/github.png'">
+                    </div>
+                    <div class="education-details">
+                        <h3>Minor</h3>
+                        <h4>Business</h4>
+                        <p>University of Colorado Boulder</p>
+                        <p>Leeds School of Business</p>
+                        <p>Expected: 2027</p>
+                        <p class="education-courses">Key Courses: Business Analytics, Entrepreneurship, Marketing Fundamentals</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Relevant Coursework Section -->
+            <div class="coursework-container">
+                <h2>Relevant Coursework</h2>
+                <div class="coursework-grid">
+                    <!-- Computer Science Courses -->
+                    <div class="course-category">
+                        <h3>Computer Science</h3>
+                        <ul class="course-list">
+                            <li>
+                                <span class="course-code">CSCI 3104</span>
+                                <span class="course-name">Algorithms</span>
+                                <p class="course-description">Design and analysis of algorithms, including divide-and-conquer, dynamic programming, and greedy approaches.</p>
+                            </li>
+                            <li>
+                                <span class="course-code">CSCI 2270</span>
+                                <span class="course-name">Data Structures</span>
+                                <p class="course-description">Implementation and application of common data structures including linked lists, stacks, queues, trees, and graphs.</p>
+                            </li>
+                            <li>
+                                <span class="course-code">CSCI 3308</span>
+                                <span class="course-name">Software Development Methods</span>
+                                <p class="course-description">Software engineering practices including version control, testing, and agile methodologies.</p>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Business Courses -->
+                    <div class="course-category">
+                        <h3>Business</h3>
+                        <ul class="course-list">
+                            <li>
+                                <span class="course-code">BCOR 2500</span>
+                                <span class="course-name">Business Analytics</span>
+                                <p class="course-description">Statistical analysis and data-driven decision making for business applications.</p>
+                            </li>
+                            <li>
+                                <span class="course-code">ESBM 3700</span>
+                                <span class="course-name">Entrepreneurial Environments</span>
+                                <p class="course-description">Identifying business opportunities and developing entrepreneurial mindsets.</p>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -126,242 +225,247 @@
             onclick="location.href='./#experience'"
         >
     </section>
+    
+    <!-- EXPERIENCE SECTION -->
     <section id="experience">
         <p class="section__text__p1">Explore My</p>
         <h1 class="title">Experience</h1>
         <div class="experience-details-container">
           <div class="about-containers">
-            <div class="row-container" style="display: flex; gap: 2rem; margin-bottom: 2rem;">
-              <div class="details-container" style="flex: 1;">
-                <h2 class="experience-sub-title">Languages</h2>
-                <div class="article-container">
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>Python</h3>
-                      <p>Experienced</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>C++</h3>
-                      <p>Experienced</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>C</h3>
-                      <p>Experienced</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>JavaScript</h3>
-                      <p>Intermediate</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>HTML/CSS</h3>
-                      <p>Experienced</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>Assembly</h3>
-                      <p>Beginner</p>
-                    </div>
-                  </article>
-                </div>
-              </div>
-              <div class="details-container" style="flex: 1;">
-                <h2 class="experience-sub-title">AI & Data</h2>
-                <div class="article-container">
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>TensorFlow</h3>
-                      <p>Intermediate</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>PyTorch</h3>
-                      <p>Beginner</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>PostgreSQL</h3>
-                      <p>Intermediate</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>Redis</h3>
-                      <p>Beginner</p>
-                    </div>
-                  </article>
-                </div>
+            <!-- Languages container - directly in the grid -->
+            <div class="details-container">
+              <h2 class="experience-sub-title">Languages</h2>
+              <div class="article-container">
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Python</h3>
+                    <p>Experienced</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>C++</h3>
+                    <p>Experienced</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>C</h3>
+                    <p>Experienced</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>JavaScript</h3>
+                    <p>Intermediate</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>HTML/CSS</h3>
+                    <p>Experienced</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Assembly</h3>
+                    <p>Beginner</p>
+                  </div>
+                </article>
               </div>
             </div>
-            <div class="row-container" style="display: flex; gap: 2rem;">
-              <div class="details-container" style="flex: 1;">
-                <h2 class="experience-sub-title">Web & Backend</h2>
-                <div class="article-container">
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>FastAPI</h3>
-                      <p>Intermediate</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>React</h3>
-                      <p>Intermediate</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>Docker</h3>
-                      <p>Intermediate</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>AWS</h3>
-                      <p>Beginner</p>
-                    </div>
-                  </article>
-                </div>
+            
+            <!-- AI & Data container - directly in the grid -->
+            <div class="details-container">
+              <h2 class="experience-sub-title">AI & Data</h2>
+              <div class="article-container">
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>TensorFlow</h3>
+                    <p>Intermediate</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>PyTorch</h3>
+                    <p>Beginner</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>PostgreSQL</h3>
+                    <p>Intermediate</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Redis</h3>
+                    <p>Beginner</p>
+                  </div>
+                </article>
               </div>
-              <div class="details-container" style="flex: 1;">
-                <h2 class="experience-sub-title">APIs & Scraping</h2>
-                <div class="article-container">
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>Strava API</h3>
-                      <p>Experienced</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>Last.fm API</h3>
-                      <p>Intermediate</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>Spotify API</h3>
-                      <p>Intermediate</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>BeautifulSoup</h3>
-                      <p>Experienced</p>
-                    </div>
-                  </article>
-                  <article>
-                    <img
-                      src="./assets/checkmark.png"
-                      alt="Experience icon"
-                      class="icon"
-                    />
-                    <div>
-                      <h3>CloudScraper</h3>
-                      <p>Intermediate</p>
-                    </div>
-                  </article>
-                </div>
+            </div>
+            
+            <!-- Web & Backend container - directly in the grid -->
+            <div class="details-container">
+              <h2 class="experience-sub-title">Web & Backend</h2>
+              <div class="article-container">
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>FastAPI</h3>
+                    <p>Intermediate</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>React</h3>
+                    <p>Intermediate</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Docker</h3>
+                    <p>Intermediate</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>AWS</h3>
+                    <p>Beginner</p>
+                  </div>
+                </article>
+              </div>
+            </div>
+            
+            <!-- APIs & Scraping container - directly in the grid -->
+            <div class="details-container">
+              <h2 class="experience-sub-title">APIs & Scraping</h2>
+              <div class="article-container">
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Strava API</h3>
+                    <p>Experienced</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Last.fm API</h3>
+                    <p>Intermediate</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Spotify API</h3>
+                    <p>Intermediate</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>BeautifulSoup</h3>
+                    <p>Experienced</p>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/checkmark.png"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>CloudScraper</h3>
+                    <p>Intermediate</p>
+                  </div>
+                </article>
               </div>
             </div>
           </div>
@@ -373,6 +477,8 @@
           onclick="location.href='./#projects'"
         />
       </section>
+      
+    <!-- PROJECTS SECTION -->
     <section id="projects">
         <p class="section__text__p1">Browse My Recent</p>
         <h1 class="title">Projects</h1>
@@ -387,6 +493,13 @@
                 </div>
                 <h2 class="experience-sub-title project-title">EcoVision</h2>
                 <p class="project-description">EcoVision is an intelligent recycling assistant that leverages advanced computer vision and AI to help users accurately identify recyclable items, learn proper disposal methods, and track their environmental impact, all in real-time.</p>
+                <!-- Tech Stack Tags -->
+                <div class="project-tech-stack">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">TensorFlow</span>
+                    <span class="tech-tag">Computer Vision</span>
+                    <span class="tech-tag">FastAPI</span>
+                </div>
                 <div class="btn-container">
                     <button class="btn btn-color-2 project-btn" 
                         onclick="location.href='https://github.com/connergroth/EcoVision'"
@@ -410,6 +523,12 @@
                 </div>
                 <h2 class="experience-sub-title project-title">Strim</h2>
                 <p class="project-description">Strim is a tool that allows users to trim Strava runs and edit distance metadata, automatically deleting the inaccurate activity and reuploading the trimmed one, using the Strava API.</p>
+                <!-- Tech Stack Tags -->
+                <div class="project-tech-stack">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Strava API</span>
+                    <span class="tech-tag">Data Processing</span>
+                </div>
                 <div class="btn-container">
                     <button class="btn btn-color-2 project-btn" 
                         onclick="location.href='https://github.com/connergroth/Strim'"
@@ -417,7 +536,7 @@
                         Github
                     </button>
                     <button class="btn btn-color-2 project-btn" 
-                        onclick="location.href='https://connergroth.github.io/weather-app'"
+                        onclick="location.href='https://github.com/connergroth/Strim'"
                     >
                         Live Demo
                     </button>
@@ -432,7 +551,14 @@
                     >
                 </div>
                 <h2 class="experience-sub-title project-title">Sonance</h2>
-                <p class="project-description">Sonance is a recommendation engine that uses machine learning to generate personalized music recommendations.</p>
+                <p class="project-description">Sonance is a recommendation engine that uses machine learning to generate personalized music recommendations based on user listening history and preferences.</p>
+                <!-- Tech Stack Tags -->
+                <div class="project-tech-stack">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Machine Learning</span>
+                    <span class="tech-tag">Spotify API</span>
+                    <span class="tech-tag">Last.fm API</span>
+                </div>
                 <div class="btn-container">
                     <button class="btn btn-color-2 project-btn" 
                         onclick="location.href='https://github.com/connergroth/Sonance'"
@@ -440,7 +566,7 @@
                         Github
                     </button>
                     <button class="btn btn-color-2 project-btn" 
-                        onclick="location.href='https://connergroth.github.io/todo-list'"
+                        onclick="location.href='https://github.com/connergroth/Sonance'"
                     >
                         Live Demo
                     </button>
@@ -453,28 +579,48 @@
             onclick="location.href='./#contact'"
         >
     </section>
+    
+    <!-- CONTACT SECTION -->
     <section id="contact">
         <p class="section__text__p1">Get In Touch</p>
         <h1 class="title">Contact Me</h1>
-        <div class="contact-info-upper-container">
-            <div class="contact-info-container">
-                <img 
-                    src="./assets/email.png" 
-                    alt="Email icon"
-                    class="icon contact-icon email-icon"
-                >
-                <p><a href="mailto:connergroth@gmail.com">connergroth@gmail.com</a></p>
+        <div class="contact-content-container">
+            <!-- Contact Information -->
+            <div class="contact-info-upper-container">
+                <div class="contact-info-container">
+                    <img src="./assets/email.png" alt="Email icon" class="icon contact-icon email-icon">
+                    <p><a href="mailto:connergroth@gmail.com">connergroth@gmail.com</a></p>
+                </div>
+                <div class="contact-info-container">
+                    <img src="./assets/linkedin.png" alt="LinkedIn icon" class="icon contact-icon">
+                    <p><a href="https://linkedin.com/in/connergroth" target="_blank">LinkedIn</a></p>
+                </div>
+                <div class="contact-info-container">
+                    <img src="./assets/github.png" alt="GitHub icon" class="icon contact-icon">
+                    <p><a href="https://github.com/connergroth" target="_blank">GitHub</a></p>
+                </div>
             </div>
-            <div class="contact-info-container">
-                <img 
-                    src="./assets/linkedin.png" 
-                    alt="LinkedIn icon"
-                    class="icon contact-icon"
-                >
-                <p><a href="https://linkedin.com/in/connergroth">LinkedIn</a></p>
-            </div>
+            
+            <!-- Contact Form -->
+            <form id="contact-form" class="contact-form">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" placeholder="Your message" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-color-1 submit-btn">Send Message</button>
+            </form>
         </div>
     </section>
+    
+    <!-- FOOTER -->
     <footer>
         <nav>
             <div class="nav-links-container">
@@ -488,6 +634,6 @@
         </nav>
         <p>Copyright &#169; 2024 Conner Groth. All Rights Reserved. </p>
     </footer>
-    <script src="script.js"></script>
+    <script src="./script.js"></script>
 </body>
 </html>
