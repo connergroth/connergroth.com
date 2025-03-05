@@ -39,6 +39,9 @@ window.addEventListener("load", function () {
   // Initialize project cards
   revealAllElements();
 
+  // Initialize project cards with enhanced handling
+  initializeProjectCards();
+
   // Setup project image animations
   setupProjectImageAnimations();
 
@@ -500,4 +503,271 @@ function setupMobileTouchEvents() {
       { passive: true }
     );
   });
+}
+
+// Enhanced project card handling for both desktop and mobile
+document.addEventListener("DOMContentLoaded", function () {
+  initializeProjectCards();
+
+  // Re-initialize on resize to ensure proper layout
+  window.addEventListener("resize", function () {
+    setTimeout(initializeProjectCards, 100);
+  });
+});
+
+function initializeProjectCards() {
+  const projectCards = document.querySelectorAll(".project-card");
+
+  projectCards.forEach((card) => {
+    // Fix styling issues
+    ensureCardStyling(card);
+
+    // Remove existing listeners to prevent duplicates
+    const newCard = card.cloneNode(true);
+    card.parentNode.replaceChild(newCard, card);
+
+    // Add appropriate event handlers
+    if ("ontouchstart" in window) {
+      // Touch device behavior
+      setupTouchBehavior(newCard);
+    } else {
+      // Desktop hover behavior is handled by CSS
+      setupDesktopEnhancements(newCard);
+    }
+  });
+
+  // Fix project container layout
+  const projectsContainer = document.querySelector(".projects-container");
+  if (projectsContainer) {
+    fixProjectContainerLayout(projectsContainer);
+  }
+}
+
+function ensureCardStyling(card) {
+  // Ensure basic card styling
+  card.style.opacity = "1";
+  card.style.visibility = "visible";
+  card.style.display = "block";
+  card.style.width = "100%";
+
+  // Fix card inner
+  const cardInner = card.querySelector(".project-card-inner");
+  if (cardInner) {
+    cardInner.style.visibility = "visible";
+    cardInner.style.width = "100%";
+  }
+
+  // Fix project description
+  const description = card.querySelector(".project-description");
+  if (description) {
+    description.style.width = "100%";
+    description.style.textAlign = "left";
+    description.style.minHeight = "80px";
+    description.style.display = "-webkit-box";
+    description.style.webkitLineClamp = "3";
+    description.style.webkitBoxOrient = "vertical";
+    description.style.overflow = "hidden";
+    description.style.marginBottom = "1rem";
+  }
+
+  // Ensure description-full has proper scrolling
+  const descriptionFull = card.querySelector(".project-description-full");
+  if (descriptionFull) {
+    descriptionFull.style.overflowY = "auto";
+    descriptionFull.style.maxHeight = "120px";
+    descriptionFull.style.minHeight = "120px";
+    descriptionFull.style.paddingRight = "5px";
+  }
+
+  // Fix tech icons container
+  const techIconsContainer = card.querySelector(".tech-icons-container");
+  if (techIconsContainer) {
+    techIconsContainer.style.display = "flex";
+    techIconsContainer.style.flexWrap = "wrap";
+    techIconsContainer.style.gap = "0.75rem";
+    techIconsContainer.style.marginBottom = "1rem";
+    techIconsContainer.style.justifyContent = "flex-start";
+    techIconsContainer.style.minHeight = "40px";
+    techIconsContainer.style.alignItems = "center";
+  }
+
+  // Style tech icons
+  const techIcons = card.querySelectorAll(".tech-icon");
+  techIcons.forEach((icon) => {
+    icon.style.width = "28px";
+    icon.style.height = "28px";
+    icon.style.objectFit = "contain";
+    icon.style.transition = "transform 0.2s ease";
+    icon.style.filter = "grayscale(30%)";
+
+    // Add hover effect
+    icon.addEventListener("mouseenter", function () {
+      this.style.transform = "scale(1.2)";
+      this.style.filter = "grayscale(0%)";
+    });
+
+    icon.addEventListener("mouseleave", function () {
+      this.style.transform = "scale(1)";
+      this.style.filter = "grayscale(30%)";
+    });
+  });
+
+  // Ensure consistent heights
+  standardizeHeights(card);
+}
+
+function setupTouchBehavior(card) {
+  card.addEventListener(
+    "touchstart",
+    function (e) {
+      // Prevent default only if we're touching the card itself
+      // This allows scrolling to continue working normally
+      if (e.target.closest(".project-card-inner")) {
+        e.preventDefault();
+      }
+    },
+    { passive: false }
+  );
+
+  card.addEventListener("touchend", function (e) {
+    // Toggle flipped class on touch
+    this.classList.toggle("flipped");
+
+    // Prevent any click events from firing
+    e.preventDefault();
+
+    // Announce for screen readers
+    const isFlipped = this.classList.contains("flipped");
+    const announceMessage = isFlipped
+      ? "Card flipped to show details"
+      : "Card flipped back to front";
+
+    announceToScreenReader(announceMessage);
+  });
+}
+
+function setupDesktopEnhancements(card) {
+  // Add animation enhancements for non-touch devices
+  const projectImg = card.querySelector(".project-img");
+  const cardInner = card.querySelector(".project-card-inner");
+
+  if (projectImg) {
+    card.addEventListener("mouseenter", function () {
+      projectImg.style.transform = "scale(1.1)";
+    });
+
+    card.addEventListener("mouseleave", function () {
+      projectImg.style.transform = "scale(1)";
+    });
+  }
+
+  // Add keyboard accessibility
+  card.setAttribute("tabindex", "0");
+  card.setAttribute("role", "button");
+  card.setAttribute(
+    "aria-label",
+    `${
+      card.querySelector(".project-title")?.textContent || "Project"
+    } - Press Enter to flip card`
+  );
+
+  card.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      this.classList.toggle("flipped");
+
+      // Announce for screen readers
+      const isFlipped = this.classList.contains("flipped");
+      const announceMessage = isFlipped
+        ? "Card flipped to show details"
+        : "Card flipped back to front";
+
+      announceToScreenReader(announceMessage);
+    }
+  });
+}
+
+function fixProjectContainerLayout(container) {
+  container.style.display = "grid";
+  container.style.visibility = "visible";
+  container.style.opacity = "1";
+  container.style.width = "100%";
+
+  // Adjust grid layout based on screen width
+  if (window.innerWidth <= 600) {
+    container.style.gridTemplateColumns = "1fr";
+  } else if (window.innerWidth <= 1200) {
+    container.style.gridTemplateColumns = "repeat(2, 1fr)";
+  } else {
+    container.style.gridTemplateColumns = "repeat(3, 1fr)";
+  }
+}
+
+function standardizeHeights(card) {
+  // Ensure consistent heights for key elements to maintain card uniformity
+  const imgContainer = card.querySelector(".project-img-container");
+  if (imgContainer) {
+    imgContainer.style.height = "200px";
+  }
+
+  const description = card.querySelector(".project-description");
+  if (description) {
+    description.style.minHeight = "80px";
+  }
+
+  const techIconsContainer = card.querySelector(".tech-icons-container");
+  if (techIconsContainer) {
+    techIconsContainer.style.minHeight = "40px";
+  }
+
+  // Ensure consistent content padding
+  const content = card.querySelector(".project-content");
+  if (content) {
+    content.style.padding = "1.25rem";
+    content.style.height = "calc(100% - 200px)";
+  }
+
+  // Ensure consistent meta section
+  const meta = card.querySelector(".project-meta");
+  if (meta) {
+    meta.style.marginTop = "auto";
+    meta.style.paddingTop = "0.75rem";
+  }
+
+  // Set fixed height for all cards including featured
+  card.style.height = "480px";
+
+  // Ensure featured project has same height
+  if (card.classList.contains("featured-project")) {
+    card.style.height = "480px";
+  }
+}
+
+// Accessibility helper
+function announceToScreenReader(message) {
+  const announcement = document.getElementById("sr-announcement");
+
+  if (!announcement) {
+    const newAnnouncement = document.createElement("div");
+    newAnnouncement.id = "sr-announcement";
+    newAnnouncement.setAttribute("aria-live", "polite");
+    newAnnouncement.classList.add("sr-only");
+    document.body.appendChild(newAnnouncement);
+
+    // Style for screen reader only
+    newAnnouncement.style.position = "absolute";
+    newAnnouncement.style.width = "1px";
+    newAnnouncement.style.height = "1px";
+    newAnnouncement.style.padding = "0";
+    newAnnouncement.style.margin = "-1px";
+    newAnnouncement.style.overflow = "hidden";
+    newAnnouncement.style.clip = "rect(0, 0, 0, 0)";
+    newAnnouncement.style.border = "0";
+
+    setTimeout(() => {
+      newAnnouncement.textContent = message;
+    }, 100);
+  } else {
+    announcement.textContent = message;
+  }
 }

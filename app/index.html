@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conner Groth | Software Engineer & AI Specialist</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./assets/favicon.png">
+    
+    <!-- CSS Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mediaqueries.css">
+    <link rel="stylesheet" href="project-fix.css">
+    
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="Conner Groth - Software Engineer and AI Specialist with expertise in machine learning, web development, and data science.">
+    <meta property="og:title" content="Conner Groth | Software Engineer & AI Specialist">
+    <meta property="og:description" content="Portfolio showcasing projects and skills in software development, AI, and web technologies.">
+    <meta property="og:image" content="./assets/connerpfp.png">
+    <meta property="og:url" content="https://connergroth.github.io/app/">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/c8e4d183c2.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- Page loader -->
+    <div class="loader-wrapper">
+        <div class="loader"></div>
+    </div>
+    
+    <!-- Scroll progress indicator -->
+    <div class="progress-container">
+        <div id="progress-bar" class="progress-bar"></div>
+    </div>
+    
+    <!-- SINGLE NAVBAR STRUCTURE WITH DESKTOP AND MOBILE VERSIONS -->
+    <!-- Desktop Navigation (hidden on mobile) -->
+    <nav id="desktop-nav">
+        <a href="#" class="logo">Conner Groth</a>
+        <div class="nav-right">
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <!-- Dark Mode Toggle -->
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" />
+                    <div class="slider round">
+                        <span class="moon-icon">🌙</span>
+                        <span class="sun-icon">☀️</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation (hidden on desktop) -->
+    <nav id="hamburger-nav">
+        <a href="#" class="logo">Conner Groth</a>
+        <div class="nav-right">
+            <!-- Dark Mode Toggle Mobile -->
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox-mobile">
+                    <input type="checkbox" id="checkbox-mobile" />
+                    <div class="slider round">
+                        <span class="moon-icon">🌙</span>
+                        <span class="sun-icon">☀️</span>
+                    </div>
+                </label>
+            </div>
+            <div class="hamburger-menu">
+                <div class="hamburger-icon" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="menu-links">
+                    <ul>
+                        <li><a href="#about" onclick="toggleMenu()">About</a></li>
+                        <li><a href="#experience" onclick="toggleMenu()">Experience</a></li>
+                        <li><a href="#projects" onclick="toggleMenu()">Projects</a></li>
+                        <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- PROFILE SECTION -->
+    <section id="profile">
+        <div class="section__pic-container reveal-element">
+            <img src="./assets/connerpfp.png" alt="Conner Groth profile picture">
+        </div>
+        <div class="section__text">
+            <div class="typing-demo">
+                Hello, I'm
+            </div>
+            <h1 class="title reveal-element">Conner Groth</h1>
+            <p class="section__text__p2">Computer Science Student at <br> CU Boulder </p>
+
+            <div class="btn-container">
+                <button class="btn btn-color-2" onclick="window.open('./assets/Conner Groth Resume.pdf')">
+                    Download CV
+                </button>
+                <button class="btn btn-color-1" onclick="location.href='#contact'">
+                    Contact Info
+                </button>
+            </div>
+            <div id="socials-container">
+                <img 
+                    src="./assets/linkedin.png" 
+                    alt="My LinkedIn profile" 
+                    class="icon"
+                    onclick="location.href='https://linkedin.com/in/connergroth'"
+                >
+                <img 
+                    src="./assets/github.png" 
+                    alt="My GitHub profile" 
+                    class="icon"
+                    onclick="location.href='https://github.com/connergroth'"
+                >
+            </div>
+        </div>
+    </section>
+    
+    <!-- ABOUT SECTION -->
+    <section id="about">
+        <p class="section__text__p1">Get To Know More</p>
+        <h1 class="title reveal-element">About Me</h1>
+        <div class="section-container">
+            <!-- Description Container -->
+            <div class="about-description-container reveal-element">
+                <h2>Who I Am</h2>
+                <p>I'm a Computer Science student at CU Boulder passionate about building scalable, data-driven applications that integrate machine learning, AI, and APIs to deliver impactful user experiences.
+
+                  I specialize in full-stack development, working with Python, C++, JavaScript (React, Next.js), FastAPI, and PostgreSQL to develop efficient, user-centric software. My experience spans backend architecture, database design, and AI-powered applications that leverage real-world data.
+                  </p>
+                <p>I'm driven to create intuitive, efficient applications that solve real-world problems. My academic journey has equipped me with strong analytical skills and a solid foundation in computer science principles, while my ongoing projects allow me to apply these skills in practical scenarios.</p>
+                <p>When I'm not coding, you can find me lifting weights, taking photos, and skiing.</p>
+            </div>
+            
+            <!-- Education Containers -->
+            <div class="education-containers">
+                <!-- CS Degree Container -->
+                <div class="education-card reveal-element">
+                    <div class="education-logo">
+                        <img src="./assets/culogo.png" alt="CU Boulder Logo" onerror="this.src='./assets/gradcap.png'">
+                    </div>
+                    <div class="education-details">
+                        <h3>Bachelor of Science</h3>
+                        <h4>Computer Science</h4>
+                        <p>University of Colorado Boulder</p>
+                        <p>School of Engineering & Applied Science</p>
+                        <p>Expected: 2027</p>
+                        <p class="education-courses">Key Courses: Data Structures & Algorithms, Software Development Methods & Tools, Computer Systems</p>
+                    </div>
+                </div>
+                
+                <!-- Business Minor Container -->
+                <div class="education-card reveal-element">
+                    <div class="education-logo">
+                        <img src="./assets/culogo.png" alt="CU Boulder Business School Logo" onerror="this.src='./assets/github.png'">
+                    </div>
+                    <div class="education-details">
+                        <h3>Minor</h3>
+                        <h4>Business</h4>
+                        <p>University of Colorado Boulder</p>
+                        <p>Leeds School of Business</p>
+                        <p>Expected: 2027</p>
+                        <p class="education-courses">Key Courses: Marketing, Management</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Relevant Coursework Section -->
+            <div class="coursework-container reveal-element">
+                <h2>Relevant Coursework</h2>
+                <div class="coursework-grid">
+                    <!-- Computer Science Courses -->
+                    <div class="course-category">
+                        <h3>Computer Science</h3>
+                        <ul class="course-list">
+                            <li>
+                                <span class="course-code">CSCI 2270</span>
+                                <span class="course-name">Data Structures</span>
+                                <p class="course-description">Data abstractions, covering stacks, queues, lists, and trees, along with their implementations using arrays and linked structures, while introducing algorithm design, analysis, and data structure selection for various applications.</p>
+                            </li>
+                            <li>
+                                <span class="course-code">CSCI 2400</span>
+                                <span class="course-name">Computer Systems</span>
+                                <p class="course-description">Computer architecture fundamentals, including binary representation, assembly programming, memory hierarchy, instruction-level parallelism, performance optimization, and system-level concepts like virtual memory, dynamic allocation, and exceptional control flow.</p>
+                            </li>
+                            <li>
+                                <span class="course-code">CSCI 3308</span>
+                                <span class="course-name">Software Development Methods</span>
+                                <p class="course-description">Software engineering practices including version control, testing, and agile methodologies.</p>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Business Courses -->
+                    <div class="course-category">
+                        <h3>Business</h3>
+                        <ul class="course-list">
+                            <li>
+                                <span class="course-code">BUSM 2010</span>
+                                <span class="course-name">Principles of Marketing</span>
+                                <p class="course-description">Introduction to marketing concepts, strategies, and tactics, including the 4 P's framework (place, price, product, and promotion), with applications across business and society.</p>
+                            </li>
+                            <li>
+                                <span class="course-code">BUSM 2011</span>
+                                <span class="course-name">Principles of Management</span>
+                                <p class="course-description">Knowledge and skills needed to effectively lead and manage in the workplace, covering leadership styles, team dynamics, decision-making, and strategies for motivating and guiding individuals and organizations.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <img 
+            src="./assets/arrow.png" alt="Arrow icon" 
+            class="icon arrow"
+            onclick="location.href='#experience'"
+            aria-label="Navigate to Experience section"
+        >
+    </section>
+    
+    <!-- EXPERIENCE SECTION -->
+    <section id="experience">
+        <p class="section__text__p1">Explore My</p>
+        <h1 class="title reveal-element">Experience</h1>
+        <div class="experience-details-container">
+          <div class="about-containers">
+            <!-- Languages container - directly in the grid -->
+            <div class="details-container reveal-element">
+              <h2 class="experience-sub-title">Languages</h2>
+              <div class="article-container">
+                <article>
+                  <img
+                    src="./assets/Python-Dark.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Python</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/CPP.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>C++</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/C.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>C</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/JavaScript.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>JavaScript</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/HTML.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>HTML</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/CSS.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>CSS</h3>
+                  </div>
+                </article>
+              </div>
+            </div>
+            
+            <!-- AI & Data container - directly in the grid -->
+            <div class="details-container reveal-element">
+              <h2 class="experience-sub-title">AI & Data</h2>
+              <div class="article-container">
+                <article>
+                  <img
+                    src="./assets/TensorFlow-Dark.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>TensorFlow</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/PyTorch-Dark.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>PyTorch</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/PostgreSQL-Dark.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>PostgreSQL</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/Redis-Dark.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Redis</h3>
+                  </div>
+                </article>
+              </div>
+            </div>
+            
+            <!-- Web & Backend container - directly in the grid -->
+            <div class="details-container reveal-element">
+              <h2 class="experience-sub-title">Web & Backend</h2>
+              <div class="article-container">
+                <article>
+                  <img
+                    src="./assets/FastAPI.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>FastAPI</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/React-Dark.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>React</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/Docker.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Docker</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/AWS-Dark.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>AWS</h3>
+                  </div>
+                </article>
+              </div>
+            </div>
+            
+            <!-- APIs & Scraping container - directly in the grid -->
+            <div class="details-container reveal-element">
+              <h2 class="experience-sub-title">Design & Tools</h2>
+              <div class="article-container">
+                <article>
+                  <img
+                    src="./assets/Git.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Git</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/Postman.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Postman</h3>
+                  </div>
+                </article>
+                <article>
+                  <img
+                    src="./assets/Figma-Dark.svg"
+                    alt="Experience icon"
+                    class="icon"
+                  />
+                  <div>
+                    <h3>Figma</h3>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+        <img
+          src="./assets/arrow.png"
+          alt="Arrow icon"
+          class="icon arrow"
+          onclick="location.href='#projects'"
+          aria-label="Navigate to Projects section"
+        />
+      </section>
+      
+    <!-- PROJECTS SECTION -->
+    <section id="projects">
+      <p class="section__text__p1">Browse My Recent</p>
+      <h1 class="title reveal-element">Projects</h1>
+      
+      <div class="projects-container">
+          <!-- EcoVision Project -->
+          <div class="project-card reveal-element featured-project">
+              <div class="project-card-inner">
+                  <div class="project-card-front">
+                      <div class="project-img-container">
+                          <img src="./assets/EcoVisionDemoImage.jpg" alt="EcoVision Project" class="project-img">
+                          <div class="project-overlay">
+                              <span class="view-project">View Project</span>
+                          </div>
+                      </div>
+                      <div class="project-content">
+                          <div class="project-header">
+                              <h2 class="project-title">EcoVision</h2>
+                              <div class="project-badges">
+                                  <span class="project-badge live">Live</span>
+                              </div>
+                          </div>
+                          <p class="project-description">An intelligent recycling assistant leveraging computer vision and AI to identify recyclable items in real-time.</p>
+                          <div class="tech-icons-container">
+                              <img src="./assets/Python-Dark.svg" alt="Python" class="tech-icon" title="Python">
+                              <img src="./assets/TensorFlow-Dark.svg" alt="TensorFlow" class="tech-icon" title="TensorFlow">
+                              <img src="./assets/FastAPI.svg" alt="FastAPI" class="tech-icon" title="FastAPI">
+                              <img src="./assets/Docker.svg" alt="Docker" class="tech-icon" title="Docker">
+                          </div>
+                          <div class="project-meta">
+                              <span class="project-status complete">Completed</span>
+                              <span class="project-year">2023</span>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="project-card-back">
+                      <h3>EcoVision</h3>
+                      <p class="project-description-full">
+                          EcoVision is an intelligent recycling assistant that leverages advanced computer vision and AI to help users accurately identify recyclable items, learn proper disposal methods, and track their environmental impact, all in real-time.
+                      </p>
+                      <div class="project-highlights">
+                          <h4>Key Features:</h4>
+                          <ul>
+                              <li>Real-time object detection for recyclable items</li>
+                              <li>Item-specific disposal instructions</li>
+                              <li>Environmental impact tracking</li>
+                              <li>Custom ML model with 93% accuracy</li>
+                          </ul>
+                      </div>
+                      <div class="btn-container">
+                          <button class="btn btn-color-1 project-btn" onclick="location.href='https://github.com/connergroth/EcoVision'">
+                              <i class="btn-icon github-icon"></i>GitHub
+                          </button>
+                          <button class="btn btn-color-2 project-btn" onclick="location.href='https://ecovision-demo.vercel.app'">
+                              <i class="btn-icon demo-icon"></i>Live Demo
+                          </button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+    
+          <!-- Strim Project -->
+          <div class="project-card reveal-element">
+              <div class="project-card-inner">
+                  <div class="project-card-front">
+                      <div class="project-img-container">
+                          <img src="./assets/strimDemoImage.PNG" alt="Strim Project" class="project-img">
+                          <div class="project-overlay">
+                              <span class="view-project">View Project</span>
+                          </div>
+                      </div>
+                      <div class="project-content">
+                          <div class="project-header">
+                              <h2 class="project-title">Strim</h2>
+                              <div class="project-badges">
+                                  <span class="project-badge live">Live</span>
+                              </div>
+                          </div>
+                          <p class="project-description">A tool for trimming Strava activities and editing metadata with automatic reupload.</p>
+                          <div class="tech-icons-container">
+                              <img src="./assets/Python-Dark.svg" alt="Python" class="tech-icon" title="Python">
+                              <img src="./assets/JavaScript.svg" alt="JavaScript" class="tech-icon" title="JavaScript">
+                              <img src="./assets/HTML.svg" alt="HTML" class="tech-icon" title="HTML">
+                              <img src="./assets/CSS.svg" alt="CSS" class="tech-icon" title="CSS">
+                          </div>
+                          <div class="project-meta">
+                              <span class="project-status complete">Completed</span>
+                              <span class="project-year">2023</span>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="project-card-back">
+                      <h3>Strim</h3>
+                      <p class="project-description-full">
+                          Strim is a powerful tool that allows users to trim Strava runs and edit distance metadata, automatically deleting the inaccurate activity and reuploading the trimmed one, using the Strava API.
+                      </p>
+                      <div class="project-highlights">
+                          <h4>Key Features:</h4>
+                          <ul>
+                              <li>Simple GUI for activity trimming</li>
+                              <li>Auto-recalculation of pace and other metrics</li>
+                              <li>OAuth integration with Strava</li>
+                              <li>Batch processing of multiple activities</li>
+                          </ul>
+                      </div>
+                      <div class="btn-container">
+                          <button class="btn btn-color-1 project-btn" onclick="location.href='https://github.com/connergroth/Strim'">
+                              <i class="btn-icon github-icon"></i>GitHub
+                          </button>
+                          <button class="btn btn-color-2 project-btn" onclick="location.href='https://strim-demo.vercel.app'">
+                              <i class="btn-icon demo-icon"></i>Live Demo
+                          </button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+    
+          <!-- Sonance Project -->
+          <div class="project-card reveal-element">
+              <div class="project-card-inner">
+                  <div class="project-card-front">
+                      <div class="project-img-container">
+                          <img src="./assets/sonance-preview.jpg" alt="Sonance Project" class="project-img">
+                          <div class="project-overlay">
+                              <span class="view-project">View Project</span>
+                          </div>
+                      </div>
+                      <div class="project-content">
+                          <div class="project-header">
+                              <h2 class="project-title">Sonance</h2>
+                              <div class="project-badges">
+                                  <span class="project-badge upcoming">Coming Soon</span>
+                              </div>
+                          </div>
+                          <p class="project-description">A recommendation engine using ML to generate personalized music recommendations.</p>
+                          <div class="tech-icons-container">
+                              <img src="./assets/Python-Dark.svg" alt="Python" class="tech-icon" title="Python">
+                              <img src="./assets/React-Dark.svg" alt="React" class="tech-icon" title="React">
+                              <img src="./assets/PostgreSQL-Dark.svg" alt="PostgreSQL" class="tech-icon" title="PostgreSQL">
+                              <img src="./assets/AWS-Dark.svg" alt="AWS" class="tech-icon" title="AWS">
+                          </div>
+                          <div class="project-meta">
+                              <span class="project-status in-progress">In Progress</span>
+                              <span class="project-year">2024</span>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="project-card-back">
+                      <h3>Sonance</h3>
+                      <p class="project-description-full">
+                          Sonance is a sophisticated recommendation engine that uses machine learning to generate highly personalized music recommendations based on user listening history and preferences.
+                      </p>
+                      <div class="project-highlights">
+                          <h4>Key Features:</h4>
+                          <ul>
+                              <li>Collaborative filtering recommendation system</li>
+                              <li>Integration with Spotify and Last.fm APIs</li>
+                              <li>Customizable recommendation parameters</li>
+                              <li>Playlist generation with one click</li>
+                          </ul>
+                      </div>
+                      <div class="btn-container">
+                          <button class="btn btn-color-1 project-btn" onclick="location.href='https://github.com/connergroth/Sonance'">
+                              <i class="btn-icon github-icon"></i>GitHub
+                          </button>
+                          <button class="btn btn-color-2 project-btn disabled-btn">
+                              <i class="btn-icon demo-icon"></i>Coming Soon
+                          </button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      
+      <img 
+          src="./assets/arrow.png" alt="Arrow icon" 
+          class="icon arrow"
+          onclick="location.href='#contact'"
+          aria-label="Navigate to Contact section"
+      >
+    </section>
+    
+    <!-- CONTACT SECTION -->
+    <section id="contact">
+        <p class="section__text__p1">Get In Touch</p>
+        <h1 class="title reveal-element">Contact Me</h1>
+        <div class="contact-content-container">
+            <!-- Contact Information -->
+            <div class="contact-info-upper-container reveal-element">
+                <div class="contact-info-container">
+                    <img src="./assets/email.png" alt="Email icon" class="icon contact-icon email-icon">
+                    <p><a href="mailto:connergroth@gmail.com">connergroth@gmail.com</a></p>
+                </div>
+                <div class="contact-info-container">
+                    <img src="./assets/linkedin.png" alt="LinkedIn icon" class="icon contact-icon">
+                    <p><a href="https://linkedin.com/in/connergroth" target="_blank">LinkedIn</a></p>
+                </div>
+                <div class="contact-info-container">
+                    <img src="./assets/github.png" alt="GitHub icon" class="icon contact-icon">
+                    <p><a href="https://github.com/connergroth" target="_blank">GitHub</a></p>
+                </div>
+            </div>
+            
+            <!-- Contact Form -->
+            <form id="contact-form" class="contact-form reveal-element">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" placeholder="Your message" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-color-1 submit-btn">Send Message</button>
+            </form>
+        </div>
+    </section>
+    
+    <!-- FOOTER -->
+    <footer>
+        <nav>
+            <div class="nav-links-container">
+                <ul class="nav-links">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#experience">Experience</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+        <p>Copyright &#169; 2024 Conner Groth. All Rights Reserved. </p>
+    </footer>
+    <script src="./script.js"></script>
+    <script src="project-fix.js"></script>
+</body>
+</html>
