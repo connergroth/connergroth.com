@@ -1,49 +1,79 @@
 @media screen and (max-width: 1400px) {
   #profile {
-      height: 83vh;
-      margin-bottom: 6rem;
+      height: calc(100vh - 10vh);
+      margin-top: 10vh;
+      padding: 0 5rem;
   }
-  .about-containers {
-      flex-wrap: wrap;
+  .about-containers,
+  .projects-container {
+      gap: 1.5rem;
   }
   #contact,
   #projects {
-      height: fit-content;
+      min-height: fit-content;
+  }
+  section {
+      padding: 4rem 5rem 8rem;
+      margin-bottom: 2rem;
+  }
+  .arrow {
+      right: 3rem;
+      bottom: 4rem;
+  }
+  #contact {
+      padding: 4rem 5rem;
+  }
+  .article-container {
+      gap: 0.5rem;
   }
 }
 
 @media screen and (max-width: 1200px) {
+  #profile {
+      height: calc(100vh - 10vh);
+      margin-top: 10vh;
+      padding: 0 3rem;
+  }
   #desktop-nav {
       display: none;
   }
   #hamburger-nav {
       display: flex;
   }
-  #experience,
+  section {
+      padding: 3rem 3rem 7rem;
+      margin-bottom: 2rem;
+  }
+  .arrow {
+      right: 2rem;
+      bottom: 3rem;
+  }
   .experience-details-container {
-      margin-top: 2rem;
+      margin-top: 1.5rem;
+  }
+  .about-containers {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+  }
+  .projects-container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
   }
   #profile,
   .section-container {
       display: block;
-  }
-  .arrow {
-      display: none;
-  }
-  section,
-  .section-container {
-      height: fit-content;
-  }
-  section {
-      margin: 0 5%;
   }
   .section__pic-container {
       width: 275px;
       height: 275px;
       margin: 0 auto 2rem;
   }
-  .about-containers {
-      margin-top: 0;
+  #contact {
+      padding: 3rem 3rem;
+  }
+  .article-container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
   }
 }
 
@@ -54,18 +84,18 @@
   
   #contact,
   footer {
-      height: auto;
-      padding: 2rem 0;
+      padding: 2rem;
   }
   
   #profile {
-      height: auto;
-      margin-bottom: 2rem;
-      padding-top: 5rem;
+      height: calc(100vh - 10vh);
+      margin-top: 10vh;
+      padding: 0 2rem;
   }
   
   article {
       font-size: 1rem;
+      justify-content: flex-start;
   }
   
   footer nav {
@@ -73,10 +103,9 @@
       margin-bottom: 2rem;
   }
   
-  .about-containers,
-  .contact-info-upper-container,
-  .btn-container {
-      flex-wrap: wrap;
+  .about-containers {
+      grid-template-columns: 1fr;
+      gap: 1rem;
   }
   
   .contact-info-container {
@@ -127,7 +156,6 @@
   
   .details-container {
       padding: 1rem;
-      margin-bottom: 2rem;
   }
   
   .typing-demo {
@@ -140,5 +168,25 @@
   
   .project-img-container {
       height: 240px;
+  }
+  
+  section {
+      padding: 2rem 2rem 6rem;
+      margin-bottom: 1rem;
+  }
+  .arrow {
+      right: 1rem;
+      bottom: 2rem;
+  }
+  #contact {
+      padding-bottom: 4rem;
+  }
+  .projects-container {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+  }
+  .article-container {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
   }
 }
