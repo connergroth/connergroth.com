@@ -240,22 +240,21 @@
       }
       
       footer nav {
-          height: fit-content;
-          margin-bottom: 2rem;
-      }
-      
-      .about-containers {
-          grid-template-columns: 1fr;
+          flex-direction: column;
           gap: 1rem;
       }
       
+      .about-containers {
+          flex-direction: column;
+      }
+      
       .contact-info-container {
-          margin: 0.5rem 0;
+          margin: 0;
       }
       
       .contact-info-container p,
-      .nav-links li a {
-          font-size: 1rem;
+      .contact-info-container a {
+          font-size: 0.9rem;
       }
       
       .experience-sub-title {
@@ -263,7 +262,7 @@
       }
       
       a.logo {
-          font-size: 1.3rem;
+          font-size: 1.5rem;
       }
       
       .nav-links {
@@ -273,10 +272,10 @@
       }
       
       .section__pic-container {
-          width: 85%;
-          height: auto;
-          max-width: 280px;
-          aspect-ratio: 1/1;
+          width: auto;
+          height: 46vw;
+          justify-content: center;
+          margin: 0 auto 2rem;
       }
       
       .section__text__p2 {
@@ -292,20 +291,19 @@
       }
       
       .project-description {
-          padding: 0 1rem;
-          min-height: 0; /* Remove minimum height on mobile */
+          font-size: 0.9rem;
       }
       
       .details-container {
-          padding: 1.2rem;
+          padding: 1.5rem;
       }
       
       .typing-demo {
-          font-size: 1.3em;
+          font-size: 1.1rem;
       }
       
       .menu-links.open {
-          max-height: 250px;
+          padding: 6rem 1.5rem;
       }
       
       .project-img-container {
@@ -330,33 +328,29 @@
       }
       
       .theme-switch-wrapper {
-          margin-left: 10px;
+          margin-left: 0.5rem;
       }
       
       .theme-switch {
           width: 50px;
-          height: 25px;
+          height: 24px;
       }
       
       .slider:before {
-          height: 17px;
-          width: 17px;
+          height: 18px;
+          width: 18px;
       }
       
       input:checked + .slider:before {
           transform: translateX(25px);
       }
       
-      .sun-icon, .moon-icon {
-          font-size: 12px;
-      }
-      
       .contact-content-container {
-          gap: 1rem;
+          flex-direction: column;
       }
       
       .contact-form {
-          padding: 1.5rem;
+          width: 100%;
       }
       
       .form-group {
@@ -374,18 +368,18 @@
       }
       
       .project-tech-stack {
-          gap: 0.3rem;
+          flex-wrap: wrap;
       }
       
       .tech-tag {
+          margin: 0.2rem;
           font-size: 0.7rem;
-          padding: 0.2rem 0.4rem;
+          padding: 0.3rem 0.6rem;
       }
       
-      /* Fix hamburger menu on very small screens */
       .hamburger-icon {
-          height: 20px;
-          width: 25px;
+          width: 1.5rem;
+          height: 1.2rem;
       }
   }
   

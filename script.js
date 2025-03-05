@@ -36,9 +36,8 @@ window.addEventListener("load", function () {
   revealOnScroll();
   highlightNavOnScroll();
 
-  // PROJECTS SECTION INITIALIZATION
-  // Initialize project card animations
-  revealProjects();
+  // Initialize project cards
+  revealAllElements();
 
   // Setup project image animations
   setupProjectImageAnimations();
@@ -70,6 +69,78 @@ function revealOnScroll() {
     }
   });
 }
+
+// Unified function to reveal all elements including projects
+function revealAllElements() {
+  // Make sure projects container is visible and properly styled
+  const projectsContainer = document.querySelector(".projects-container");
+  if (projectsContainer) {
+    projectsContainer.style.display = "grid";
+    projectsContainer.style.visibility = "visible";
+    projectsContainer.style.opacity = "1";
+    projectsContainer.style.width = "100%";
+
+    // Adjust grid template columns based on screen width
+    if (window.innerWidth <= 600) {
+      projectsContainer.style.gridTemplateColumns = "1fr";
+    } else if (window.innerWidth <= 1200) {
+      projectsContainer.style.gridTemplateColumns = "repeat(2, 1fr)";
+    } else {
+      projectsContainer.style.gridTemplateColumns = "repeat(3, 1fr)";
+    }
+  }
+
+  // Initialize project cards
+  const projectCards = document.querySelectorAll(".project-card");
+  projectCards.forEach((card) => {
+    // Remove reveal class and ensure visibility
+    card.classList.remove("reveal");
+    card.classList.add("active");
+    card.style.opacity = "1";
+    card.style.transform = "none";
+    card.style.visibility = "visible";
+    card.style.display = "block";
+    card.style.width = "100%";
+
+    // Ensure card content is visible
+    const content = card.querySelector(".project-content");
+    if (content) {
+      content.style.visibility = "visible";
+      content.style.width = "100%";
+    }
+
+    // Make sure card inner is properly set up for hover
+    const cardInner = card.querySelector(".project-card-inner");
+    if (cardInner) {
+      cardInner.style.visibility = "visible";
+      cardInner.style.width = "100%";
+
+      // Remove any click event listeners (we're using hover now)
+      // No need to add click event listeners as we're using CSS hover
+    }
+  });
+
+  // Handle other reveal elements
+  const elements = document.querySelectorAll(".reveal-element");
+  elements.forEach((element) => {
+    element.classList.add("active");
+  });
+}
+
+// Call revealAllElements immediately after DOM loads
+document.addEventListener("DOMContentLoaded", function () {
+  revealAllElements();
+});
+
+// Also call it after a small delay to ensure everything is loaded
+window.addEventListener("load", function () {
+  setTimeout(revealAllElements, 500);
+
+  // Also call on resize to adjust grid
+  window.addEventListener("resize", function () {
+    setTimeout(revealAllElements, 100);
+  });
+});
 
 // Check for saved theme preference or set based on user preference
 function initTheme() {
@@ -130,6 +201,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // Also initialize projects on DOM load
+  revealAllElements();
 });
 
 // Enhanced smooth scrolling for a better user experience
@@ -199,10 +273,7 @@ window.addEventListener("scroll", function () {
   }
 
   // Call reveal animation
-  revealOnScroll();
-
-  // Call project reveal animation
-  revealProjects();
+  revealAllElements();
 
   // Highlight active nav section
   highlightNavOnScroll();
@@ -379,79 +450,54 @@ function isValidEmail(email) {
   return re.test(String(email).toLowerCase());
 }
 
-// PROJECTS SECTION FUNCTIONS
-
-// Enhanced reveal animation for projects
-function revealProjects() {
-  const projectCards = document.querySelectorAll(".project-card");
-
-  projectCards.forEach((card, index) => {
-    // Remove the initial reveal class to make cards visible by default
-    card.classList.remove("reveal");
-
-    // Set transition delay for staggered animation
-    card.style.transitionDelay = `${index * 100}ms`;
-
-    // Add active class immediately
-    card.classList.add("active");
-  });
-}
-
-// Ensure projects are revealed on initial load
-document.addEventListener("DOMContentLoaded", function () {
-  // Call reveal immediately
-  revealProjects();
-});
-
 // Create animation for project images on hover
 function setupProjectImageAnimations() {
   const projectImages = document.querySelectorAll(".project-img-container");
   projectImages.forEach((container) => {
-    container.addEventListener("mouseenter", function () {
-      const img = this.querySelector(".project-img");
-      if (img) img.style.transform = "scale(1.1)";
+    const img = container.querySelector(".project-img");
+    if (!img) return;
+
+    container.addEventListener("mouseenter", () => {
+      img.style.transform = "scale(1.1)";
     });
 
-    container.addEventListener("mouseleave", function () {
-      const img = this.querySelector(".project-img");
-      if (img) img.style.transform = "scale(1)";
+    container.addEventListener("mouseleave", () => {
+      img.style.transform = "scale(1)";
     });
   });
 }
 
 // Setup touch events for mobile devices
 function setupMobileTouchEvents() {
-  const projectCards = document.querySelectorAll(".project-card-inner");
+  const projectCards = document.querySelectorAll(".project-card");
 
   projectCards.forEach((card) => {
     let touchStartX = 0;
     let touchEndX = 0;
+    const cardInner = card.querySelector(".project-card-inner");
+    if (!cardInner) return;
 
     card.addEventListener(
       "touchstart",
-      function (e) {
+      (e) => {
         touchStartX = e.changedTouches[0].screenX;
       },
-      false
+      { passive: true }
     );
 
     card.addEventListener(
       "touchend",
-      function (e) {
+      (e) => {
         touchEndX = e.changedTouches[0].screenX;
-        handleSwipe(this);
-      },
-      false
-    );
+        const swipeDistance = touchEndX - touchStartX;
 
-    function handleSwipe(element) {
-      if (touchStartX - touchEndX > 50) {
-        // Swiped left
-        element.style.transform = "rotateY(180deg)";
-      } else if (touchEndX - touchStartX > 50) {
-        // Swiped right
-        element.style.transform = "rotateY(0deg)";
-      }
-    }
+        if (Math.abs(swipeDistance) > 50) {
+          const currentTransform = cardInner.style.transform;
+          cardInner.style.transform =
+            swipeDistance > 0 ? "rotateY(0deg)" : "rotateY(180deg)";
+        }
+      },
+      { passive: true }
+    );
   });
 }
