@@ -49,135 +49,204 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function initializeProjectCards() {
   const projectCards = document.querySelectorAll(".project-card");
-  const projectsContainer = document.querySelector(".projects-container");
 
-  // Fix projects container layout
-  if (projectsContainer) {
-    // Adjust grid based on screen width
-    if (window.innerWidth <= 576) {
-      projectsContainer.style.gridTemplateColumns = "1fr";
-    } else if (window.innerWidth <= 1200) {
-      projectsContainer.style.gridTemplateColumns = "repeat(2, 1fr)";
-    } else {
-      projectsContainer.style.gridTemplateColumns = "repeat(3, 1fr)";
-    }
-  }
+  // Detect if device supports touch
+  const isTouchDevice =
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0;
 
   projectCards.forEach((card) => {
-    // Add accessibility support
-    card.setAttribute("tabindex", "0");
-    card.setAttribute("role", "button");
-    card.setAttribute(
-      "aria-label",
-      `${
-        card.querySelector(".project-title")?.textContent || "Project"
-      } - View project details`
-    );
+    // Remove any existing listeners by cloning the card
+    const newCard = card.cloneNode(true);
+    card.parentNode.replaceChild(newCard, card);
 
-    // Ensure all cards have consistent height
-    standardizeProjectCard(card);
+    // For touch devices
+    if (isTouchDevice) {
+      // Add tap to flip
+      newCard.addEventListener("click", function (e) {
+        // Don't flip if clicking on a button or link
+        if (e.target.closest("button") || e.target.closest("a")) {
+          return;
+        }
 
-    // Add appropriate event handlers
-    if ("ontouchstart" in window) {
-      // Touch device behavior
-      setupTouchBehavior(card);
+        this.classList.toggle("flipped");
+      });
+
+      // Add visual indicator for touch devices
+      const imgContainer = newCard.querySelector(".project-img-container");
+      if (imgContainer && !imgContainer.querySelector(".touch-hint")) {
+        const touchHint = document.createElement("div");
+        touchHint.className = "touch-hint";
+        touchHint.textContent = "Tap to view details";
+        imgContainer.appendChild(touchHint);
+      }
     } else {
-      // Desktop enhancements
-      setupDesktopEnhancements(card);
+      // For desktop: use CSS hover by default (defined in CSS)
+      // But also add keyboard accessibility
+      newCard.setAttribute("tabindex", "0");
+      newCard.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.classList.toggle("flipped");
+        }
+      });
     }
-  });
-}
 
-function standardizeProjectCard(card) {
-  // Ensure consistent styling for project cards
-  const imgContainer = card.querySelector(".project-img-container");
-  if (imgContainer) {
-    imgContainer.style.height = "220px";
-  }
+    // Handle buttons properly on both sides of card
+    const buttons = newCard.querySelectorAll(".project-btn:not(.disabled-btn)");
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation(); // Prevent card flip when clicking buttons
+      });
+    });
 
-  const content = card.querySelector(".project-content");
-  if (content) {
-    content.style.display = "flex";
-    content.style.flexDirection = "column";
-    content.style.flexGrow = "1";
-  }
+    // Handle disabled buttons
+    const disabledBtns = newCard.querySelectorAll(".disabled-btn");
+    disabledBtns.forEach((btn) => {
+      btn.setAttribute("disabled", "true");
+      btn.setAttribute("aria-disabled", "true");
 
-  const description = card.querySelector(".project-description");
-  if (description) {
-    description.style.display = "-webkit-box";
-    description.style.webkitLineClamp = "3";
-    description.style.webkitBoxOrient = "vertical";
-    description.style.overflow = "hidden";
-  }
-
-  const btnContainer = card.querySelector(".project-btn-container");
-  if (btnContainer) {
-    btnContainer.style.marginTop = "auto";
-  }
-
-  // Handle disabled buttons
-  const disabledBtns = card.querySelectorAll(".disabled-btn");
-  disabledBtns.forEach((btn) => {
-    btn.setAttribute("disabled", "true");
-    btn.setAttribute("aria-disabled", "true");
-
-    // Prevent click events on disabled buttons
-    btn.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
+      // Prevent click events on disabled buttons
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      });
     });
   });
+
+  // Ensure consistent heights for all cards
+  standardizeCardHeights();
 }
 
-function setupTouchBehavior(card) {
-  // For touch devices, add explicit tap indicators
-  const overlay = card.querySelector(".project-overlay");
-  if (overlay) {
-    const viewProject = overlay.querySelector(".view-project");
-    if (viewProject) {
-      viewProject.textContent = "Tap to view";
+// Standardize card heights for consistent appearance
+function standardizeCardHeights() {
+  const cards = document.querySelectorAll(".project-card");
+  if (!cards.length) return;
+
+  // Reset heights first
+  cards.forEach((card) => {
+    // Set fixed height for all cards including featured
+    if (window.innerWidth > 768) {
+      card.style.height = "650px";
+    } else {
+      // On mobile, let cards adjust to content
+      card.style.height = "auto";
+      card.style.minHeight = window.innerWidth > 480 ? "600px" : "580px";
     }
-  }
 
-  // Make it clear that buttons are interactive
-  const buttons = card.querySelectorAll(".project-btn:not(.disabled-btn)");
-  buttons.forEach((btn) => {
-    btn.addEventListener("touchstart", function () {
-      this.style.transform = "scale(0.95)";
+    // Reset inner elements
+    const inner = card.querySelector(".project-card-inner");
+    const front = card.querySelector(".project-card-front");
+    const back = card.querySelector(".project-card-back");
+    const imgContainer = card.querySelector(".project-img-container");
+    const btnContainer = card.querySelector(".project-btn-container");
+
+    if (inner) inner.style.height = "100%";
+    if (front) front.style.height = "100%";
+    if (back) back.style.height = "100%";
+
+    if (imgContainer) {
+      if (window.innerWidth > 768) {
+        imgContainer.style.height = "220px";
+      } else if (window.innerWidth > 480) {
+        imgContainer.style.height = "200px";
+      } else {
+        imgContainer.style.height = "180px";
+      }
+    }
+
+    // Ensure proper spacing between description and highlights
+    const descriptionP = card.querySelector(".project-description-full p");
+    const highlights = card.querySelector(".project-highlights");
+
+    if (descriptionP && highlights) {
+      descriptionP.style.marginBottom = "1rem";
+      highlights.style.marginTop = "1rem";
+      highlights.style.marginBottom = "1rem";
+    }
+
+    // Optimize list item spacing
+    const listItems = card.querySelectorAll(".project-highlights li");
+    listItems.forEach((item) => {
+      item.style.marginBottom = "0.2rem";
+      item.style.lineHeight = "1.3";
     });
 
-    btn.addEventListener("touchend", function () {
-      this.style.transform = "scale(1)";
-    });
-  });
-}
+    // Ensure button container has proper spacing and all buttons are visible
+    if (btnContainer) {
+      btnContainer.style.marginTop = "1rem";
+      btnContainer.style.marginBottom = "0";
+      btnContainer.style.paddingTop = "0.75rem";
 
-function setupDesktopEnhancements(card) {
-  // Add hover animations for desktop
-  const img = card.querySelector(".project-img");
-  if (img) {
-    card.addEventListener("mouseenter", function () {
-      img.style.transform = "scale(1.05)";
-    });
+      // Make sure all buttons are visible
+      const buttons = btnContainer.querySelectorAll(".project-btn");
 
-    card.addEventListener("mouseleave", function () {
-      img.style.transform = "scale(1)";
-    });
-  }
+      // Count the number of buttons
+      const buttonCount = buttons.length;
 
-  // Add keyboard accessibility
-  card.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
+      if (buttonCount > 0) {
+        if (window.innerWidth <= 480) {
+          // Stack buttons on very small screens
+          btnContainer.style.flexDirection = "column";
+          btnContainer.style.gap = "0.5rem";
+          buttons.forEach((btn) => {
+            btn.style.width = "100%";
+            btn.style.margin = "0";
+          });
+        } else if (window.innerWidth <= 768) {
+          // Optimize for 3 buttons on small screens
+          btnContainer.style.flexDirection = "row";
+          btnContainer.style.flexWrap = "wrap";
+          btnContainer.style.gap = "0.5rem";
+          buttons.forEach((btn) => {
+            btn.style.flexBasis = "calc(33.33% - 0.4rem)";
+            btn.style.fontSize = "0.7rem";
+            btn.style.padding = "0.5rem 0.3rem";
+            btn.style.margin = "0";
 
-      // Find the first non-disabled button and click it
-      const firstButton = card.querySelector(".project-btn:not(.disabled-btn)");
-      if (firstButton) {
-        firstButton.click();
+            // Make icons smaller on small screens
+            const icon = btn.querySelector(".btn-icon");
+            if (icon) {
+              icon.style.width = "14px";
+              icon.style.height = "14px";
+              icon.style.marginRight = "3px";
+            }
+          });
+        } else {
+          // Default layout for larger screens
+          btnContainer.style.flexDirection = "row";
+          btnContainer.style.flexWrap = "wrap";
+          btnContainer.style.gap = "0.5rem";
+          buttons.forEach((btn) => {
+            btn.style.flexBasis = "0";
+            btn.style.flexGrow = "1";
+            btn.style.fontSize = "0.8rem";
+            btn.style.padding = "0.6rem 0.5rem";
+            btn.style.margin = "0";
+
+            // Restore icon size on larger screens
+            const icon = btn.querySelector(".btn-icon");
+            if (icon) {
+              icon.style.width = "16px";
+              icon.style.height = "16px";
+              icon.style.marginRight = "5px";
+            }
+          });
+        }
       }
     }
   });
 }
+
+// Call this function after DOM loads and after window load
+document.addEventListener("DOMContentLoaded", initializeProjectCards);
+window.addEventListener("load", initializeProjectCards);
+
+// Also reinitialize on resize to handle orientation changes
+window.addEventListener("resize", function () {
+  setTimeout(initializeProjectCards, 200);
+});
 
 // Function to handle screen reader announcements
 function announceToScreenReader(message) {
