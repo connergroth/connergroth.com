@@ -518,232 +518,203 @@ document.addEventListener("DOMContentLoaded", function () {
 function initializeProjectCards() {
   const projectCards = document.querySelectorAll(".project-card");
 
-  projectCards.forEach((card) => {
-    // Fix styling issues
-    ensureCardStyling(card);
+  if (!projectCards.length) return;
 
-    // Remove existing listeners to prevent duplicates
+  // Call standardizeHeights once for all cards
+  standardizeHeights();
+
+  projectCards.forEach((card) => {
+    // Remove existing event listeners by cloning and replacing
     const newCard = card.cloneNode(true);
     card.parentNode.replaceChild(newCard, card);
 
-    // Add appropriate event handlers
-    if ("ontouchstart" in window) {
-      // Touch device behavior
+    // Check if device supports touch events
+    const isTouchDevice =
+      "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+    if (isTouchDevice) {
       setupTouchBehavior(newCard);
     } else {
-      // Desktop hover behavior is handled by CSS
       setupDesktopEnhancements(newCard);
     }
+
+    // Add keyboard accessibility
+    newCard.setAttribute("tabindex", "0");
+    newCard.setAttribute("role", "button");
+    newCard.setAttribute(
+      "aria-label",
+      `Project: ${
+        newCard.querySelector(".project-title")?.textContent || "Project"
+      }`
+    );
+
+    // Add keyboard support for flipping
+    newCard.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        newCard.classList.toggle("flipped");
+
+        const isFlipped = newCard.classList.contains("flipped");
+        const projectTitle =
+          newCard.querySelector(".project-title")?.textContent || "Project";
+
+        announceToScreenReader(
+          isFlipped
+            ? `Showing details for ${projectTitle}`
+            : `Showing preview for ${projectTitle}`
+        );
+      }
+    });
+
+    // Handle disabled buttons
+    const disabledBtns = newCard.querySelectorAll(".disabled-btn");
+    disabledBtns.forEach((btn) => {
+      btn.setAttribute("disabled", "true");
+      btn.setAttribute("aria-disabled", "true");
+
+      // Prevent click events on disabled buttons
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
   });
 
-  // Fix project container layout
+  // Fix project container layout if it exists
   const projectsContainer = document.querySelector(".projects-container");
   if (projectsContainer) {
     fixProjectContainerLayout(projectsContainer);
   }
 }
 
-function ensureCardStyling(card) {
-  // Ensure basic card styling
-  card.style.opacity = "1";
-  card.style.visibility = "visible";
-  card.style.display = "block";
-  card.style.width = "100%";
+function fixProjectContainerLayout(container) {
+  const updateLayout = () => {
+    const width = window.innerWidth;
 
-  // Fix card inner
-  const cardInner = card.querySelector(".project-card-inner");
-  if (cardInner) {
-    cardInner.style.visibility = "visible";
-    cardInner.style.width = "100%";
-  }
+    if (width > 1200) {
+      container.style.gridTemplateColumns = "repeat(3, 1fr)";
+    } else if (width > 768) {
+      container.style.gridTemplateColumns = "repeat(2, 1fr)";
+    } else {
+      container.style.gridTemplateColumns = "1fr";
+    }
+  };
 
-  // Fix project description
-  const description = card.querySelector(".project-description");
-  if (description) {
-    description.style.width = "100%";
-    description.style.textAlign = "left";
-    description.style.minHeight = "80px";
-    description.style.display = "-webkit-box";
-    description.style.webkitLineClamp = "3";
-    description.style.webkitBoxOrient = "vertical";
-    description.style.overflow = "hidden";
-    description.style.marginBottom = "1rem";
-  }
+  // Initial update
+  updateLayout();
 
-  // Ensure description-full has proper scrolling
-  const descriptionFull = card.querySelector(".project-description-full");
-  if (descriptionFull) {
-    descriptionFull.style.overflowY = "auto";
-    descriptionFull.style.maxHeight = "120px";
-    descriptionFull.style.minHeight = "120px";
-    descriptionFull.style.paddingRight = "5px";
-  }
+  // Update on resize
+  window.addEventListener("resize", updateLayout);
+}
 
-  // Fix tech icons container
-  const techIconsContainer = card.querySelector(".tech-icons-container");
-  if (techIconsContainer) {
-    techIconsContainer.style.display = "flex";
-    techIconsContainer.style.flexWrap = "wrap";
-    techIconsContainer.style.gap = "0.75rem";
-    techIconsContainer.style.marginBottom = "1rem";
-    techIconsContainer.style.justifyContent = "flex-start";
-    techIconsContainer.style.minHeight = "40px";
-    techIconsContainer.style.alignItems = "center";
-  }
+function standardizeHeights() {
+  const cards = document.querySelectorAll(".project-card");
+  if (!cards.length) return;
 
-  // Style tech icons
-  const techIcons = card.querySelectorAll(".tech-icon");
-  techIcons.forEach((icon) => {
-    icon.style.width = "28px";
-    icon.style.height = "28px";
-    icon.style.objectFit = "contain";
-    icon.style.transition = "transform 0.2s ease";
-    icon.style.filter = "grayscale(30%)";
+  // Reset heights first
+  cards.forEach((card) => {
+    // Set fixed height for all cards including featured
+    card.style.height = "550px";
 
-    // Add hover effect
-    icon.addEventListener("mouseenter", function () {
-      this.style.transform = "scale(1.2)";
-      this.style.filter = "grayscale(0%)";
-    });
+    // Reset inner elements
+    const inner = card.querySelector(".project-card-inner");
+    const front = card.querySelector(".project-card-front");
+    const back = card.querySelector(".project-card-back");
+    const imgContainer = card.querySelector(".project-img-container");
+    const content = card.querySelector(".project-content");
+    const techIcons = card.querySelector(".tech-icons-container");
+    const meta = card.querySelector(".project-meta");
 
-    icon.addEventListener("mouseleave", function () {
-      this.style.transform = "scale(1)";
-      this.style.filter = "grayscale(30%)";
-    });
+    if (inner) inner.style.height = "100%";
+    if (front) front.style.height = "100%";
+    if (back) back.style.height = "100%";
+    if (imgContainer) imgContainer.style.height = "220px";
+    if (content) content.style.padding = "1.25rem";
+
+    // Don't set fixed height for description anymore
+    // Let it adjust naturally based on content
+
+    if (techIcons) techIcons.style.marginTop = "1rem";
+    if (meta) meta.style.marginTop = "1rem";
   });
 
-  // Ensure consistent heights
-  standardizeHeights(card);
+  // Check if we have a featured project and ensure it has the same height
+  const featuredProject = document.querySelector(".featured-project");
+  if (featuredProject) {
+    featuredProject.style.height = "550px";
+  }
 }
 
 function setupTouchBehavior(card) {
-  card.addEventListener(
-    "touchstart",
-    function (e) {
-      // Prevent default only if we're touching the card itself
-      // This allows scrolling to continue working normally
-      if (e.target.closest(".project-card-inner")) {
-        e.preventDefault();
-      }
-    },
-    { passive: false }
-  );
+  // For touch devices, add tap to flip functionality
+  card.addEventListener("click", function (e) {
+    // Don't flip if clicking on a button or link
+    if (e.target.closest("button") || e.target.closest("a")) {
+      return;
+    }
 
-  card.addEventListener("touchend", function (e) {
-    // Toggle flipped class on touch
-    this.classList.toggle("flipped");
+    // Toggle flipped class
+    card.classList.toggle("flipped");
 
-    // Prevent any click events from firing
-    e.preventDefault();
+    // Announce to screen readers
+    const isFlipped = card.classList.contains("flipped");
+    const projectTitle =
+      card.querySelector(".project-title")?.textContent || "Project";
+    announceToScreenReader(
+      `${projectTitle} card ${
+        isFlipped ? "flipped to show details" : "flipped back to front"
+      }`
+    );
+  });
 
-    // Announce for screen readers
-    const isFlipped = this.classList.contains("flipped");
-    const announceMessage = isFlipped
-      ? "Card flipped to show details"
-      : "Card flipped back to front";
+  // Make it clear that buttons are interactive
+  const buttons = card.querySelectorAll(".project-btn:not(.disabled-btn)");
+  buttons.forEach((btn) => {
+    btn.addEventListener("touchstart", function () {
+      this.style.transform = "scale(0.95)";
+    });
 
-    announceToScreenReader(announceMessage);
+    btn.addEventListener("touchend", function () {
+      this.style.transform = "scale(1)";
+    });
   });
 }
 
 function setupDesktopEnhancements(card) {
-  // Add animation enhancements for non-touch devices
-  const projectImg = card.querySelector(".project-img");
-  const cardInner = card.querySelector(".project-card-inner");
-
-  if (projectImg) {
+  // Add hover animations for desktop
+  const img = card.querySelector(".project-img");
+  if (img) {
     card.addEventListener("mouseenter", function () {
-      projectImg.style.transform = "scale(1.1)";
+      img.style.transform = "scale(1.05)";
     });
 
     card.addEventListener("mouseleave", function () {
-      projectImg.style.transform = "scale(1)";
+      img.style.transform = "scale(1)";
     });
   }
 
   // Add keyboard accessibility
-  card.setAttribute("tabindex", "0");
-  card.setAttribute("role", "button");
-  card.setAttribute(
-    "aria-label",
-    `${
-      card.querySelector(".project-title")?.textContent || "Project"
-    } - Press Enter to flip card`
-  );
-
   card.addEventListener("keydown", function (e) {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      this.classList.toggle("flipped");
 
-      // Announce for screen readers
-      const isFlipped = this.classList.contains("flipped");
-      const announceMessage = isFlipped
-        ? "Card flipped to show details"
-        : "Card flipped back to front";
+      // Toggle flipped class
+      card.classList.toggle("flipped");
 
-      announceToScreenReader(announceMessage);
+      // Announce to screen readers
+      const isFlipped = card.classList.contains("flipped");
+      const projectTitle =
+        card.querySelector(".project-title")?.textContent || "Project";
+      announceToScreenReader(
+        `${projectTitle} card ${
+          isFlipped ? "flipped to show details" : "flipped back to front"
+        }`
+      );
     }
   });
 }
 
-function fixProjectContainerLayout(container) {
-  container.style.display = "grid";
-  container.style.visibility = "visible";
-  container.style.opacity = "1";
-  container.style.width = "100%";
-
-  // Adjust grid layout based on screen width
-  if (window.innerWidth <= 600) {
-    container.style.gridTemplateColumns = "1fr";
-  } else if (window.innerWidth <= 1200) {
-    container.style.gridTemplateColumns = "repeat(2, 1fr)";
-  } else {
-    container.style.gridTemplateColumns = "repeat(3, 1fr)";
-  }
-}
-
-function standardizeHeights(card) {
-  // Ensure consistent heights for key elements to maintain card uniformity
-  const imgContainer = card.querySelector(".project-img-container");
-  if (imgContainer) {
-    imgContainer.style.height = "200px";
-  }
-
-  const description = card.querySelector(".project-description");
-  if (description) {
-    description.style.minHeight = "80px";
-  }
-
-  const techIconsContainer = card.querySelector(".tech-icons-container");
-  if (techIconsContainer) {
-    techIconsContainer.style.minHeight = "40px";
-  }
-
-  // Ensure consistent content padding
-  const content = card.querySelector(".project-content");
-  if (content) {
-    content.style.padding = "1.25rem";
-    content.style.height = "calc(100% - 200px)";
-  }
-
-  // Ensure consistent meta section
-  const meta = card.querySelector(".project-meta");
-  if (meta) {
-    meta.style.marginTop = "auto";
-    meta.style.paddingTop = "0.75rem";
-  }
-
-  // Set fixed height for all cards including featured
-  card.style.height = "480px";
-
-  // Ensure featured project has same height
-  if (card.classList.contains("featured-project")) {
-    card.style.height = "480px";
-  }
-}
-
-// Accessibility helper
+// Function to handle screen reader announcements
 function announceToScreenReader(message) {
   const announcement = document.getElementById("sr-announcement");
 
@@ -751,10 +722,6 @@ function announceToScreenReader(message) {
     const newAnnouncement = document.createElement("div");
     newAnnouncement.id = "sr-announcement";
     newAnnouncement.setAttribute("aria-live", "polite");
-    newAnnouncement.classList.add("sr-only");
-    document.body.appendChild(newAnnouncement);
-
-    // Style for screen reader only
     newAnnouncement.style.position = "absolute";
     newAnnouncement.style.width = "1px";
     newAnnouncement.style.height = "1px";
@@ -763,6 +730,7 @@ function announceToScreenReader(message) {
     newAnnouncement.style.overflow = "hidden";
     newAnnouncement.style.clip = "rect(0, 0, 0, 0)";
     newAnnouncement.style.border = "0";
+    document.body.appendChild(newAnnouncement);
 
     setTimeout(() => {
       newAnnouncement.textContent = message;
