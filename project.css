@@ -660,4 +660,13 @@
   .project-card {
     height: 550px;
   }
+}
+
+/* Remove scrollbar styles since we don't need them anymore */
+.project-description-full::-webkit-scrollbar,
+.project-description-full::-webkit-scrollbar-track,
+.project-description-full::-webkit-scrollbar-thumb,
+.dark-mode .project-description-full::-webkit-scrollbar-track,
+.dark-mode .project-description-full::-webkit-scrollbar-thumb {
+    display: none;
 } 
