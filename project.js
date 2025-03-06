@@ -61,6 +61,9 @@ function initializeProjectCards() {
     const newCard = card.cloneNode(true);
     card.parentNode.replaceChild(newCard, card);
 
+    // Set consistent heights
+    setCardHeight(newCard);
+
     // For touch devices
     if (isTouchDevice) {
       // Add tap to flip
@@ -82,8 +85,9 @@ function initializeProjectCards() {
         imgContainer.appendChild(touchHint);
       }
     } else {
-      // For desktop: use CSS hover by default (defined in CSS)
-      // But also add keyboard accessibility
+      // For desktop: use CSS hover
+
+      // Also add keyboard accessibility
       newCard.setAttribute("tabindex", "0");
       newCard.addEventListener("keydown", function (e) {
         if (e.key === "Enter" || e.key === " ") {
@@ -114,138 +118,96 @@ function initializeProjectCards() {
       });
     });
   });
-
-  // Ensure consistent heights for all cards
-  standardizeCardHeights();
 }
 
-// Standardize card heights for consistent appearance
-function standardizeCardHeights() {
-  const cards = document.querySelectorAll(".project-card");
-  if (!cards.length) return;
+function setCardHeight(card) {
+  // Set height based on screen size
+  if (window.innerWidth > 768) {
+    card.style.height = "700px";
 
-  // Reset heights first
-  cards.forEach((card) => {
-    // Set fixed height for all cards including featured
-    if (window.innerWidth > 768) {
-      card.style.height = "650px";
-    } else {
-      // On mobile, let cards adjust to content
-      card.style.height = "auto";
-      card.style.minHeight = window.innerWidth > 480 ? "600px" : "580px";
-    }
-
-    // Reset inner elements
+    // Set inner elements height
     const inner = card.querySelector(".project-card-inner");
     const front = card.querySelector(".project-card-front");
     const back = card.querySelector(".project-card-back");
-    const imgContainer = card.querySelector(".project-img-container");
-    const btnContainer = card.querySelector(".project-btn-container");
 
     if (inner) inner.style.height = "100%";
     if (front) front.style.height = "100%";
     if (back) back.style.height = "100%";
 
-    if (imgContainer) {
-      if (window.innerWidth > 768) {
-        imgContainer.style.height = "220px";
-      } else if (window.innerWidth > 480) {
-        imgContainer.style.height = "200px";
-      } else {
-        imgContainer.style.height = "180px";
-      }
+    // Fix project image container height
+    const imgContainer = card.querySelector(".project-img-container");
+    if (imgContainer) imgContainer.style.height = "240px";
+
+    // Ensure proper spacing for content
+    const content = card.querySelector(".project-content");
+    if (content) {
+      content.style.height = "calc(100% - 240px)";
+      content.style.padding = "1.75rem";
     }
 
-    // Ensure proper spacing between description and highlights
-    const descriptionP = card.querySelector(".project-description-full p");
-    const highlights = card.querySelector(".project-highlights");
-
-    if (descriptionP && highlights) {
-      descriptionP.style.marginBottom = "1rem";
-      highlights.style.marginTop = "1rem";
-      highlights.style.marginBottom = "1rem";
+    // Fix project description height
+    const descriptionElement = card.querySelector(".project-description");
+    if (descriptionElement) {
+      descriptionElement.style.minHeight = "100px";
     }
 
-    // Optimize list item spacing
-    const listItems = card.querySelectorAll(".project-highlights li");
-    listItems.forEach((item) => {
-      item.style.marginBottom = "0.2rem";
-      item.style.lineHeight = "1.3";
-    });
-
-    // Ensure button container has proper spacing and all buttons are visible
+    // Fix button spacing
+    const btnContainer = card.querySelector(".project-btn-container");
     if (btnContainer) {
-      btnContainer.style.marginTop = "1rem";
-      btnContainer.style.marginBottom = "0";
-      btnContainer.style.paddingTop = "0.75rem";
-
-      // Make sure all buttons are visible
-      const buttons = btnContainer.querySelectorAll(".project-btn");
-
-      // Count the number of buttons
-      const buttonCount = buttons.length;
-
-      if (buttonCount > 0) {
-        if (window.innerWidth <= 480) {
-          // Stack buttons on very small screens
-          btnContainer.style.flexDirection = "column";
-          btnContainer.style.gap = "0.5rem";
-          buttons.forEach((btn) => {
-            btn.style.width = "100%";
-            btn.style.margin = "0";
-          });
-        } else if (window.innerWidth <= 768) {
-          // Optimize for 3 buttons on small screens
-          btnContainer.style.flexDirection = "row";
-          btnContainer.style.flexWrap = "wrap";
-          btnContainer.style.gap = "0.5rem";
-          buttons.forEach((btn) => {
-            btn.style.flexBasis = "calc(33.33% - 0.4rem)";
-            btn.style.fontSize = "0.7rem";
-            btn.style.padding = "0.5rem 0.3rem";
-            btn.style.margin = "0";
-
-            // Make icons smaller on small screens
-            const icon = btn.querySelector(".btn-icon");
-            if (icon) {
-              icon.style.width = "14px";
-              icon.style.height = "14px";
-              icon.style.marginRight = "3px";
-            }
-          });
-        } else {
-          // Default layout for larger screens
-          btnContainer.style.flexDirection = "row";
-          btnContainer.style.flexWrap = "wrap";
-          btnContainer.style.gap = "0.5rem";
-          buttons.forEach((btn) => {
-            btn.style.flexBasis = "0";
-            btn.style.flexGrow = "1";
-            btn.style.fontSize = "0.8rem";
-            btn.style.padding = "0.6rem 0.5rem";
-            btn.style.margin = "0";
-
-            // Restore icon size on larger screens
-            const icon = btn.querySelector(".btn-icon");
-            if (icon) {
-              icon.style.width = "16px";
-              icon.style.height = "16px";
-              icon.style.marginRight = "5px";
-            }
-          });
-        }
-      }
+      btnContainer.style.marginTop = "1.5rem";
+      btnContainer.style.paddingTop = "1.25rem";
     }
-  });
+  } else if (window.innerWidth <= 768 && window.innerWidth > 576) {
+    // Tablet view
+    card.style.height = "650px";
+
+    const imgContainer = card.querySelector(".project-img-container");
+    if (imgContainer) imgContainer.style.height = "220px";
+
+    const content = card.querySelector(".project-content");
+    if (content) {
+      content.style.height = "calc(100% - 220px)";
+      content.style.padding = "1.5rem";
+    }
+  } else {
+    // Mobile view
+    card.style.height = "auto";
+    card.style.minHeight = "600px";
+
+    const imgContainer = card.querySelector(".project-img-container");
+    if (imgContainer) imgContainer.style.height = "200px";
+
+    // For mobile, let content flow naturally
+    const content = card.querySelector(".project-content");
+    if (content) {
+      content.style.height = "auto";
+      content.style.padding = "1.25rem";
+    }
+
+    // Stack buttons on mobile
+    const btnContainer = card.querySelector(".project-btn-container");
+    if (btnContainer) {
+      btnContainer.style.flexDirection = "column";
+      btnContainer.style.gap = "0.5rem";
+    }
+  }
 }
 
-// Call this function after DOM loads and after window load
-document.addEventListener("DOMContentLoaded", initializeProjectCards);
+// Call this function after window loads to ensure proper initialization
 window.addEventListener("load", initializeProjectCards);
 
 // Also reinitialize on resize to handle orientation changes
+let resizeTimer;
 window.addEventListener("resize", function () {
-  setTimeout(initializeProjectCards, 200);
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(initializeProjectCards, 250);
+});
+
+// Ensure cards are properly initialized if projects are shown through tabs or navigation
+document.querySelectorAll('a[href="#projects"]').forEach((link) => {
+  link.addEventListener("click", function () {
+    setTimeout(initializeProjectCards, 300);
+  });
 });
 
 // Function to handle screen reader announcements
