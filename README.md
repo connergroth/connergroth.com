@@ -39,5 +39,4 @@ portfolio-website/
 ## Future Enhancements
 
 - Add a blog section
-- Implement a dark mode toggle
 - Add more interactive elements
