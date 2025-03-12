@@ -477,21 +477,78 @@ section {
 #socials-container {
     display: flex;
     justify-content: center;
-    margin-top: 1rem;
-    gap: 1rem;
+    margin-top: 1.5rem;
+    gap: 1.25rem;
 }
 
-#socials-container .icon {
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    padding: 10px;
-    border-radius: 50%;
-    background-color: var(--form-bg);
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    background-color: transparent;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    width: 3rem;
+    height: 3rem;
+    box-shadow: none;
 }
 
-#socials-container .icon:hover {
-    background-color: var(--accent-color);
-    filter: brightness(1.1);
-    transform: scale(1.2) rotate(5deg);
+.social-btn:hover {
+    transform: translateY(-5px);
+    text-decoration: none;
+}
+
+.social-btn:active {
+    transform: translateY(-2px);
+}
+
+.social-btn .icon {
+    height: 2rem;
+    width: 2rem;
+    filter: brightness(var(--icon-brightness));
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.social-btn:hover .icon {
+    transform: scale(1.1);
+}
+
+.social-btn.github-btn {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.social-btn.github-btn:hover {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.dark-mode .social-btn.github-btn {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.dark-mode .social-btn.github-btn:hover {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.dark-mode .social-btn.github-btn .icon {
+    filter: brightness(1.5);
+}
+
+.social-btn.linkedin-btn {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.social-btn.linkedin-btn:hover {
+    background-color: transparent;
+    border-color: transparent;
 }
 
 /* ICON */
@@ -1697,4 +1754,77 @@ footer .nav-links {
 
 .shake {
     animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* Blue bar styling */
+.blue-bar {
+    width: 100px;
+    height: 4px;
+    background-color: var(--accent-color);
+    margin: 0.5rem auto 1.5rem;
+    border-radius: 2px;
+}
+
+/* Dark mode fixes for social buttons */
+.dark-mode .social-btn.github-btn {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.dark-mode .social-btn.github-btn:hover {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.dark-mode .social-btn .icon {
+    filter: brightness(1.5);
+}
+
+/* SCROLLBAR STYLING */
+/* Width and track */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover);
+}
+
+/* Remove scrollbar buttons (arrows) */
+::-webkit-scrollbar-button {
+    display: none;
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) transparent;
+}
+
+/* Dark mode adjustments */
+.dark-mode::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+}
+
+.dark-mode::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover);
+}
+
+.dark-mode * {
+    scrollbar-color: var(--accent-color) transparent;
 }

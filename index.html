@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="mediaqueries.css">
   <link rel="stylesheet" href="project.css">
+  <link rel="stylesheet" href="project-fix.css">
 
   <!-- Meta Tags for SEO -->
   <meta name="description"
@@ -106,6 +107,7 @@
         Hello, I'm
       </div>
       <h1 class="title reveal-element">Conner Groth</h1>
+      <div class="blue-bar"></div>
       <p class="section__text__p2">Computer Science Student at <br> CU Boulder </p>
 
       <div class="btn-container">
@@ -117,10 +119,12 @@
         </button>
       </div>
       <div id="socials-container">
-        <img src="./assets/linkedin.png" alt="My LinkedIn profile" class="icon"
-          onclick="location.href='https://linkedin.com/in/connergroth'">
-        <img src="./assets/github.png" alt="My GitHub profile" class="icon"
-          onclick="location.href='https://github.com/connergroth'">
+        <a href="https://linkedin.com/in/connergroth" class="social-btn linkedin-btn" aria-label="LinkedIn Profile">
+          <img src="./assets/linkedin.png" alt="LinkedIn" class="icon">
+        </a>
+        <a href="https://github.com/connergroth" class="social-btn github-btn" aria-label="GitHub Profile">
+          <img src="./assets/github.png" alt="GitHub" class="icon">
+        </a>
       </div>
     </div>
   </section>
@@ -385,12 +389,12 @@
     <p class="section__text__p1">Browse My Recent</p>
     <h1 class="title reveal-element">Projects</h1>
 
-    <div class="projects-container" style="margin-bottom: 5rem !important;">
+    <div class="projects-container">
       <!-- EcoVision Project -->
-      <div class="project-card reveal-element featured-project" style="height: 700px !important;">
-        <div class="project-card-inner" style="height: 100% !important;">
+      <div class="project-card reveal-element featured-project">
+        <div class="project-card-inner">
           <!-- Front of card -->
-          <div class="project-card-front" style="height: 100% !important;">
+          <div class="project-card-front">
             <div class="project-img-container">
               <img src="./assets/EcoVisionDemoImage.jpg" alt="EcoVision Project" class="project-img">
               <div class="project-overlay">
@@ -425,7 +429,7 @@
           </div>
 
           <!-- Back of card -->
-          <div class="project-card-back" style="height: 100% !important; padding-bottom: 2rem !important;">
+          <div class="project-card-back">
             <h3 class="project-title">EcoVision</h3>
             <div class="project-description-full">
               <p>EcoVision is an intelligent recycling assistant that uses computer vision and AI to identify recyclable
@@ -441,26 +445,86 @@
                 </ul>
               </div>
             </div>
-            <div class="project-btn-container" style="margin-top: 2rem !important; margin-bottom: 1rem !important;">
+            <div class="project-btn-container">
               <button class="project-btn btn-github" onclick="location.href='https://github.com/connergroth/EcoVision'">
                 <i class="btn-icon github-icon"></i>GitHub
               </button>
               <button class="project-btn btn-demo" onclick="location.href='https://ecovisionlive.vercel.app'">
                 <i class="btn-icon demo-icon"></i>Live Demo
               </button>
-              <button class="project-btn btn-video" onclick="location.href='https://youtu.be/eco-vision-demo'">
+              <button class="project-btn btn-video" onclick="location.href='https://vimeo.com/1062545282'">
                 <i class="btn-icon video-icon"></i>Video
               </button>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- Strim Project -->
-      <div class="project-card reveal-element" style="height: 700px !important;">
-        <div class="project-card-inner" style="height: 100% !important;">
+      
+      <!-- AOTY API Project -->
+      <div class="project-card reveal-element">
+        <div class="project-card-inner">
           <!-- Front of card -->
-          <div class="project-card-front" style="height: 100% !important;">
+          <div class="project-card-front">
+            <div class="project-img-container">
+              <img src="./assets/AOTY API Logo.png" alt="AOTY API Project" class="project-img">
+              <div class="project-overlay">
+                <span class="view-project">View Details</span>
+              </div>
+            </div>
+            <div class="project-content">
+              <div class="project-header">
+                <h2 class="project-title">AOTY API</h2>
+                <div class="project-badges">
+                  <span class="project-badge live">Live</span>
+                </div>
+              </div>
+              <p class="project-description">A high-performance, unofficial REST API for albumoftheyear.org that provides comprehensive album data, ratings, and user profiles with intelligent caching and robust rate limiting.</p>
+              <div class="tech-icons-container">
+                <img src="./assets/Python-Dark.svg" alt="Python" class="tech-icon" title="Python">
+                <img src="./assets/FastAPI.svg" alt="FastAPI" class="tech-icon" title="FastAPI">
+                <img src="./assets/PostgreSQL-Dark.svg" alt="PostgreSQL" class="tech-icon" title="PostgreSQL">
+                <img src="./assets/Redis-Dark.svg" alt="Redis" class="tech-icon" title="Redis">
+                <img src="./assets/Docker.svg" alt="Docker" class="tech-icon" title="Docker">
+                <img src="./assets/AWS-Dark.svg" alt="AWS" class="tech-icon" title="AWS">
+              </div>
+              <div class="project-meta">
+                <span class="project-status complete">Completed</span>
+                <span class="project-year">2025</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Back of card -->
+          <div class="project-card-back">
+            <h3 class="project-title">AOTY API</h3>
+            <div class="project-description-full">
+              <p>The AOTY API is a FastAPI-powered service that scrapes and provides structured access to album information, reviews, and user data from albumoftheyear.org. It features intelligent caching with Redis, detailed metrics tracking, and comprehensive error handling.</p>
+              <div class="project-highlights">
+                <h4>Key Features:</h4>
+                <ul>
+                  <li>RESTful endpoints for albums, similar albums, user profiles, and search</li>
+                  <li>Efficient data scraping with Playwright for accurate results</li>
+                  <li>Redis-backed caching system with fallback to in-memory storage</li>
+                  <li>Rate limiting to prevent abuse and ensure service stability</li>
+                  <li>Detailed API documentation with interactive examples</li>
+                </ul>
+              </div>
+            </div>
+            <div class="project-btn-container">
+              <button class="project-btn btn-github" onclick="location.href='https://github.com/connergroth/aoty-api'">
+                <i class="btn-icon github-icon"></i>GitHub
+              </button>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Strim Project -->
+      <div class="project-card reveal-element">
+        <div class="project-card-inner">
+          <!-- Front of card -->
+          <div class="project-card-front">
             <div class="project-img-container">
               <img src="./assets/strimDemoImage.PNG" alt="Strim Project" class="project-img">
               <div class="project-overlay">
@@ -489,9 +553,9 @@
               </div>
             </div>
           </div>
-
+          
           <!-- Back of card -->
-          <div class="project-card-back" style="height: 100% !important; padding-bottom: 2rem !important;">
+          <div class="project-card-back">
             <h3 class="project-title">Strim</h3>
             <div class="project-description-full">
               <p>Strim is a specialized tool for Strava users that allows precise editing of activity data. It enables
@@ -507,97 +571,21 @@
                 </ul>
               </div>
             </div>
-            <div class="project-btn-container" style="margin-top: 2rem !important; margin-bottom: 1rem !important;">
+            <div class="project-btn-container">
               <button class="project-btn btn-github" onclick="location.href='https://github.com/connergroth/Strim'">
                 <i class="btn-icon github-icon"></i>GitHub
               </button>
               <button class="project-btn btn-demo" onclick="location.href='https://strimrun.vercel.app'">
                 <i class="btn-icon demo-icon"></i>Live Demo
               </button>
-              <button class="project-btn btn-video" onclick="location.href='https://youtu.be/strim-demo'">
-                <i class="btn-icon video-icon"></i>Video
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sonance Project -->
-      <div class="project-card reveal-element" style="height: 700px !important;">
-        <div class="project-card-inner" style="height: 100% !important;">
-          <!-- Front of card -->
-          <div class="project-card-front" style="height: 100% !important;">
-            <div class="project-img-container">
-              <img src="./assets/sonance-preview.jpg" alt="Sonance Project" class="project-img">
-              <div class="project-overlay">
-                <span class="view-project">View Details</span>
-              </div>
-            </div>
-            <div class="project-content">
-              <div class="project-header">
-                <h2 class="project-title">Sonance</h2>
-                <div class="project-badges">
-                  <span class="project-badge upcoming">Coming Soon</span>
-                </div>
-              </div>
-              <p class="project-description">A sophisticated recommendation engine using machine learning to generate
-                highly personalized music recommendations based on user listening history and preferences. The platform
-                analyzes patterns across multiple music services to create a unified taste profile and discover new music
-                that aligns with your unique preferences.</p>
-              <div class="tech-icons-container">
-                <img src="./assets/Python-Dark.svg" alt="Python" class="tech-icon" title="Python">
-                <img src="./assets/FastAPI.svg" alt="FastAPI" class="tech-icon" title="FastAPI">
-                <img src="./assets/PostgreSQL-Dark.svg" alt="PostgreSQL" class="tech-icon" title="PostgreSQL">
-                <img src="./assets/Redis-Dark.svg" alt="Redis" class="tech-icon" title="Redis">
-                <img src="./assets/AWS-Dark.svg" alt="AWS" class="tech-icon" title="AWS">
-                <img src="./assets/React-Dark.svg" alt="React" class="tech-icon" title="React">
-              </div>
-              <div class="project-meta">
-                <span class="project-status in-progress">In Progress</span>
-                <span class="project-year">2025</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Back of card -->
-          <div class="project-card-back" style="height: 100% !important; padding-bottom: 2rem !important;">
-            <h3 class="project-title">Sonance</h3>
-            <div class="project-description-full">
-              <p>Sonance is a sophisticated music recommendation platform that uses machine learning algorithms to
-                analyze user listening patterns and generate highly personalized recommendations. The system goes beyond
-                traditional genre-based suggestions by identifying subtle patterns in musical preferences.</p>
-              <p>The platform integrates with popular streaming services to create a comprehensive musical profile,
-                identifying patterns that even dedicated music fans might miss. Users can discover music across genres
-                that match their specific taste patterns.</p>
-              <div class="project-highlights">
-                <h4>Key Features:</h4>
-                <ul>
-                  <li>Advanced ML-based recommendation engine with collaborative and content-based filtering</li>
-                  <li>User preference learning that adapts to listening patterns over time</li>
-                  <li>Integration with Spotify, Apple Music, and other streaming platforms via API</li>
-                  <li>Detailed music analysis with visualization tools for exploring musical tastes</li>
-                  <li>Cross-platform sync with cloud storage for preferences and playlists</li>
-                </ul>
-              </div>
-            </div>
-            <div class="project-btn-container" style="margin-top: 2rem !important; margin-bottom: 1rem !important;">
-              <button class="project-btn btn-github" onclick="location.href='https://github.com/connergroth/Sonance'" style="padding: 0.75rem !important; font-size: 0.9rem !important;">
-                <i class="btn-icon github-icon"></i>GitHub
-              </button>
-              <button class="project-btn btn-demo disabled-btn" style="padding: 0.75rem !important; font-size: 0.9rem !important;">
-                <i class="btn-icon demo-icon"></i>Coming Soon
-              </button>
-              <button class="project-btn btn-video disabled-btn" style="padding: 0.75rem !important; font-size: 0.9rem !important;">
-                <i class="btn-icon video-icon"></i>Coming Soon
               </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <img src="./assets/arrow.png" alt="Arrow icon" class="icon arrow" onclick="location.href='#contact'"
-      aria-label="Navigate to Contact section">
+    
+    <img src="./assets/arrow.png" alt="Arrow icon" class="icon arrow" onclick="location.href='#contact'" aria-label="Navigate to Contact section">
   </section>
 
   <!-- CONTACT SECTION -->
@@ -656,6 +644,7 @@
   </footer>
   <script src="./script.js"></script>
   <script src="project.js"></script>
+  <script src="project-fix.js"></script>
 </body>
 
 </html>
