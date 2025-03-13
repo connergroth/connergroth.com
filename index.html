@@ -297,15 +297,15 @@
           <h2 class="experience-sub-title">AI & Data</h2>
           <div class="article-container">
             <article>
-              <img src="./assets/TensorFlow-Dark.svg" alt="Experience icon" class="icon" />
-              <div>
-                <h3>TensorFlow</h3>
-              </div>
-            </article>
-            <article>
               <img src="./assets/PyTorch-Dark.svg" alt="Experience icon" class="icon" />
               <div>
                 <h3>PyTorch</h3>
+              </div>
+            </article>
+            <article>
+              <img src="./assets/Tensorflow-Dark.svg" alt="Experience icon" class="icon" />
+              <div>
+                <h3>TensorFlow</h3>
               </div>
             </article>
             <article>
@@ -446,13 +446,13 @@
               </div>
             </div>
             <div class="project-btn-container">
-              <button class="project-btn btn-github" onclick="location.href='https://github.com/connergroth/EcoVision'">
+              <button class="project-btn btn-github" data-url="https://github.com/connergroth/EcoVision" type="button">
                 <i class="btn-icon github-icon"></i>GitHub
               </button>
-              <button class="project-btn btn-demo" onclick="location.href='https://ecovisionlive.vercel.app'">
+              <button class="project-btn btn-demo" data-url="https://ecovisionlive.vercel.app" type="button">
                 <i class="btn-icon demo-icon"></i>Live Demo
               </button>
-              <button class="project-btn btn-video" onclick="location.href='https://vimeo.com/1062545282'">
+              <button class="project-btn btn-video" data-url="https://vimeo.com/1062545282" type="button">
                 <i class="btn-icon video-icon"></i>Video
               </button>
             </div>
@@ -511,7 +511,7 @@
               </div>
             </div>
             <div class="project-btn-container">
-              <button class="project-btn btn-github" onclick="location.href='https://github.com/connergroth/aoty-api'">
+              <button class="project-btn btn-github" data-url="https://github.com/connergroth/aoty-api" type="button">
                 <i class="btn-icon github-icon"></i>GitHub
               </button>
               </button>
@@ -572,11 +572,12 @@
               </div>
             </div>
             <div class="project-btn-container">
-              <button class="project-btn btn-github" onclick="location.href='https://github.com/connergroth/Strim'">
+              <button class="project-btn btn-github" data-url="https://github.com/connergroth/Strim" type="button">
                 <i class="btn-icon github-icon"></i>GitHub
               </button>
-              <button class="project-btn btn-demo" onclick="location.href='https://strimrun.vercel.app'">
+              <button class="project-btn btn-demo" data-url="https://strimrun.vercel.app" type="button">
                 <i class="btn-icon demo-icon"></i>Live Demo
+              </button>
               </button>
               </button>
             </div>
@@ -643,6 +644,7 @@
     <p>Copyright &#169; 2025 Conner Groth. All Rights Reserved. </p>
   </footer>
   <script src="./script.js"></script>
+  <script src="project-button.js"></script>
   <script src="project.js"></script>
   <script src="project-fix.js"></script>
 </body>

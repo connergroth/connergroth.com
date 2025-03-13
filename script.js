@@ -342,7 +342,32 @@ function fixProjectCards() {
   const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   
+  // Store button information before modifying cards
+  const buttonData = [];
   projectCards.forEach(card => {
+    const buttons = card.querySelectorAll(".project-btn");
+    const cardData = { 
+      cardIndex: Array.from(projectCards).indexOf(card),
+      buttons: []
+    };
+    
+    buttons.forEach(btn => {
+      const onclickAttr = btn.getAttribute("onclick");
+      if (onclickAttr) {
+        const urlMatch = onclickAttr.match(/location\.href=[\'\"](.+?)[\'\"]/);
+        if (urlMatch && urlMatch[1]) {
+          cardData.buttons.push({
+            buttonIndex: Array.from(buttons).indexOf(btn),
+            url: urlMatch[1]
+          });
+        }
+      }
+    });
+    
+    buttonData.push(cardData);
+  });
+  
+  projectCards.forEach((card, cardIndex) => {
     // Reset card to ensure clean state
     const newCard = card.cloneNode(true);
     card.parentNode.replaceChild(newCard, card);
@@ -485,8 +510,29 @@ function fixProjectCards() {
       }
     }
     
-    // Ensure buttons don't trigger card flip
+    // Ensure buttons don't trigger card flip and restore URLs
     const buttons = newCard.querySelectorAll(".project-btn");
+    
+    // First, reapply saved URLs from buttonData
+    const cardData = buttonData[cardIndex];
+    if (cardData && cardData.buttons.length > 0) {
+      cardData.buttons.forEach(btnData => {
+        if (btnData.buttonIndex < buttons.length) {
+          const btn = buttons[btnData.buttonIndex];
+          
+          // Remove any existing onclick attribute
+          btn.removeAttribute("onclick");
+          
+          // Add proper event listener for redirection
+          btn.addEventListener("click", function(e) {
+            e.stopPropagation();
+            window.location.href = btnData.url;
+          });
+        }
+      });
+    }
+    
+    // Add common button behaviors
     buttons.forEach(btn => {
       btn.addEventListener("click", function(e) {
         e.stopPropagation();
@@ -797,4 +843,3 @@ window.addEventListener("resize", function() {
     revealAllElements();
   }, 250);
 });
-

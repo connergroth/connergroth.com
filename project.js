@@ -1,42 +1,3 @@
-// This file is kept for backward compatibility
-// The main functionality has been moved to script.js
-
-document.addEventListener("DOMContentLoaded", function () {
-  // This will be handled by the new code in script.js
-  // Just in case this file is loaded first, we'll call the new function
-  if (typeof initializeProjectCards === "function") {
-    initializeProjectCards();
-  }
-});
-
-window.addEventListener("load", function () {
-  setTimeout(function () {
-    if (typeof initializeProjectCards === "function") {
-      initializeProjectCards();
-    }
-  }, 500);
-});
-
-window.addEventListener("resize", function () {
-  setTimeout(function () {
-    if (typeof initializeProjectCards === "function") {
-      initializeProjectCards();
-    }
-  }, 100);
-});
-
-// Redirect any calls to the old function to the new one
-function fixProjectCards() {
-  if (typeof initializeProjectCards === "function") {
-    initializeProjectCards();
-  }
-}
-
-// Redirect any calls to the old function to the new one
-function addTouchSupport() {
-  // This functionality is now handled in script.js
-}
-
 // Enhanced Projects Section JavaScript
 document.addEventListener("DOMContentLoaded", function () {
   initializeProjectCards();
@@ -45,7 +6,33 @@ document.addEventListener("DOMContentLoaded", function () {
   window.addEventListener("resize", function () {
     setTimeout(initializeProjectCards, 100);
   });
+
+  // Make sure project buttons work properly
+  fixProjectButtonRedirection();
 });
+
+// Ensure project button redirections work
+function fixProjectButtonRedirection() {
+  const projectButtons = document.querySelectorAll(".project-btn");
+  
+  projectButtons.forEach(btn => {
+    const onclickAttr = btn.getAttribute("onclick");
+    if (onclickAttr) {
+      const urlMatch = onclickAttr.match(/location\.href=[\'\"](.+?)[\'\"]/);
+      if (urlMatch && urlMatch[1]) {
+        const url = urlMatch[1];
+        
+        // Replace onclick with event listener
+        btn.removeAttribute("onclick");
+        
+        btn.addEventListener("click", function(e) {
+          e.stopPropagation(); // Prevent card flip
+          window.location.href = url; // Navigate to URL
+        });
+      }
+    }
+  });
+}
 
 function initializeProjectCards() {
   const projectCards = document.querySelectorAll(".project-card");
@@ -56,7 +43,32 @@ function initializeProjectCards() {
     navigator.maxTouchPoints > 0 ||
     navigator.msMaxTouchPoints > 0;
 
-  projectCards.forEach((card) => {
+  // Store all button URLs before changing them
+  const buttonUrls = [];
+  projectCards.forEach((card, cardIndex) => {
+    const buttons = card.querySelectorAll(".project-btn");
+    const buttonData = [];
+    
+    buttons.forEach(btn => {
+      const onclickAttr = btn.getAttribute("onclick");
+      if (onclickAttr) {
+        const urlMatch = onclickAttr.match(/location\.href=[\'\"](.+?)[\'\"]/);
+        if (urlMatch && urlMatch[1]) {
+          buttonData.push({
+            index: Array.from(buttons).indexOf(btn),
+            url: urlMatch[1]
+          });
+        }
+      }
+    });
+    
+    buttonUrls.push({
+      cardIndex: cardIndex,
+      buttons: buttonData
+    });
+  });
+
+  projectCards.forEach((card, cardIndex) => {
     // Remove any existing listeners by cloning the card
     const newCard = card.cloneNode(true);
     card.parentNode.replaceChild(newCard, card);
@@ -74,6 +86,13 @@ function initializeProjectCards() {
         }
 
         this.classList.toggle("flipped");
+        
+        // Ensure card inner gets flipped too
+        const cardInner = this.querySelector(".project-card-inner");
+        if (cardInner) {
+          cardInner.style.transform = this.classList.contains("flipped") ? 
+                                     "rotateY(180deg)" : "rotateY(0deg)";
+        }
       });
 
       // Add visual indicator for touch devices
@@ -82,10 +101,30 @@ function initializeProjectCards() {
         const touchHint = document.createElement("div");
         touchHint.className = "touch-hint";
         touchHint.textContent = "Tap to view details";
+        touchHint.style.position = "absolute";
+        touchHint.style.bottom = "10px";
+        touchHint.style.left = "50%";
+        touchHint.style.transform = "translateX(-50%)";
+        touchHint.style.background = "rgba(0,0,0,0.7)";
+        touchHint.style.color = "white";
+        touchHint.style.padding = "8px 16px";
+        touchHint.style.borderRadius = "20px";
+        touchHint.style.fontSize = "0.9rem";
+        touchHint.style.zIndex = "2";
         imgContainer.appendChild(touchHint);
       }
     } else {
-      // For desktop: use CSS hover
+      // For desktop: use CSS hover 
+      const cardInner = newCard.querySelector(".project-card-inner");
+      if (cardInner) {
+        newCard.addEventListener("mouseenter", function() {
+          cardInner.style.transform = "rotateY(180deg)";
+        });
+        
+        newCard.addEventListener("mouseleave", function() {
+          cardInner.style.transform = "rotateY(0deg)";
+        });
+      }
 
       // Also add keyboard accessibility
       newCard.setAttribute("tabindex", "0");
@@ -93,15 +132,53 @@ function initializeProjectCards() {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           this.classList.toggle("flipped");
+          
+          // Ensure card inner gets flipped too
+          const cardInner = this.querySelector(".project-card-inner");
+          if (cardInner) {
+            cardInner.style.transform = this.classList.contains("flipped") ? 
+                                       "rotateY(180deg)" : "rotateY(0deg)";
+          }
         }
       });
     }
 
     // Handle buttons properly on both sides of card
     const buttons = newCard.querySelectorAll(".project-btn:not(.disabled-btn)");
+    
+    // Restore button URLs
+    const cardData = buttonUrls.find(data => data.cardIndex === cardIndex);
+    if (cardData && cardData.buttons.length > 0) {
+      cardData.buttons.forEach(btnData => {
+        if (btnData.index < buttons.length) {
+          const btn = buttons[btnData.index];
+          
+          // Remove original onclick 
+          btn.removeAttribute("onclick");
+          
+          // Add proper event listener
+          btn.addEventListener("click", function(e) {
+            e.stopPropagation();
+            window.location.href = btnData.url;
+          });
+        }
+      });
+    }
+    
     buttons.forEach((btn) => {
       btn.addEventListener("click", function (e) {
         e.stopPropagation(); // Prevent card flip when clicking buttons
+      });
+      
+      // Add hover effect
+      btn.addEventListener("mouseenter", function() {
+        this.style.transform = "translateY(-3px)";
+        this.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
+      });
+      
+      btn.addEventListener("mouseleave", function() {
+        this.style.transform = "";
+        this.style.boxShadow = "";
       });
     });
 
@@ -194,19 +271,50 @@ function setCardHeight(card) {
 }
 
 // Call this function after window loads to ensure proper initialization
-window.addEventListener("load", initializeProjectCards);
+window.addEventListener("load", function() {
+  setTimeout(function() {
+    initializeProjectCards();
+    fixProjectButtonRedirection();
+    
+    // Add an event listener to the projects container to catch all button clicks
+    const projectsContainer = document.querySelector(".projects-container");
+    if (projectsContainer) {
+      projectsContainer.addEventListener("click", function(e) {
+        const btn = e.target.closest(".project-btn");
+        if (btn) {
+          const onclickAttr = btn.getAttribute("onclick");
+          if (onclickAttr) {
+            e.stopPropagation();
+            e.preventDefault();
+            
+            const urlMatch = onclickAttr.match(/location\.href=[\'\"](.+?)[\'\"]/);
+            if (urlMatch && urlMatch[1]) {
+              window.location.href = urlMatch[1];
+            }
+          }
+        }
+      }, true); // Use capture to ensure this runs before other handlers
+    }
+  }, 500);
+});
 
 // Also reinitialize on resize to handle orientation changes
 let resizeTimer;
 window.addEventListener("resize", function () {
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(initializeProjectCards, 250);
+  resizeTimer = setTimeout(function() {
+    initializeProjectCards();
+    fixProjectButtonRedirection();
+  }, 250);
 });
 
 // Ensure cards are properly initialized if projects are shown through tabs or navigation
 document.querySelectorAll('a[href="#projects"]').forEach((link) => {
   link.addEventListener("click", function () {
-    setTimeout(initializeProjectCards, 300);
+    setTimeout(function() {
+      initializeProjectCards();
+      fixProjectButtonRedirection();
+    }, 300);
   });
 });
 
