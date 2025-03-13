@@ -417,3 +417,313 @@
       gap: 0.5rem !important;
     }
   }
+
+  /**
+ * Project Card CSS Fixes
+ * Addresses mobile formatting and Mac-specific issues
+ */
+
+/* Base project card styling with improved mobile support */
+.project-card {
+  height: 550px !important;
+  perspective: 1500px !important;
+  border-radius: 1.5rem !important;
+  background-color: var(--card-bg) !important;
+  border: 1px solid var(--card-border) !important;
+  box-shadow: 0 10px 20px var(--shadow-color) !important;
+  transition: transform 0.4s ease, box-shadow 0.4s ease !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.project-card:hover {
+  transform: translateY(-10px) !important;
+  box-shadow: 0 15px 30px var(--shadow-color) !important;
+}
+
+/* Card inner with flip effect */
+.project-card-inner {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  text-align: center !important;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  transform-style: preserve-3d !important;
+  border-radius: 1.5rem !important;
+  -webkit-transform-style: preserve-3d !important;
+}
+
+/* Front and back sides */
+.project-card-front, .project-card-back {
+  position: absolute !important;
+  width: 100% !important;
+  height: 100% !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+  border-radius: 1.5rem !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background-color: var(--card-bg) !important;
+}
+
+/* Back side rotated */
+.project-card-back {
+  transform: rotateY(180deg) !important;
+  padding: 1.5rem !important;
+  justify-content: flex-start !important;
+}
+
+/* Project image container */
+.project-img-container {
+  height: 220px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  border-top-left-radius: 1.5rem !important;
+  border-top-right-radius: 1.5rem !important;
+}
+
+.project-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transition: transform 0.5s ease !important;
+}
+
+/* Card flip behavior - hover for desktop */
+@media (hover: hover) and (pointer: fine) {
+  .project-card:hover .project-card-inner {
+    transform: rotateY(180deg) !important;
+  }
+  
+  .project-card:hover .project-img {
+    transform: scale(1.05) !important;
+  }
+}
+
+/* Project content container */
+.project-content {
+  padding: 1.25rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex-grow: 1 !important;
+  height: calc(100% - 220px) !important;
+  width: 100% !important;
+}
+
+/* Project card flip prompt */
+.flip-prompt {
+  position: absolute !important;
+  bottom: 15px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  color: white !important;
+  padding: 8px 15px !important;
+  border-radius: 20px !important;
+  font-size: 0.9rem !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease !important;
+  z-index: 5 !important;
+  pointer-events: none !important;
+}
+
+.project-card:hover .flip-prompt {
+  opacity: 1 !important;
+}
+
+/* Touch-specific styles */
+@media (hover: none) {
+  /* For touch devices, rely on click/tap rather than hover */
+  .project-card .project-card-inner {
+    transform: rotateY(0deg) !important;
+  }
+  
+  .project-card.flipped .project-card-inner {
+    transform: rotateY(180deg) !important;
+  }
+  
+  /* Show flip prompt by default on touch devices */
+  .flip-prompt {
+    opacity: 1 !important;
+  }
+  
+  /* Hide prompt when flipped */
+  .project-card.flipped .flip-prompt {
+    opacity: 0 !important;
+  }
+}
+
+/* Responsive styling for different screen sizes */
+@media screen and (max-width: 1200px) {
+  .projects-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.5rem !important;
+  }
+  
+  .project-card {
+    height: 500px !important;
+  }
+  
+  .project-img-container {
+    height: 200px !important;
+  }
+  
+  .project-content {
+    height: calc(100% - 200px) !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .projects-container {
+    grid-template-columns: 1fr !important;
+    max-width: 500px !important;
+    margin: 2rem auto !important;
+  }
+  
+  .project-card {
+    height: auto !important;
+    min-height: 500px !important;
+  }
+  
+  .project-img-container {
+    height: 180px !important;
+  }
+  
+  .project-content {
+    height: auto !important;
+    min-height: calc(100% - 180px) !important;
+  }
+  
+  /* Improve header layout on mobile */
+  .project-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  
+  .project-badges {
+    align-self: flex-start !important;
+  }
+  
+  /* Ensure description has enough space */
+  .project-description {
+    min-height: 100px !important;
+  }
+  
+  /* Adjust description on back of card */
+  .project-description-full {
+    max-height: 150px !important;
+    min-height: 150px !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .project-btn-container {
+    flex-direction: column !important;
+  }
+  
+  .project-btn {
+    width: 100% !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .project-card {
+    min-height: 480px !important;
+  }
+  
+  .project-img-container {
+    height: 160px !important;
+  }
+  
+  .project-content {
+    padding: 1rem !important;
+  }
+  
+  /* Make title and badges more compact */
+  .project-title {
+    font-size: 1.3rem !important;
+  }
+  
+  .project-description {
+    font-size: 0.9rem !important;
+    -webkit-line-clamp: 3 !important;
+    line-clamp: 3 !important;
+    min-height: 75px !important;
+  }
+}
+
+/* Mac-specific fixes */
+@media screen and (min-width: 768px) {
+  /* Use hardware acceleration for smoother animations */
+  .project-card-inner {
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+    will-change: transform !important;
+  }
+  
+  /* Ensure back side is truly hidden when not flipped */
+  .project-card-back {
+    pointer-events: none !important;
+  }
+  
+  .project-card.flipped .project-card-back {
+    pointer-events: auto !important;
+  }
+  
+  /* Hide prompt when card is flipped */
+  .project-card.flipped .flip-prompt {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+}
+
+/* Accessibility helper classes */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Button style fixes */
+.project-btn-container {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.5rem !important;
+  margin-top: auto !important;
+  padding-top: 0.75rem !important;
+  border-top: 1px solid var(--card-border) !important;
+  justify-content: space-between !important;
+}
+
+.project-btn {
+  padding: 0.6rem 0.75rem !important;
+  border-radius: 0.75rem !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  flex: 1 !important;
+  min-width: 90px !important;
+}
+
+/* Button hover effect */
+.project-btn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+}

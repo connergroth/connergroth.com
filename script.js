@@ -739,3 +739,341 @@ function announceToScreenReader(message) {
     announcement.textContent = message;
   }
 }
+
+/**
+ * Project Card Fix for Mobile Devices and Mac
+ */
+
+document.addEventListener("DOMContentLoaded", function() {
+  fixProjectCards();
+  
+  // Re-run on resize to handle orientation changes
+  let resizeTimer;
+  window.addEventListener("resize", function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fixProjectCards, 250);
+  });
+});
+
+function fixProjectCards() {
+  const projectCards = document.querySelectorAll(".project-card");
+  if (!projectCards.length) return;
+  
+  // Detect device type
+  const isMobile = window.innerWidth <= 768;
+  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  
+  projectCards.forEach(card => {
+    // Reset card to ensure clean state
+    resetCardState(card);
+    
+    // Fix card heights based on device
+    setResponsiveCardHeight(card);
+    
+    // Fix the "click for info" prompt
+    fixInfoPrompt(card, isMobile, isMac);
+    
+    // Setup appropriate flip behavior based on device
+    if (isTouchDevice || isMobile) {
+      setupTouchFlipBehavior(card);
+    } else {
+      setupHoverFlipBehavior(card);
+    }
+    
+    // Ensure proper button behavior
+    fixButtonBehavior(card);
+    
+    // Add accessibility
+    addAccessibility(card);
+  });
+}
+
+function resetCardState(card) {
+  // Remove any existing event listeners by cloning and replacing
+  const newCard = card.cloneNode(true);
+  card.parentNode.replaceChild(newCard, card);
+  
+  // Remove any classes that might interfere
+  newCard.classList.remove("flipped");
+  
+  return newCard;
+}
+
+function setResponsiveCardHeight(card) {
+  // Set appropriate heights based on screen size
+  if (window.innerWidth > 1200) {
+    // Desktop
+    card.style.height = "550px";
+    
+    const imgContainer = card.querySelector(".project-img-container");
+    if (imgContainer) imgContainer.style.height = "220px";
+    
+    const content = card.querySelector(".project-content");
+    if (content) content.style.height = "calc(100% - 220px)";
+  } 
+  else if (window.innerWidth > 768) {
+    // Tablet
+    card.style.height = "500px";
+    
+    const imgContainer = card.querySelector(".project-img-container");
+    if (imgContainer) imgContainer.style.height = "200px";
+    
+    const content = card.querySelector(".project-content");
+    if (content) content.style.height = "calc(100% - 200px)";
+  } 
+  else {
+    // Mobile
+    card.style.height = "auto";
+    card.style.minHeight = "500px";
+    
+    const imgContainer = card.querySelector(".project-img-container");
+    if (imgContainer) imgContainer.style.height = "180px";
+    
+    const content = card.querySelector(".project-content");
+    if (content) {
+      content.style.height = "auto";
+      content.style.minHeight = "calc(100% - 180px)";
+    }
+  }
+  
+  // Set consistent heights for the card inner, front, and back
+  const inner = card.querySelector(".project-card-inner");
+  const front = card.querySelector(".project-card-front");
+  const back = card.querySelector(".project-card-back");
+  
+  if (inner) inner.style.height = "100%";
+  if (front) front.style.height = "100%";
+  if (back) back.style.height = "100%";
+}
+
+function fixInfoPrompt(card, isMobile, isMac) {
+  // Remove any existing prompts
+  const existingPrompts = card.querySelectorAll(".flip-prompt");
+  existingPrompts.forEach(prompt => prompt.remove());
+  
+  // Create new info prompt
+  const imgContainer = card.querySelector(".project-img-container");
+  if (!imgContainer) return;
+  
+  // Clear any existing ::after content
+  imgContainer.style.position = "relative";
+  
+  // Add a new prompt element instead of using ::after
+  const prompt = document.createElement("div");
+  prompt.className = "flip-prompt";
+  prompt.textContent = isMobile ? "Tap for details" : "Hover for details";
+  
+  // Style the prompt
+  prompt.style.position = "absolute";
+  prompt.style.bottom = "15px";
+  prompt.style.left = "50%";
+  prompt.style.transform = "translateX(-50%)";
+  prompt.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+  prompt.style.color = "white";
+  prompt.style.padding = "8px 15px";
+  prompt.style.borderRadius = "20px";
+  prompt.style.fontSize = "0.9rem";
+  prompt.style.opacity = "0";
+  prompt.style.transition = "opacity 0.3s ease";
+  prompt.style.zIndex = "10";
+  
+  imgContainer.appendChild(prompt);
+  
+  // Show prompt on hover/touch for front card only
+  card.addEventListener("mouseenter", function() {
+    if (!card.classList.contains("flipped")) {
+      prompt.style.opacity = "1";
+    }
+  });
+  
+  card.addEventListener("mouseleave", function() {
+    prompt.style.opacity = "0";
+  });
+  
+  // Special fix for Mac to ensure prompt doesn't appear on back of card
+  if (isMac) {
+    const cardInner = card.querySelector(".project-card-inner");
+    if (cardInner) {
+      cardInner.addEventListener("transitionstart", function() {
+        prompt.style.opacity = "0";
+      });
+    }
+  }
+}
+
+function setupTouchFlipBehavior(card) {
+  card.addEventListener("click", function(e) {
+    // Don't flip if clicking on a button or link
+    if (e.target.closest("button") || e.target.closest("a")) {
+      return;
+    }
+    
+    // Toggle flipped class
+    this.classList.toggle("flipped");
+    
+    // Hide prompt when flipped
+    const prompt = this.querySelector(".flip-prompt");
+    if (prompt) {
+      prompt.style.opacity = "0";
+    }
+  });
+  
+  // Reset the opacity of the prompt when returning to front
+  card.addEventListener("transitionend", function(e) {
+    if (e.propertyName === "transform" && !this.classList.contains("flipped")) {
+      const prompt = this.querySelector(".flip-prompt");
+      if (prompt) {
+        setTimeout(() => {
+          if (!this.classList.contains("flipped")) {
+            prompt.style.opacity = "1";
+          }
+        }, 300);
+      }
+    }
+  });
+}
+
+function setupHoverFlipBehavior(card) {
+  // For non-touch devices, use CSS hover
+  // Add transition end handler to manage prompt
+  card.addEventListener("transitionend", function(e) {
+    if (e.propertyName === "transform") {
+      const prompt = this.querySelector(".flip-prompt");
+      if (prompt) {
+        if (this.classList.contains("flipped")) {
+          prompt.style.opacity = "0";
+        } else {
+          setTimeout(() => {
+            if (!this.classList.contains("flipped") && this.matches(":hover")) {
+              prompt.style.opacity = "1";
+            }
+          }, 100);
+        }
+      }
+    }
+  });
+  
+  // Fix hover state for inner card
+  const cardInner = card.querySelector(".project-card-inner");
+  if (cardInner) {
+    // Use CSS hover state by default
+    card.addEventListener("mouseenter", function() {
+      cardInner.style.transform = "rotateY(180deg)";
+      card.classList.add("flipped");
+    });
+    
+    card.addEventListener("mouseleave", function() {
+      cardInner.style.transform = "rotateY(0deg)";
+      card.classList.remove("flipped");
+    });
+  }
+}
+
+function fixButtonBehavior(card) {
+  // Ensure buttons don't trigger card flip
+  const buttons = card.querySelectorAll(".project-btn");
+  buttons.forEach(btn => {
+    btn.addEventListener("click", function(e) {
+      e.stopPropagation();
+    });
+    
+    // Add enhanced hover effect
+    btn.addEventListener("mouseenter", function() {
+      this.style.transform = "translateY(-3px)";
+      this.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.2)";
+    });
+    
+    btn.addEventListener("mouseleave", function() {
+      this.style.transform = "";
+      this.style.boxShadow = "";
+    });
+  });
+  
+  // Prevent default action for disabled buttons
+  const disabledButtons = card.querySelectorAll(".disabled-btn");
+  disabledButtons.forEach(btn => {
+    btn.setAttribute("disabled", "true");
+    btn.setAttribute("aria-disabled", "true");
+    
+    btn.addEventListener("click", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  });
+}
+
+function addAccessibility(card) {
+  // Make cards keyboard accessible
+  card.setAttribute("tabindex", "0");
+  card.setAttribute("role", "button");
+  
+  const projectTitle = card.querySelector(".project-title")?.textContent || "Project";
+  card.setAttribute("aria-label", `Project: ${projectTitle}. Press Enter to view details.`);
+  
+  // Add keyboard support
+  card.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      this.classList.toggle("flipped");
+      
+      const cardInner = this.querySelector(".project-card-inner");
+      if (cardInner) {
+        cardInner.style.transform = this.classList.contains("flipped") ? 
+                                    "rotateY(180deg)" : "rotateY(0deg)";
+      }
+      
+      // Announce to assistive technology
+      const isFlipped = this.classList.contains("flipped");
+      announceToScreenReader(
+        `${projectTitle} card ${isFlipped ? "flipped to show details" : "flipped back to front"}`
+      );
+    }
+  });
+}
+
+// Screen reader announcement helper
+function announceToScreenReader(message) {
+  let announcement = document.getElementById("sr-announcement");
+  
+  if (!announcement) {
+    announcement = document.createElement("div");
+    announcement.id = "sr-announcement";
+    announcement.setAttribute("aria-live", "polite");
+    announcement.className = "sr-only";
+    
+    // Style to hide visually but keep available to screen readers
+    announcement.style.position = "absolute";
+    announcement.style.width = "1px";
+    announcement.style.height = "1px";
+    announcement.style.padding = "0";
+    announcement.style.margin = "-1px";
+    announcement.style.overflow = "hidden";
+    announcement.style.clip = "rect(0, 0, 0, 0)";
+    announcement.style.whiteSpace = "nowrap";
+    announcement.style.border = "0";
+    
+    document.body.appendChild(announcement);
+  }
+  
+  // Set the message after a brief delay to ensure it's announced
+  setTimeout(() => {
+    announcement.textContent = message;
+  }, 100);
+}
+
+// Run the fix on page load and after a short delay to ensure everything is loaded
+window.addEventListener("load", function() {
+  fixProjectCards();
+  
+  // Run again after a short delay for any lazy-loaded content
+  setTimeout(fixProjectCards, 500);
+});
+
+// Call the fix function when DOM is loaded
+document.addEventListener("DOMContentLoaded", fixProjectCards);
+
+// Also call after page load to ensure all elements are properly loaded
+window.addEventListener("load", function() {
+  setTimeout(fixProjectCards, 500);
+});
