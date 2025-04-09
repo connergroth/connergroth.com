@@ -22,17 +22,19 @@ A personal portfolio website showcasing my projects, skills, and experience.
 ```
 portfolio-website/
 ├── assets/                  # Images and downloadable files
-│   ├── connerpfp.png        # Profile picture
-│   ├── EcoVisionDemoImage.jpg
-│   ├── strimDemoImage.PNG
-│   ├── project-3.png
-│   ├── Conner Groth Resume.pdf
-│   └── ...
+├── css/
+│   ├── main.css             # Main styles 
+│   ├── responsive.css       # All responsive styles
+│   └── components/          # Component-specific CSS
+│       ├── projects.css     # Project card styles
+│       ├── timeline.css     # Timeline styles
+│       └── dark-mode.css    # Dark mode styles
+├── js/
+│   ├── main.js              # Main functionality 
+│   ├── projects.js          # Project card functionality
+│   └── dark-mode.js         # Dark mode toggle functionality
 ├── index.html               # Main HTML file
-├── style.css                # Main stylesheet
-├── mediaqueries.css         # Responsive design rules
-├── script.js                # JavaScript functionality
-└── README.md                # This file
+└── README.md                # Project description
 ```
 
 ## Future Enhancements
