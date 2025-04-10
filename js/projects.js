@@ -1,6 +1,7 @@
 /**
- * Project Cards Functionality
+ * Enhanced Project Cards Functionality
  * Handles project card behavior, animations, and interactions
+ * with improved mobile and accessibility support
  */
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -13,7 +14,31 @@ document.addEventListener("DOMContentLoaded", function() {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(initializeProjectCards, 250);
     });
+    
+    // Create screen reader announcement element (for accessibility)
+    createScreenReaderAnnouncer();
   });
+  
+  /**
+   * Screen reader helper for accessibility
+   */
+  function createScreenReaderAnnouncer() {
+    if (!document.getElementById("sr-announcer")) {
+      const announcer = document.createElement("div");
+      announcer.id = "sr-announcer";
+      announcer.className = "sr-only";
+      announcer.setAttribute("aria-live", "polite");
+      announcer.setAttribute("aria-atomic", "true");
+      document.body.appendChild(announcer);
+    }
+  }
+  
+  function announceToScreenReader(message) {
+    const announcer = document.getElementById("sr-announcer");
+    if (announcer) {
+      announcer.textContent = message;
+    }
+  }
   
   /**
    * Initialize all project cards with proper functionality
@@ -28,101 +53,93 @@ document.addEventListener("DOMContentLoaded", function() {
       navigator.maxTouchPoints > 0 || 
       navigator.msMaxTouchPoints > 0;
     
-    // Store button information before modifying cards
-    const buttonData = [];
+    // Process all cards
     projectCards.forEach(card => {
-      const buttons = card.querySelectorAll(".project-btn");
-      const cardData = { 
-        cardIndex: Array.from(projectCards).indexOf(card),
-        buttons: []
-      };
-      
-      buttons.forEach(btn => {
-        // Check for URL in data attribute first
-        let url = btn.getAttribute("data-url");
-        
-        // If not found, check onclick attribute
-        if (!url) {
-          const onclickAttr = btn.getAttribute("onclick");
-          if (onclickAttr) {
-            const urlMatch = onclickAttr.match(/location\.href=[\'\"](.+?)[\'\"]/);
-            if (urlMatch && urlMatch[1]) {
-              url = urlMatch[1];
-            }
-          }
-        }
-        
-        if (url) {
-          cardData.buttons.push({
-            buttonIndex: Array.from(buttons).indexOf(btn),
-            url: url
-          });
-        }
-      });
-      
-      buttonData.push(cardData);
-    });
-      
-    projectCards.forEach((card, cardIndex) => {
-      // Clone card to remove existing event listeners
-      const newCard = card.cloneNode(true);
-      card.parentNode.replaceChild(newCard, card);
+      // Reset any existing classes or styles
+      card.classList.remove("initialized");
       
       // Set consistent heights
-      setCardHeight(newCard);
+      setCardHeight(card);
       
       // Setup different behaviors based on device type
       if (isTouchDevice) {
-        setupTouchBehavior(newCard);
+        setupTouchBehavior(card);
       } else {
-        setupDesktopBehavior(newCard);
+        setupDesktopBehavior(card);
       }
       
-      // Ensure buttons work properly
-      setupButtons(newCard, buttonData[cardIndex]);
+      // Setup buttons
+      setupButtons(card);
       
       // Add keyboard accessibility
-      addKeyboardAccessibility(newCard);
+      addKeyboardAccessibility(card);
+      
+      // Mark card as initialized
+      card.classList.add("initialized");
     });
   }
   
   /**
    * Set appropriate heights for card components
+   * Now uses auto height approach for better content fitting
    */
   function setCardHeight(card) {
-    // Adjust heights based on screen size
-    let cardHeight, imgHeight;
+    // Get dimensions based on screen size
+    let imgHeight;
     
-    if (window.innerWidth > 768) {
-      cardHeight = "550px";
+    if (window.innerWidth > 992) {
+      // Desktop
       imgHeight = "200px";
-    } else if (window.innerWidth > 480) {
-      cardHeight = "500px";
+    } else if (window.innerWidth > 768) {
+      // Tablet
+      imgHeight = "180px";
+    } else if (window.innerWidth > 576) {
+      // Mobile
       imgHeight = "180px";
     } else {
-      cardHeight = "450px";
+      // Small mobile
       imgHeight = "160px";
     }
     
-    // Apply heights
-    card.style.height = cardHeight;
+    // Apply auto height with min-height for better content fitting
+    card.style.height = "auto";
     
-    const cardInner = card.querySelector(".project-card-inner");
+    // Use different min-heights based on screen size
+    if (window.innerWidth > 992) {
+      card.style.minHeight = "550px";
+    } else if (window.innerWidth > 768) {
+      card.style.minHeight = "520px";
+    } else if (window.innerWidth > 576) {
+      card.style.minHeight = "500px";
+    } else {
+      card.style.minHeight = "450px";
+    }
+    
+    // Set image container height
+    const imgContainer = card.querySelector(".project-img-container");
+    if (imgContainer) {
+      imgContainer.style.height = imgHeight;
+    }
+    
+    // Adjust content area height
+    const content = card.querySelector(".project-content");
+    if (content && imgContainer) {
+      content.style.height = "auto";
+    }
+    
+    // Allow front and back to have flexible height
     const cardFront = card.querySelector(".project-card-front");
     const cardBack = card.querySelector(".project-card-back");
-    const imgContainer = card.querySelector(".project-img-container");
-    const content = card.querySelector(".project-content");
     
-    // Set heights for all components
-    if (cardInner) cardInner.style.height = "100%";
-    if (cardFront) cardFront.style.height = "100%";
-    if (cardBack) cardBack.style.height = "100%";
-    if (imgContainer) imgContainer.style.height = imgHeight;
+    if (cardFront && cardBack) {
+      cardFront.style.height = "100%";
+      cardBack.style.height = "100%";
+    }
     
-    // Set content height based on image height
-    if (content && imgContainer) {
-      const actualImgHeight = imgContainer.offsetHeight || parseInt(imgHeight);
-      content.style.height = `calc(100% - ${actualImgHeight}px)`;
+    // For desktop, we need to ensure the card inner maintains proper dimensions
+    const cardInner = card.querySelector(".project-card-inner");
+    if (cardInner) {
+      cardInner.style.height = "100%";
     }
   }
   
@@ -130,6 +147,12 @@ document.addEventListener("DOMContentLoaded", function() {
    * Setup behavior for touch devices (tap to flip)
    */
   function setupTouchBehavior(card) {
+    // Remove any existing click handlers
+    const newCard = card.cloneNode(true);
+    card.parentNode.replaceChild(newCard, card);
+    card = newCard;
+    
+    // Add tap to flip functionality
     card.addEventListener("click", function(e) {
       // Don't flip if clicking on a button or link
       if (e.target.closest("button") || e.target.closest("a")) {
@@ -146,47 +169,59 @@ document.addEventListener("DOMContentLoaded", function() {
                                    "rotateY(180deg)" : "rotateY(0deg)";
       }
       
+      // After flipping, resize the card height to fit all content if needed
+      if (this.classList.contains("flipped")) {
+        // Small delay to let the flip animation complete
+        setTimeout(() => {
+          const cardBack = this.querySelector(".project-card-back");
+          if (cardBack) {
+            // Get total height of all children in the back
+            let totalHeight = 0;
+            Array.from(cardBack.children).forEach(child => {
+              totalHeight += child.offsetHeight;
+            });
+            
+            // Add padding
+            totalHeight += 40; // Account for padding
+            
+            // Set minimum height to accommodate all content
+            const currentMinHeight = parseInt(this.style.minHeight || 0);
+            if (totalHeight > currentMinHeight) {
+              this.style.minHeight = totalHeight + "px";
+            }
+          }
+        }, 300);
+      }
+      
       // Announce to screen readers
       const isFlipped = this.classList.contains("flipped");
       const projectTitle = this.querySelector(".project-title")?.textContent || "Project";
       
-      // Use our announcement helper
-      if (typeof announceToScreenReader === 'function') {
-        announceToScreenReader(
-          `${projectTitle} card ${isFlipped ? "flipped to show details" : "flipped back to front"}`
-        );
-      }
+      announceToScreenReader(
+        `${projectTitle} card ${isFlipped ? "flipped to show details" : "flipped back to front"}`
+      );
     });
     
-    // Add visual indicator for touch devices
-    const overlay = card.querySelector(".project-overlay");
-    if (overlay) {
-      const viewButton = overlay.querySelector(".view-project");
-      if (viewButton) {
-        viewButton.textContent = "Tap to view details";
-      }
+    // Update view button text for touch devices
+    const viewButton = card.querySelector(".view-project");
+    if (viewButton) {
+      viewButton.textContent = "Tap to view details";
     }
+    
+    // Setup buttons again for the cloned card
+    setupButtons(card);
+    addKeyboardAccessibility(card);
   }
   
   /**
    * Setup behavior for desktop devices (hover to flip)
    */
   function setupDesktopBehavior(card) {
-    // Desktop uses CSS hover by default
-    const cardInner = card.querySelector(".project-card-inner");
-    if (cardInner) {
-      card.addEventListener("mouseenter", function() {
-        cardInner.style.transform = "rotateY(180deg)";
-        this.classList.add("flipped");
-      });
-      
-      card.addEventListener("mouseleave", function() {
-        cardInner.style.transform = "rotateY(0deg)";
-        this.classList.remove("flipped");
-      });
-    }
+    // Remove hover class if previously applied
+    card.classList.remove("flipped");
     
-    // Additional desktop enhancement for images
+    // Desktop uses CSS hover by default for the flip effect
+    // But we can enhance the image behavior
     const img = card.querySelector(".project-img");
     if (img) {
       card.addEventListener("mouseenter", function() {
@@ -200,55 +235,46 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   
   /**
-   * Setup button behavior
+   * Setup button behavior 
    */
-  function setupButtons(card, cardData) {
+  function setupButtons(card) {
     // Get all buttons on the card
     const buttons = card.querySelectorAll(".project-btn:not(.disabled-btn)");
     
-    // First, reapply saved URLs from buttonData if available
-    if (cardData && cardData.buttons.length > 0) {
-      cardData.buttons.forEach(btnData => {
-        if (btnData.buttonIndex < buttons.length) {
-          const btn = buttons[btnData.buttonIndex];
-          
-          // Remove any existing onclick attribute
-          btn.removeAttribute("onclick");
-          
-          // Store URL in data attribute for easier access
-          btn.setAttribute("data-url", btnData.url);
-          
-          // Add proper event listener for redirection
-          btn.addEventListener("click", function(e) {
-            e.stopPropagation();
-            window.location.href = btnData.url;
-          });
-        }
-      });
-    }
-    
-    // General button behavior for all buttons
     buttons.forEach(btn => {
+      // Clean up any existing click listeners
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      btn = newBtn;
+      
+      // Get the URL from the data attribute or onclick attribute
+      let url = btn.getAttribute("data-url");
+      if (!url) {
+        const onclickAttr = btn.getAttribute("onclick");
+        if (onclickAttr) {
+          const urlMatch = onclickAttr.match(/location\.href=[\'\"](.+?)[\'\"]/);
+          if (urlMatch && urlMatch[1]) {
+            url = urlMatch[1];
+            // Store for future use
+            btn.setAttribute("data-url", url);
+          }
+        }
+      }
+      
+      // Add click handler that prevents propagation
       btn.addEventListener("click", function(e) {
         e.stopPropagation(); // Prevent card flip
         
-        // If data-url attribute exists, use it
-        const url = this.getAttribute("data-url");
         if (url) {
-          window.location.href = url;
+          window.open(url, '_blank');
         }
       });
       
-      // Add hover effect
-      btn.addEventListener("mouseenter", function() {
-        this.style.transform = "translateY(-3px)";
-        this.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.2)";
-      });
-      
-      btn.addEventListener("mouseleave", function() {
-        this.style.transform = "translateY(0)";
-        this.style.boxShadow = "";
-      });
+      // Add proper aria attributes
+      btn.setAttribute("role", "button");
+      if (url) {
+        btn.setAttribute("aria-label", `${btn.textContent.trim()} - opens in new tab`);
+      }
     });
     
     // Disable actions on disabled buttons
@@ -270,8 +296,10 @@ document.addEventListener("DOMContentLoaded", function() {
   function addKeyboardAccessibility(card) {
     card.setAttribute("tabindex", "0");
     card.setAttribute("role", "button");
+    
+    const projectTitle = card.querySelector(".project-title")?.textContent || "Project";
     card.setAttribute("aria-label", 
-      `Project: ${card.querySelector(".project-title")?.textContent || "Project"}. Press Enter to view details.`
+      `Project: ${projectTitle}. Press Enter to view details.`
     );
     
     card.addEventListener("keydown", function(e) {
@@ -287,26 +315,34 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         
         const isFlipped = this.classList.contains("flipped");
-        const projectTitle = this.querySelector(".project-title")?.textContent || "Project";
         
-        // Use our announcement helper if available
-        if (typeof announceToScreenReader === 'function') {
-          announceToScreenReader(
-            `${projectTitle} card ${isFlipped ? "flipped to show details" : "flipped back to front"}`
-          );
-        }
+        announceToScreenReader(
+          `${projectTitle} card ${isFlipped ? "flipped to show details" : "flipped back to front"}`
+        );
       }
+    });
+    
+    // Make project buttons keyboard navigable
+    const buttons = card.querySelectorAll(".project-btn");
+    buttons.forEach(btn => {
+      btn.setAttribute("tabindex", "0");
+      
+      btn.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.click();
+        }
+      });
     });
   }
   
   // Make sure projects load correctly after page is fully loaded
   window.addEventListener("load", function() {
+    // Initialize after a short delay to ensure all content is loaded
     setTimeout(initializeProjectCards, 500);
     
-    // Also initialize after scrolling to projects section
-    document.querySelectorAll('a[href="#projects"]').forEach(link => {
-      link.addEventListener("click", function() {
-        setTimeout(initializeProjectCards, 300);
-      });
+    // Also initialize when dark mode changes
+    document.addEventListener("themeChanged", function() {
+      setTimeout(initializeProjectCards, 300);
     });
   });
