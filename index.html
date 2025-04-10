@@ -11,10 +11,11 @@
   <link rel="icon" type="image/png" href="./assets/connerpfp.png">
 
   <!-- CSS Stylesheets -->
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="mediaqueries.css">
-  <link rel="stylesheet" href="project.css">
-  <link rel="stylesheet" href="project-fix.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/components/projects.css">
+  <link rel="stylesheet" href="css/components/timeline.css">
+  <link rel="stylesheet" href="css/components/dark-mode.css">
 
   <!-- Meta Tags for SEO -->
   <meta name="description"
@@ -23,10 +24,10 @@
   <meta property="og:description"
     content="Portfolio showcasing projects and skills in software development, AI, and web technologies.">
   <meta property="og:image" content="./assets/connerpfp.png">
-  <meta property="og:url" content="https://connergroth.github.io/">
+  <meta property="og:url" content="https://connergroth.me/">
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- Font Awesome -->
+  <!-- Font Awesome for icons -->
   <script src="https://kit.fontawesome.com/c8e4d183c2.js" crossorigin="anonymous"></script>
 </head>
 
@@ -49,6 +50,7 @@
       <ul class="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#experience">Experience</a></li>
+        <li><a href="#skills">Skills</a></li>
         <li><a href="#projects">Projects</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
@@ -89,6 +91,7 @@
           <ul>
             <li><a href="#about" onclick="toggleMenu()">About</a></li>
             <li><a href="#experience" onclick="toggleMenu()">Experience</a></li>
+            <li><a href="#skills" onclick="toggleMenu()">Skills</a></li>
             <li><a href="#projects" onclick="toggleMenu()">Projects</a></li>
             <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
           </ul>
@@ -108,7 +111,7 @@
       </div>
       <h1 class="title reveal-element">Conner Groth</h1>
       <div class="blue-bar"></div>
-      <p class="section__text__p2">Computer Science Student at <br> CU Boulder </p>
+      <p class="section__text__p2">Software Engineer Team Lead | CU Boulder CS</p>
 
       <div class="btn-container">
         <button class="btn btn-color-2" onclick="window.open('./assets/Conner Groth Resume.pdf')">
@@ -243,15 +246,67 @@
       aria-label="Navigate to Experience section">
   </section>
 
-  <!-- EXPERIENCE SECTION -->
+  <!-- EXPERIENCE SECTION (New Timeline) -->
   <section id="experience">
-    <p class="section__text__p1">Explore My</p>
+    <p class="section__text__p1">My Professional</p>
     <h1 class="title reveal-element">Experience</h1>
-    <div class="experience-details-container">
-      <div class="about-containers">
-        <!-- Languages container - directly in the grid -->
+    
+    <div class="timeline-container reveal-element">
+      <!-- Timeline Item 1 -->
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">
+          <span>August 2025 - Present</span>
+        </div>
+        <div class="timeline-content">
+          <h3>Software Engineer Team Lead</h3>
+          <h4>Blueprint Boulder</h4>
+          <p>Leading a team of developers to build a scheduling and resource management platform for a nonprofit supporting families with special needs. Responsible for project planning, technical guidance, and full-stack development.
+          </p>
+          <div class="timeline-tags">
+            <span class="timeline-tag">React</span>
+            <span class="timeline-tag">Node.js</span>
+            <span class="timeline-tag">Express</span>
+            <span class="timeline-tag">PostgreSQL</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline Item 2 -->
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">
+          <span>May 2025 - Present</span>
+        </div>
+        <div class="timeline-content">
+          <h3>Software Research Assistant – Synthetic Biology Data Curation Tools</h3>
+          <h4>Genetic Logic Lab</h4>
+          <p>Contributing to tools for FAIR-compliant genetic data curation in synthetic biology. Supporting backend development and infrastructure for sequence submission and search using platforms like SeqImprove and SynBioHub.</p>
+          <div class="timeline-tags">
+            <span class="timeline-tag">Python</span>
+            <span class="timeline-tag">FastAPI</span>
+            <span class="timeline-tag">React</span>
+            <span class="timeline-tag">Java</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Add more timeline items as needed -->
+    </div>
+    
+    <img src="./assets/arrow.png" alt="Arrow icon" class="icon arrow" onclick="location.href='#skills'"
+      aria-label="Navigate to Skills section">
+  </section>
+
+  <!-- SKILLS SECTION (Moved from Experience) -->
+  <section id="skills">
+    <p class="section__text__p1">Explore My</p>
+    <h1 class="title reveal-element">Skills</h1>
+    <div class="skills-container">
+      <div class="skills-grid">
+        <!-- Languages container -->
         <div class="details-container reveal-element">
-          <h2 class="experience-sub-title">Languages</h2>
+          <h2 class="skills-sub-title">Languages</h2>
           <div class="article-container">
             <article>
               <img src="./assets/Python-Dark.svg" alt="Experience icon" class="icon" />
@@ -292,9 +347,9 @@
           </div>
         </div>
 
-        <!-- AI & Data container - directly in the grid -->
+        <!-- AI & Data container -->
         <div class="details-container reveal-element">
-          <h2 class="experience-sub-title">AI & Data</h2>
+          <h2 class="skills-sub-title">AI & Data</h2>
           <div class="article-container">
             <article>
               <img src="./assets/PyTorch-Dark.svg" alt="Experience icon" class="icon" />
@@ -323,9 +378,9 @@
           </div>
         </div>
 
-        <!-- Web & Backend container - directly in the grid -->
+        <!-- Web & Backend container -->
         <div class="details-container reveal-element">
-          <h2 class="experience-sub-title">Web & Backend</h2>
+          <h2 class="skills-sub-title">Web & Backend</h2>
           <div class="article-container">
             <article>
               <img src="./assets/React-Dark.svg" alt="Experience icon" class="icon" />
@@ -354,9 +409,9 @@
           </div>
         </div>
         
-        <!-- APIs & Scraping container - directly in the grid -->
+        <!-- Tools & Design container -->
         <div class="details-container reveal-element">
-          <h2 class="experience-sub-title">Tools & Design</h2>
+          <h2 class="skills-sub-title">Tools & Design</h2>
           <div class="article-container">
             <article>
               <img src="./assets/Git.svg" alt="Experience icon" class="icon" />
@@ -514,7 +569,6 @@
               <button class="project-btn btn-github" data-url="https://github.com/connergroth/aoty-api" type="button">
                 <i class="btn-icon github-icon"></i>GitHub
               </button>
-              </button>
             </div>
           </div>
         </div>
@@ -578,8 +632,6 @@
               <button class="project-btn btn-demo" data-url="https://strimrun.vercel.app" type="button">
                 <i class="btn-icon demo-icon"></i>Live Demo
               </button>
-              </button>
-              </button>
             </div>
           </div>
         </div>
@@ -611,7 +663,7 @@
       </div>
 
       <!-- Contact Form -->
-      <form id="contact-form" class="contact-form reveal-element">
+      <form id="contact-form" class="contact-form reveal-element" action="https://formspree.io/f/xgvarknn" method="POST">
         <div class="form-group">
           <label for="name">Name</label>
           <input type="text" id="name" name="name" placeholder="Your name" required>
@@ -636,17 +688,19 @@
         <ul class="nav-links">
           <li><a href="#about">About</a></li>
           <li><a href="#experience">Experience</a></li>
+          <li><a href="#skills">Skills</a></li>
           <li><a href="#projects">Projects</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </div>
     </nav>
-    <p>Copyright &#169; 2025 Conner Groth. All Rights Reserved. </p>
+    <p>Copyright &#169; 2025 Conner Groth.</p>
   </footer>
-  <script src="./script.js"></script>
-  <script src="project-button.js"></script>
-  <script src="project.js"></script>
-  <script src="project-fix.js"></script>
+
+  <!-- JavaScript Files -->
+  <script src="js/main.js"></script>
+  <script src="js/projects.js"></script>
+  <script src="js/dark-mode.js"></script>
 </body>
 
 </html>

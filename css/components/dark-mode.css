@@ -1,0 +1,256 @@
+/* DARK MODE STYLING
+   ========================================== */
+
+/* Theme toggle styling */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+  }
+  
+  .theme-switch {
+    display: inline-block;
+    position: relative;
+    width: 60px;
+    height: 30px;
+    margin: 0;
+  }
+  
+  .theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    opacity: 1;
+    overflow: hidden;
+  }
+  
+  /* Position icons with more space */
+  .sun-icon, .moon-icon {
+    line-height: 30px;
+    z-index: 1;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .sun-icon {
+    margin-right: 0;
+    opacity: 1; /* Visible in unchecked state */
+  }
+  
+  .moon-icon {
+    margin-left: 0;
+    opacity: 1; /* Actually keep it visible to better test our solution */
+  }
+  
+  /* Adjust the slider overlay */
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    z-index: 3;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+  }
+  
+  input:checked + .slider {
+    background-color: var(--accent-color);
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(30px);
+  }
+  
+  /* Round the corners of the slider */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  /* Dark Theme Colors - applied when .dark-mode is added to body */
+  .dark-mode {
+    --bg-color: #121212;
+    --bg-color-rgb: 18, 18, 18;
+    --text-color: #f0f0f0;
+    --secondary-text: #b0b0b0;
+    --accent-color: #4dabf7;
+    --accent-color-rgb: 77, 171, 247;
+    --accent-hover: #339af0;
+    --card-bg: #1e1e1e;
+    --card-bg-rgb: 30, 30, 30;
+    --card-border: #2d2d2d;
+    --nav-bg: rgb(30, 30, 30);
+    --nav-bg-rgb: 30, 30, 30;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --btn-text: #121212;
+    --btn-secondary-text: #f0f0f0;
+    --btn-secondary-bg: transparent;
+    --btn-secondary-border: #f0f0f0;
+    --form-bg: #2d2d2d;
+    --tech-tag-bg: #2d2d2d;
+    --tech-tag-text: #f0f0f0;
+    --progress-bar-bg: #2d2d2d;
+    --skill-level-bg: #4dabf7;
+    --icon-brightness: 0.8;
+    --form-input-bg: #2d2d2d;
+    --form-input-text: #f0f0f0;
+    --form-input-border: #3d3d3d;
+    --error-color: #e74c3c;
+    --primary-color: #4dabf7;
+    --tag-bg: #2d2d2d;
+    --tag-text: #f0f0f0;
+    --text-color-light: #b0b0b0;
+  }
+  
+  /* When toggled, show moon and hide sun */
+  input:checked + .slider .sun-icon {
+    opacity: 0;
+  }
+  
+  input:checked + .slider .moon-icon {
+    opacity: 1;
+  }
+  
+  /* Dark mode specific element adjustments */
+  .dark-mode .social-btn .icon {
+    filter: brightness(1.5);
+  }
+  
+  .dark-mode .project-card,
+  .dark-mode .education-card,
+  .dark-mode .coursework-container,
+  .dark-mode .about-description-container,
+  .dark-mode .timeline-content,
+  .dark-mode .contact-info-upper-container,
+  .dark-mode .contact-form {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  }
+  
+  .dark-mode .nav-links a,
+  .dark-mode .menu-links a {
+    color: #f0f0f0;
+  }
+  
+  .dark-mode .hamburger-icon span {
+    background-color: #f0f0f0;
+  }
+  
+  .dark-mode .timeline-date span {
+    background-color: #4dabf7;
+    color: #121212;
+  }
+  
+  .dark-mode .timeline-tag {
+    background-color: rgba(77, 171, 247, 0.2);
+    border-color: #4dabf7;
+    color: #4dabf7;
+  }
+  
+  .dark-mode .timeline-dot {
+    background-color: #4dabf7;
+    box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.3);
+  }
+  
+  .dark-mode .nav-links a:hover,
+  .dark-mode .menu-links a:hover {
+    color: #4dabf7;
+  }
+  
+  .dark-mode .project-img-container::after {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .dark-mode .btn-color-1 {
+    background: #4dabf7;
+    border-color: #4dabf7;
+    color: #121212;
+  }
+  
+  .dark-mode .btn-color-1:hover {
+    background: #339af0;
+    border-color: #339af0;
+    box-shadow: 0 10px 20px rgba(77, 171, 247, 0.3);
+  }
+  
+  .dark-mode .btn-color-2 {
+    border-color: #f0f0f0;
+    color: #f0f0f0;
+  }
+  
+  .dark-mode .btn-color-2:hover {
+    background: #4dabf7;
+    border-color: #4dabf7;
+    color: #121212;
+    box-shadow: 0 10px 20px rgba(77, 171, 247, 0.3);
+  }
+  
+  .dark-mode .social-btn.github-btn {
+    background-color: transparent;
+    border-color: transparent;
+  }
+  
+  .dark-mode .social-btn.github-btn:hover {
+    background-color: transparent;
+    border-color: transparent;
+  }
+  
+  .dark-mode .tech-icon {
+    filter: brightness(1.2);
+  }
+  
+  .dark-mode .tech-icon:hover {
+    filter: brightness(1.4);
+  }
+  
+  .dark-mode .arrow {
+    filter: brightness(1.5);
+  }
+  
+  .dark-mode .arrow:hover {
+    background-color: #4dabf7;
+    filter: brightness(1);
+  }
+  
+  .dark-mode .project-description-full::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .dark-mode .project-description-full::-webkit-scrollbar-thumb {
+    background: #4dabf7;
+  }
+  
+  .dark-mode .project-description-full::-webkit-scrollbar-thumb:hover {
+    background: #339af0;
+  }
+  
+  /* Mobile dark mode adjustments */
+  @media screen and (max-width: 768px) {
+    .dark-mode #hamburger-nav {
+      background-color: rgba(30, 30, 30, 0.95);
+    }
+    
+    .dark-mode .menu-links {
+      background-color: #1e1e1e;
+      border: 1px solid #2d2d2d;
+    }
+  }
