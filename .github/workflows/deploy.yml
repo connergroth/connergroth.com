@@ -19,10 +19,19 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          # cache removed to fix dependency lock file error
+
+      - name: Clean install directories
+        run: |
+          rm -rf node_modules
+          rm -f package-lock.json
 
       - name: Install Dependencies
         run: npm install
+
+      - name: Fix Rollup Dependencies
+        run: |
+          cd node_modules/rollup
+          npm install --no-save @rollup/rollup-linux-x64-gnu
 
       - name: Build
         run: npm run build
