@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "cross-env ROLLUP_SKIP_NODEJS=true vite build",
+    "preview": "vite preview",
+    "vercel-build": "ROLLUP_SKIP_NODEJS=true vite build"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",
@@ -15,7 +16,9 @@
     "@types/react-dom": "^18.2.18",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
+    "cross-env": "^7.0.3",
     "postcss": "^8.4.32",
+    "rollup": "3.29.4",
     "tailwindcss": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "terser": "^5.39.0",
@@ -34,6 +37,6 @@
     "tailwind-merge": "^2.6.0"
   },
   "overrides": {
-    "rollup": "npm:@rollup/rollup@^4.9.1"
+    "rollup": "3.29.4"
   }
 }
