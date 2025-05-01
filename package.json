@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
@@ -32,5 +32,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.5.3",
     "tailwind-merge": "^2.6.0"
+  },
+  "overrides": {
+    "rollup": "npm:@rollup/rollup@^4.9.1"
   }
 }

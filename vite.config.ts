@@ -37,7 +37,14 @@ export default defineConfig({
   },
   server: {
     headers: {
-      'Content-Type': 'application/javascript'
+      // Set correct MIME types for JavaScript and TypeScript modules
+      'Content-Type': 'application/javascript; charset=utf-8'
+    }
+  },
+  preview: {
+    headers: {
+      // Also apply headers to preview server
+      'Content-Type': 'application/javascript; charset=utf-8'
     }
   }
 });
