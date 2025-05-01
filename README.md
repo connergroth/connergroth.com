@@ -56,50 +56,6 @@ portfolio-website/
 └── vite.config.ts           # Vite configuration
 ```
 
-## Setup and Development
-
-### Prerequisites
-
-- Node.js (v14+)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/connergroth/portfolio-website.git
-   cd portfolio-website
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   npm install
-   # or
-   yarn
-   ```
-
-3. Start the development server:
-
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
-
-4. Open your browser and navigate to `http://localhost:5173`
-
-### Build for Production
-
-```bash
-npm run build
-# or
-yarn build
-```
-
-The build artifacts will be located in the `dist` directory.
-
 ## Future Enhancements
 
 - Blog section with MDX support
