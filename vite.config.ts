@@ -18,9 +18,23 @@ export default defineConfig({
   build: {
     // Use esbuild minifier instead of terser (esbuild is built-in)
     minify: 'esbuild',
+    // Don't split chunks to reduce complexity
+    cssCodeSplit: false,
     rollupOptions: {
       output: {
-        manualChunks: undefined
+        // Force .js extension and simplify naming
+        entryFileNames: 'assets/app.js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]',
+        // Use AMD format which works better with GitHub Pages
+        format: 'umd',
+        // No code splitting for simpler structure
+        manualChunks: undefined,
+        // Expose globals to prevent module resolution issues
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM'
+        }
       }
     }
   }

@@ -39,6 +39,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Fix HTML and add script tag
+        run: |
+          # Add script tag before closing body tag in index.html
+          sed -i 's|</body>|  <script src="./assets/app.js"></script>\n  </body>|' dist/index.html
+
       - name: Ensure CNAME and config files are copied
         run: |
           # Copy CNAME file
@@ -64,6 +69,14 @@ jobs:
           echo "*.json  linguist-language=JSON" >> dist/.gitattributes
           echo "*.svg   linguist-language=SVG" >> dist/.gitattributes
 
+          # Copy .htaccess if it exists
+          if [ -f "public/.htaccess" ]; then
+            cp public/.htaccess dist/
+          fi
+
+          # Create GitHub Pages specific content-type configuration
+          echo '{"*.js":"application/javascript","*.mjs":"application/javascript","*.css":"text/css","*.json":"application/json","*.svg":"image/svg+xml"}' > dist/content-types.json
+
           # Create specific MIME type file for GitHub Pages
           mkdir -p dist/.well-known
           echo "application/javascript  .js" > dist/.well-known/mimetypes
@@ -87,6 +100,8 @@ jobs:
           test -f dist/index.html && echo "index.html exists" || echo "WARNING: index.html not found!"
           echo "Checking MIME type configuration:"
           ls -la dist/.well-known/ || echo "MIME type configuration not found!"
+          echo "Contents of index.html:"
+          cat dist/index.html
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
