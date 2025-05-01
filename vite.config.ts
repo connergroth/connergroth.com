@@ -8,6 +8,7 @@ const __dirname = dirname(__filename);
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './',  // Set base path for GitHub Pages
   plugins: [react()],
   resolve: {
     alias: {
