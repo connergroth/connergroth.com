@@ -12,7 +12,7 @@ A modern, responsive portfolio website built with React, TypeScript, and Tailwin
 - Contact information
 - Optimized performance with modern frontend practices
 
-## Technologies Used
+## Tech Stack
 
 - React
 - TypeScript
@@ -62,7 +62,3 @@ portfolio-website/
 - More interactive project demonstrations
 - Animation optimizations for performance
 - Integration with a headless CMS for easier content management
-
-## License
-
-MIT
