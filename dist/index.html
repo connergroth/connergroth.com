@@ -11,7 +11,7 @@
     <meta property="og:title" content="Conner Groth | Software Engineer & AI Specialist" />
     <meta property="og:description" content="Portfolio showcasing projects and skills in software development, AI, and web technologies." />
     <meta property="og:image" content="./assets/connerpfp.png" />
-    <meta property="og:url" content="http://connergroth.me/" />
+    <meta property="og:url" content="https://connergroth.me/" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@connergroth" />
@@ -29,6 +29,10 @@
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap">
     </noscript>
+    
+    <!-- Load React directly from CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
     <style>
       /* Font display optimization */
@@ -48,13 +52,13 @@
         scroll-behavior: smooth;
       }
     </style>
-    <script type="module" crossorigin src="./assets/index-D0p9R-j4.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-Bj2_4YlG.css">
   </head>
 
   <body>
     <div id="root"></div>
-    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    
+    <!-- Load external scripts -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html> 

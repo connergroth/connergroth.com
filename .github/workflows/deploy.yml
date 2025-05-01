@@ -39,14 +39,20 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Fix HTML and add script tag
+      - name: Fix HTML and adjust script tags
         run: |
-          # Add script tag before closing body tag in index.html
-          # First, check if the gptengineer.js script is correctly configured as a module
+          # Ensure the gptengineer.js script has type="module"
           grep -q 'type="module"' dist/index.html || sed -i 's|<script src="https://cdn.gpteng.co/gptengineer.js"|<script src="https://cdn.gpteng.co/gptengineer.js" type="module"|' dist/index.html
 
-          # Then add our app script (not as a module)
-          sed -i 's|</body>|  <script src="./assets/app.js"></script>\n  </body>|' dist/index.html
+          # Check if our main script tag is present and add it if not
+          if ! grep -q 'src="./assets/' dist/index.html; then
+            # Find the main script file name in dist/assets
+            MAIN_JS=$(find dist/assets -name "*.js" | grep -v "polyfill" | head -1 | sed 's|dist/||')
+            # Add the script tag before closing body
+            if [ -n "$MAIN_JS" ]; then
+              sed -i "s|</body>|  <script type=\"module\" src=\"./$MAIN_JS\"></script>\n  </body>|" dist/index.html
+            fi
+          fi
 
       - name: Ensure CNAME and config files are copied
         run: |

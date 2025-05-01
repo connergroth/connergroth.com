@@ -22,19 +22,14 @@ export default defineConfig({
     cssCodeSplit: false,
     rollupOptions: {
       output: {
-        // Force .js extension and simplify naming
-        entryFileNames: 'assets/app.js',
-        chunkFileNames: 'assets/[name].js',
-        assetFileNames: 'assets/[name].[ext]',
-        // Use AMD format which works better with GitHub Pages
-        format: 'umd',
+        // Use more standard naming pattern with hash for better caching
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]',
+        // Standard ES modules for maximum compatibility
+        format: 'es',
         // No code splitting for simpler structure
-        manualChunks: undefined,
-        // Expose globals to prevent module resolution issues
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM'
-        }
+        manualChunks: undefined
       }
     }
   }
