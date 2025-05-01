@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "prebuild": "node rollup-fix.js",
+    "prebuild": "node rollup-fix.cjs",
     "build": "vite build",
     "preview": "vite preview"
   },
