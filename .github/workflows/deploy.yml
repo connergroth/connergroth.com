@@ -39,14 +39,44 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Ensure CNAME is copied
+      - name: Ensure CNAME and config files are copied
         run: |
+          # Copy CNAME file
           if [ -f "CNAME" ]; then
             cp CNAME dist/
           fi
           if [ -f "public/CNAME" ]; then
             cp public/CNAME dist/
           fi
+          # Force create CNAME file if it doesn't exist
+          echo "connergroth.me" > dist/CNAME
+
+          # Copy _headers file if it exists
+          if [ -f "_headers" ]; then
+            cp _headers dist/
+          fi
+          if [ -f "public/_headers" ]; then
+            cp public/_headers dist/
+          fi
+
+          # Create .nojekyll file
+          touch dist/.nojekyll
+
+          # Ensure index.html exists
+          if [ ! -f "dist/index.html" ]; then
+            echo "WARNING: No index.html found in dist directory!"
+          fi
+
+      - name: Verify dist directory
+        run: |
+          echo "Contents of dist directory:"
+          ls -la dist/
+          echo "Checking for CNAME file:"
+          cat dist/CNAME || echo "CNAME file not found!"
+          echo "Checking if index.html exists:"
+          test -f dist/index.html && echo "index.html exists" || echo "WARNING: index.html not found!"
+          echo "Checking for _headers file:"
+          test -f dist/_headers && echo "_headers exists" || echo "WARNING: _headers not found!"
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
