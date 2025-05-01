@@ -1,5 +1,10 @@
 {
   "framework": "vite",
-  "buildCommand": "ROLLUP_SKIP_NODEJS=true npm run build",
-  "outputDirectory": "dist"
-} 
+  "buildCommand": "node rollup-fix.cjs && ROLLUP_SKIP_NODEJS=true npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install --no-optional",
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
