@@ -28,6 +28,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Install Terser
+        run: npm install --save-dev terser
+
       - name: Fix Rollup Dependencies
         run: |
           cd node_modules/rollup

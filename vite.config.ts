@@ -16,8 +16,8 @@ export default defineConfig({
     },
   },
   build: {
-    // Reduce build complexity to avoid Rollup issues
-    minify: 'terser',
+    // Use esbuild minifier instead of terser (esbuild is built-in)
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: undefined
