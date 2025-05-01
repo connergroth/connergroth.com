@@ -51,16 +51,30 @@ jobs:
           # Force create CNAME file if it doesn't exist
           echo "connergroth.me" > dist/CNAME
 
-          # Copy _headers file if it exists
-          if [ -f "_headers" ]; then
-            cp _headers dist/
-          fi
-          if [ -f "public/_headers" ]; then
-            cp public/_headers dist/
-          fi
+          # Create GitHub Pages config
+          echo '{ "dependencies": {}, "scripts": {} }' > dist/package.json
+
+          # Create .gitattributes for MIME types
+          cat > dist/.gitattributes << EOF
+*.js    linguist-language=JavaScript
+*.mjs   linguist-language=JavaScript
+*.css   linguist-language=CSS
+*.json  linguist-language=JSON
+*.svg   linguist-language=SVG
+EOF
 
           # Create .nojekyll file
           touch dist/.nojekyll
+
+          # Create specific MIME type file for GitHub Pages
+          mkdir -p dist/.well-known
+          cat > dist/.well-known/mimetypes << EOF
+application/javascript  .js
+application/javascript  .mjs
+text/css                .css
+application/json        .json
+image/svg+xml           .svg
+EOF
 
           # Ensure index.html exists
           if [ ! -f "dist/index.html" ]; then
@@ -75,8 +89,8 @@ jobs:
           cat dist/CNAME || echo "CNAME file not found!"
           echo "Checking if index.html exists:"
           test -f dist/index.html && echo "index.html exists" || echo "WARNING: index.html not found!"
-          echo "Checking for _headers file:"
-          test -f dist/_headers && echo "_headers exists" || echo "WARNING: _headers not found!"
+          echo "Checking MIME type configuration:"
+          ls -la dist/.well-known/ || echo "MIME type configuration not found!"
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
