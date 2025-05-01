@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main # Set this to your default branch
+      - main
 
 permissions:
   contents: write
@@ -54,27 +54,23 @@ jobs:
           # Create GitHub Pages config
           echo '{ "dependencies": {}, "scripts": {} }' > dist/package.json
 
-          # Create .gitattributes for MIME types
-          cat > dist/.gitattributes << EOF
-*.js    linguist-language=JavaScript
-*.mjs   linguist-language=JavaScript
-*.css   linguist-language=CSS
-*.json  linguist-language=JSON
-*.svg   linguist-language=SVG
-EOF
-
           # Create .nojekyll file
           touch dist/.nojekyll
 
+          # Create .gitattributes file manually
+          echo "*.js    linguist-language=JavaScript" > dist/.gitattributes
+          echo "*.mjs   linguist-language=JavaScript" >> dist/.gitattributes
+          echo "*.css   linguist-language=CSS" >> dist/.gitattributes
+          echo "*.json  linguist-language=JSON" >> dist/.gitattributes
+          echo "*.svg   linguist-language=SVG" >> dist/.gitattributes
+
           # Create specific MIME type file for GitHub Pages
           mkdir -p dist/.well-known
-          cat > dist/.well-known/mimetypes << EOF
-application/javascript  .js
-application/javascript  .mjs
-text/css                .css
-application/json        .json
-image/svg+xml           .svg
-EOF
+          echo "application/javascript  .js" > dist/.well-known/mimetypes
+          echo "application/javascript  .mjs" >> dist/.well-known/mimetypes
+          echo "text/css                .css" >> dist/.well-known/mimetypes
+          echo "application/json        .json" >> dist/.well-known/mimetypes
+          echo "image/svg+xml           .svg" >> dist/.well-known/mimetypes
 
           # Ensure index.html exists
           if [ ! -f "dist/index.html" ]; then
