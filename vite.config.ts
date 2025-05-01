@@ -16,7 +16,9 @@ export default defineConfig({
     },
   },
   build: {
-    // Use esbuild minifier instead of terser (esbuild is built-in)
+    outDir: 'dist',
+    // Ensure ES modules are properly output
+    target: 'es2015',
     minify: 'esbuild',
     // Don't split chunks to reduce complexity
     cssCodeSplit: false,
@@ -32,5 +34,10 @@ export default defineConfig({
         manualChunks: undefined
       }
     }
+  },
+  server: {
+    headers: {
+      'Content-Type': 'application/javascript'
+    }
   }
-}); 
+});

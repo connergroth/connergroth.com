@@ -41,9 +41,12 @@ jobs:
 
       - name: Fix HTML and adjust script tags
         run: |
-          # Ensure the gptengineer.js script has type="module"
+          # Ensure all script tags have type="module"
           grep -q 'type="module"' dist/index.html || sed -i 's|<script src="https://cdn.gpteng.co/gptengineer.js"|<script src="https://cdn.gpteng.co/gptengineer.js" type="module"|' dist/index.html
-
+          
+          # Make sure relative script paths use proper format
+          sed -i 's|<script src="\.\/assets\/|<script type="module" src="./assets/|g' dist/index.html
+          
           # Check if our main script tag is present and add it if not
           if ! grep -q 'src="./assets/' dist/index.html; then
             # Find the main script file name in dist/assets
@@ -53,6 +56,52 @@ jobs:
               sed -i "s|</body>|  <script type=\"module\" src=\"./$MAIN_JS\"></script>\n  </body>|" dist/index.html
             fi
           fi
+
+      - name: Setup proper MIME types
+        run: |
+          # Create _headers file for proper MIME types
+          echo "/*" > dist/_headers
+          echo "  Access-Control-Allow-Origin: *" >> dist/_headers
+          echo "" >> dist/_headers
+          echo "/*.js" >> dist/_headers
+          echo "  Content-Type: application/javascript" >> dist/_headers
+          echo "" >> dist/_headers
+          echo "/*.mjs" >> dist/_headers
+          echo "  Content-Type: application/javascript" >> dist/_headers
+          echo "" >> dist/_headers
+          echo "/*.css" >> dist/_headers
+          echo "  Content-Type: text/css" >> dist/_headers
+          
+          # Create .well-known mime types
+          mkdir -p dist/.well-known
+          echo "text/javascript  .js" > dist/.well-known/mime.types
+          echo "application/javascript  .js" >> dist/.well-known/mime.types
+          echo "application/javascript  .mjs" >> dist/.well-known/mime.types
+          echo "text/css  .css" >> dist/.well-known/mime.types
+          
+          # Create vercel.json for MIME type configuration
+          echo '{
+            "headers": [
+              {
+                "source": "/(.*).js",
+                "headers": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/javascript"
+                  }
+                ]
+              },
+              {
+                "source": "/(.*).mjs",
+                "headers": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/javascript"
+                  }
+                ]
+              }
+            ]
+          }' > dist/vercel.json
 
       - name: Ensure CNAME and config files are copied
         run: |
@@ -74,30 +123,27 @@ jobs:
 
           # Create .gitattributes file manually
           echo "*.js    linguist-language=JavaScript" > dist/.gitattributes
+          echo "*.js    text/javascript" >> dist/.gitattributes
           echo "*.mjs   linguist-language=JavaScript" >> dist/.gitattributes
+          echo "*.mjs   text/javascript" >> dist/.gitattributes
           echo "*.css   linguist-language=CSS" >> dist/.gitattributes
+          echo "*.css   text/css" >> dist/.gitattributes
           echo "*.json  linguist-language=JSON" >> dist/.gitattributes
           echo "*.svg   linguist-language=SVG" >> dist/.gitattributes
 
           # Copy .htaccess if it exists
           if [ -f "public/.htaccess" ]; then
             cp public/.htaccess dist/
-          fi
-
-          # Create GitHub Pages specific content-type configuration
-          echo '{"*.js":"application/javascript","*.mjs":"application/javascript","*.css":"text/css","*.json":"application/json","*.svg":"image/svg+xml"}' > dist/content-types.json
-
-          # Create specific MIME type file for GitHub Pages
-          mkdir -p dist/.well-known
-          echo "application/javascript  .js" > dist/.well-known/mimetypes
-          echo "application/javascript  .mjs" >> dist/.well-known/mimetypes
-          echo "text/css                .css" >> dist/.well-known/mimetypes
-          echo "application/json        .json" >> dist/.well-known/mimetypes
-          echo "image/svg+xml           .svg" >> dist/.well-known/mimetypes
-
-          # Ensure index.html exists
-          if [ ! -f "dist/index.html" ]; then
-            echo "WARNING: No index.html found in dist directory!"
+          else
+            # Create .htaccess with proper MIME types
+            echo "AddType application/javascript .js" > dist/.htaccess
+            echo "AddType application/javascript .mjs" >> dist/.htaccess
+            echo "AddType text/css .css" >> dist/.htaccess
+            echo "<IfModule mod_headers.c>" >> dist/.htaccess
+            echo "  <FilesMatch \"\.(js|mjs)$\">" >> dist/.htaccess
+            echo "    Header set Content-Type \"application/javascript\"" >> dist/.htaccess
+            echo "  </FilesMatch>" >> dist/.htaccess
+            echo "</IfModule>" >> dist/.htaccess
           fi
 
       - name: Verify dist directory
