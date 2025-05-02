@@ -21,4 +21,4 @@ export default defineConfig({
     // Force Vite to use WASM version of Rollup
     needsInterop: ['rollup']
   }
-});
+}); 
