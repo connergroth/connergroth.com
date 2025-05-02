@@ -246,25 +246,27 @@ const ProjectsSection: React.FC = () => {
                       </div>
                       
                       <div className="mt-auto">
-                        <div className="mb-3">
+                        <div className="mb-4">
                           {project.status === 'complete' ? (
-                            <div className="flex items-center gap-2 mb-1.5">
-                              <CheckCircle size={16} className="text-green-500" />
-                              <span className="text-xs font-medium">Completed</span>
+                            <div className="flex items-center gap-2 mb-2.5 h-9">
+                              <div className="flex items-center gap-1.5 bg-green-500/10 text-green-500 px-2.5 py-1 rounded-full border border-green-500/20">
+                                <CheckCircle size={14} />
+                                <span className="text-xs font-medium">Completed</span>
+                              </div>
                             </div>
                           ) : (
-                            <div className="mb-1.5">
+                            <div className="mb-2.5 h-9">
                               <div className="flex items-center gap-2 mb-1.5">
-                                <Clock size={16} className="text-amber-500" />
+                                <Clock size={14} className="text-primary" />
                                 <span className="text-xs font-medium">In Progress</span>
                               </div>
                               <div className="w-full h-1.5 bg-secondary/50 rounded-full">
-                                <div className="h-full bg-amber-500 rounded-full" style={{ width: '60%' }}></div>
+                                <div className="h-full bg-primary rounded-full" style={{ width: '60%' }}></div>
                               </div>
                             </div>
                           )}
                           <div className="flex items-center gap-2">
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                            <span className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary">
                               {project.projectType}
                             </span>
                             <span className="text-xs text-muted-foreground">
@@ -275,7 +277,7 @@ const ProjectsSection: React.FC = () => {
                         
                         <button 
                           onClick={(e) => handleFlipToBack(project.id, e)}
-                          className="view-details-btn w-full justify-center py-1.5 border border-primary/20 rounded-md hover:bg-primary/5"
+                          className="view-details-btn w-full justify-center py-2 border border-primary/20 rounded-md hover:bg-primary/5"
                         >
                           View Details
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
