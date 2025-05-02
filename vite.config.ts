@@ -16,5 +16,9 @@ export default defineConfig({
       // Force Rollup to use the JS implementation
       context: 'globalThis',
     }
+  },
+  optimizeDeps: {
+    // Force Vite to use WASM version of Rollup
+    needsInterop: ['rollup']
   }
 });
