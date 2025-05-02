@@ -1,7 +1,7 @@
 import React, { useState, FormEvent, useRef } from 'react';
 import SectionHeading from './SectionHeading';
 import { Mail, Linkedin, Github, Send, CheckCircle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '../hooks/use-toast';
 import confetti from 'canvas-confetti';
 
 const ContactSection: React.FC = () => {

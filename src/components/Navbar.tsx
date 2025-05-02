@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Moon, Sun, ChevronRight } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

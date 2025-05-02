@@ -19,6 +19,7 @@ const config: Config = {
         sans: ["Inter var", "Inter", "sans-serif"],
         heading: ["Cal Sans", "Inter var", "sans-serif"],
         mono: ["Fira Code VF", "Fira Code", "monospace"],
+        display: ["Clash Display", "Cal Sans", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
