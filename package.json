@@ -8,7 +8,6 @@
   },
   "scripts": {
     "dev": "vite",
-    "prebuild": "node rollup-fix.cjs",
     "build": "vite build",
     "vercel-build": "cross-env ROLLUP_NATIVE_DISABLE=true vite build",
     "preview": "vite preview"
@@ -38,5 +37,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.5.3",
     "tailwind-merge": "^2.6.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.40.1"
   }
 }
