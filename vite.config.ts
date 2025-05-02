@@ -11,6 +11,10 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'dist'
+    outDir: 'dist',
+    rollupOptions: {
+      // Force Rollup to use the JS implementation
+      context: 'globalThis',
+    }
   }
 });

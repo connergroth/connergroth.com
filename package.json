@@ -10,6 +10,7 @@
     "dev": "vite",
     "prebuild": "node rollup-fix.cjs",
     "build": "vite build",
+    "vercel-build": "cross-env ROLLUP_NATIVE_DISABLE=true vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
