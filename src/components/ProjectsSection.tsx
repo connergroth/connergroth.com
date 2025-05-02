@@ -46,46 +46,6 @@ const ProjectsSection: React.FC = () => {
       isLive: true
     },
     {
-      id: "aoty-api",
-      title: "AOTY API",
-      description: "A high-performance, unofficial REST API for albumoftheyear.org that provides comprehensive album data, ratings, and user profiles with intelligent caching and robust rate limiting.",
-      detailedDescription: "The AOTY API is a FastAPI-powered service that scrapes and provides structured access to album information, reviews, and user data from albumoftheyear.org. It features intelligent caching with Redis, detailed metrics tracking, and comprehensive error handling.",
-      highlights: [
-        "RESTful endpoints for albums, similar albums, user profiles, and search",
-        "Efficient data scraping with Playwright for accurate results",
-        "Redis-backed caching system with fallback to in-memory storage",
-        "Rate limiting to prevent abuse and ensure service stability",
-        "Detailed API documentation with interactive examples"
-      ],
-      image: "./assets/AOTY API Logo.png",
-      technologies: ["Python-Dark.svg", "FastAPI.svg", "PostgreSQL-Dark.svg", "Redis-Dark.svg", "Docker.svg", "AWS-Dark.svg"],
-      github: "https://github.com/connergroth/aoty-api",
-      status: "complete",
-      year: "2025",
-      projectType: "Personal Project",
-      isLive: true
-    },
-    {
-      id: "strim",
-      title: "Strim",
-      description: "A powerful tool for trimming Strava activities and editing metadata with automatic deletion and reupload using the Strava API.",
-      detailedDescription: "Strim is a specialized tool for Strava users that allows precise editing of activity data. It enables users to trim unwanted portions of their activities and edit metadata before automatically reuploading to Strava.",
-      highlights: [
-        "Seamless Strava API integration",
-        "Visual activity data editing",
-        "Automatic deletion and reupload",
-        "Batch processing capabilities"
-      ],
-      image: "./assets/strimDemoImage.PNG",
-      technologies: ["Python-Dark.svg", "Flask-Dark.svg", "JavaScript.svg", "HTML.svg", "CSS.svg"],
-      github: "https://github.com/connergroth/Strim",
-      demo: "https://strimrun.vercel.app",
-      status: "complete",
-      year: "2025",
-      projectType: "Personal Project",
-      isLive: true
-    },
-    {
       id: "moviemate",
       title: "MovieMate",
       description: "A full-featured social platform for movie lovers to connect, rate films, and discover trending releases — all powered by real-time messaging and movie data APIs.",
@@ -139,6 +99,46 @@ const ProjectsSection: React.FC = () => {
       year: "2025",
       projectType: "Hackathon",
       featured: true,
+      isLive: true
+    },
+    {
+      id: "aoty-api",
+      title: "AOTY API",
+      description: "A high-performance, unofficial REST API for albumoftheyear.org that provides comprehensive album data, ratings, and user profiles with intelligent caching and robust rate limiting.",
+      detailedDescription: "The AOTY API is a FastAPI-powered service that scrapes and provides structured access to album information, reviews, and user data from albumoftheyear.org. It features intelligent caching with Redis, detailed metrics tracking, and comprehensive error handling.",
+      highlights: [
+        "RESTful endpoints for albums, similar albums, user profiles, and search",
+        "Efficient data scraping with Playwright for accurate results",
+        "Redis-backed caching system with fallback to in-memory storage",
+        "Rate limiting to prevent abuse and ensure service stability",
+        "Detailed API documentation with interactive examples"
+      ],
+      image: "./assets/AOTY API Logo.png",
+      technologies: ["Python-Dark.svg", "FastAPI.svg", "PostgreSQL-Dark.svg", "Redis-Dark.svg", "Docker.svg", "AWS-Dark.svg"],
+      github: "https://github.com/connergroth/aoty-api",
+      status: "complete",
+      year: "2025",
+      projectType: "Personal Project",
+      isLive: true
+    },
+    {
+      id: "strim",
+      title: "Strim",
+      description: "A powerful tool for trimming Strava activities and editing metadata with automatic deletion and reupload using the Strava API.",
+      detailedDescription: "Strim is a specialized tool for Strava users that allows precise editing of activity data. It enables users to trim unwanted portions of their activities and edit metadata before automatically reuploading to Strava.",
+      highlights: [
+        "Seamless Strava API integration",
+        "Visual activity data editing",
+        "Automatic deletion and reupload",
+        "Batch processing capabilities"
+      ],
+      image: "./assets/strimDemoImage.PNG",
+      technologies: ["Python-Dark.svg", "Flask-Dark.svg", "JavaScript.svg", "HTML.svg", "CSS.svg"],
+      github: "https://github.com/connergroth/Strim",
+      demo: "https://strimrun.vercel.app",
+      status: "complete",
+      year: "2025",
+      projectType: "Personal Project",
       isLive: true
     },
     {

@@ -28,7 +28,7 @@ const AboutSection: React.FC = () => {
                 in practical scenarios.
               </p>
               <p>
-                When I'm not coding, you can find me lifting weights, taking photos, and skiing.
+                When I'm not coding, you can find me lifting weights, taking photos, and hiking.
               </p>
             </div>
           </div>
