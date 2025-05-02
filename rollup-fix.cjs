@@ -9,10 +9,17 @@ function patchRollup() {
     if (fs.existsSync(nativePath)) {
       let content = fs.readFileSync(nativePath, "utf8");
 
-      // Force use of JS implementation by always returning null for native addon
+      // Check if already patched
+      if (content.includes("function originalTryNative")) {
+        console.log("Rollup already patched, skipping");
+        return;
+      }
+
+      // Force use of JS implementation by completely replacing the tryNative function
+      // This prevents any attempts to load platform-specific binaries
       content = content.replace(
-        "function tryNative",
-        "function tryNative() { return null; }\n\nfunction originalTryNative"
+        /function tryNative\(\) \{[\s\S]*?return.*?\}/,
+        "function tryNative() { return null; }"
       );
 
       fs.writeFileSync(nativePath, content);
