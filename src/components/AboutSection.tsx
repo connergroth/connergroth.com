@@ -1,5 +1,6 @@
 import React from 'react';
 import SectionHeading from './SectionHeading';
+import { Link } from 'react-router-dom';
 
 const AboutSection: React.FC = () => {
   return (
@@ -28,7 +29,7 @@ const AboutSection: React.FC = () => {
                 in practical scenarios.
               </p>
               <p>
-                When I'm not coding, you can find me lifting weights, taking photos, and hiking.
+                When I'm not coding, you can find me lifting weights, <Link to="/photography" className="text-primary hover:underline">taking photos</Link>, and hiking.
               </p>
             </div>
           </div>
@@ -39,13 +40,13 @@ const AboutSection: React.FC = () => {
               <div className="flex items-start gap-4">
                 <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
                   <img 
-                    src="./assets/culogo.png" 
+                    src="/assets/images/culogo.png" 
                     alt="CU Boulder Logo"
                     className="w-10 h-10 object-contain"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.onerror = null;
-                      target.src = './assets/gradcap.png';
+                      target.src = '/assets/icons/gradcap.png';
                     }}
                   />
                 </div>
@@ -64,13 +65,13 @@ const AboutSection: React.FC = () => {
               <div className="flex items-start gap-4">
                 <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
                   <img 
-                    src="./assets/culogo.png" 
+                    src="/assets/images/culogo.png" 
                     alt="CU Boulder Business School Logo"
                     className="w-10 h-10 object-contain"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.onerror = null;
-                      target.src = './assets/github.png';
+                      target.src = '/assets/icons/github.png';
                     }}
                   />
                 </div>

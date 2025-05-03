@@ -1,14 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Moon, Sun, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Menu, X, Moon, Sun, ChevronRight, ChevronDown } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { cn } from '../lib/utils';
+import { Link, useLocation } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isHidden, setIsHidden] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const location = useLocation();
+  const dropdownRef = useRef<HTMLLIElement>(null);
+  const [logoSrc, setLogoSrc] = useState('/assets/logos/handwrittendark.png');
+
+  useEffect(() => {
+    setLogoSrc(theme === 'dark' ? '/assets/logos/handwritten.png' : '/assets/logos/handwrittendark.png');
+  }, [theme]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,6 +44,18 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
+  useEffect(() => {
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const toggleMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
     // Prevent body scroll when menu is open
@@ -46,13 +67,8 @@ const Navbar: React.FC = () => {
     document.body.style.overflow = 'auto';
   };
 
-  const handleNavClick = (sectionId: string) => {
-    closeMenu();
-    const element = document.getElementById(sectionId);
-    if (element) {
-      // Smooth scroll to section
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
   };
 
   return (
@@ -60,35 +76,79 @@ const Navbar: React.FC = () => {
       {/* Desktop & Mobile Navbar */}
       <nav 
         className={cn(
-          'sticky-header transition-transform duration-300 py-4 px-6 md:px-12 flex items-center justify-between',
+          'sticky-header transition-transform duration-300 py-2 px-6 md:px-12 flex items-center justify-between',
           isScrolled ? 'shadow-sm' : '',
           isHidden ? 'header-hidden' : ''
         )}
       >
-        <a 
-          href="#" 
-          className="text-2xl font-bold text-gradient"
-          onClick={(e) => {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-        >
-          Conner Groth
-        </a>
+        {/* LOGO - Just use a direct link to homepage */}
+        {location.pathname === '/' ? (
+          <a href="#" className="flex items-center">
+            <img 
+              src={logoSrc} 
+              alt="Conner Groth" 
+              className="h-10 md:h-12 w-auto object-contain"
+            />
+          </a>
+        ) : (
+          <a href="/" className="flex items-center">
+            <img 
+              src={logoSrc} 
+              alt="Conner Groth" 
+              className="h-10 md:h-12 w-auto object-contain"
+            />
+          </a>
+        )}
         
         <div className="flex items-center gap-4">
           {/* Desktop Nav Links - Hidden on Mobile */}
           <ul className="hidden md:flex items-center gap-6">
-            {['about', 'experience', 'skills', 'projects', 'contact'].map((item) => (
-              <li key={item}>
-                <button 
-                  onClick={() => handleNavClick(item)}
-                  className="text-foreground/80 hover:text-foreground transition-colors capitalize px-2 py-1"
+            {/* SIMPLE DIRECT HTML LINKS */}
+            {location.pathname === '/' ? (
+              // If on home page, use anchor links
+              <>
+                <li><a href="#about" className="text-foreground/80 hover:text-foreground transition-colors capitalize px-2 py-1">About</a></li>
+                <li><a href="#experience" className="text-foreground/80 hover:text-foreground transition-colors capitalize px-2 py-1">Experience</a></li>
+                <li><a href="#skills" className="text-foreground/80 hover:text-foreground transition-colors capitalize px-2 py-1">Skills</a></li>
+                <li><a href="#projects" className="text-foreground/80 hover:text-foreground transition-colors capitalize px-2 py-1">Projects</a></li>
+                <li><a href="#contact" className="text-foreground/80 hover:text-foreground transition-colors capitalize px-2 py-1">Contact</a></li>
+              </>
+            ) : (
+              // If not on home page, link to home with hash
+              <>
+                <li><a href="/#about" className="text-foreground/80 hover:text-foreground transition-colors capitalize px-2 py-1">About</a></li>
+                <li><a href="/#experience" className="text-foreground/80 hover:text-foreground transition-colors capitalize px-2 py-1">Experience</a></li>
+                <li><a href="/#skills" className="text-foreground/80 hover:text-foreground transition-colors capitalize px-2 py-1">Skills</a></li>
+                <li><a href="/#projects" className="text-foreground/80 hover:text-foreground transition-colors capitalize px-2 py-1">Projects</a></li>
+                <li><a href="/#contact" className="text-foreground/80 hover:text-foreground transition-colors capitalize px-2 py-1">Contact</a></li>
+              </>
+            )}
+            
+            {/* More Dropdown */}
+            <li className="relative" ref={dropdownRef}>
+              <button 
+                onClick={toggleDropdown}
+                className="flex items-center gap-1 text-foreground/80 hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
+              >
+                More <ChevronDown size={16} className={`transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {dropdownOpen && (
+                <div 
+                  className="absolute top-full right-0 mt-1 py-2 w-48 bg-card rounded-lg shadow-lg border border-border/40 z-10 backdrop-blur-sm overflow-hidden animate-in fade-in"
+                  style={{ transformOrigin: 'top right', animationDuration: '200ms' }}
                 >
-                  {item}
-                </button>
-              </li>
-            ))}
+                  <Link 
+                    to="/photography"
+                    className="block px-4 py-2 text-sm text-foreground/80 hover:text-foreground transition-colors w-full text-left flex items-center gap-2"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>
+                    Photography
+                  </Link>
+                </div>
+              )}
+            </li>
           </ul>
           
           {/* Theme Toggle */}
@@ -112,23 +172,104 @@ const Navbar: React.FC = () => {
       </nav>
       
       {/* Mobile Menu Overlay */}
-      <div className={`mobile-menu ${mobileMenuOpen ? 'open' : 'closed'}`}>
-        <div className="h-full flex flex-col justify-center items-center p-8">
+      <div 
+        className={`mobile-menu ${mobileMenuOpen ? 'open' : 'closed'}`}
+        onClick={closeMenu}
+      >
+        <div className="h-full flex flex-col justify-center items-center p-8" onClick={(e) => e.stopPropagation()}>
+          <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
+            <img 
+              src={logoSrc} 
+              alt="Conner Groth" 
+              className="h-10 w-auto object-contain"
+            />
+          </div>
           <ul className="flex flex-col items-center gap-8 text-2xl">
-            {['about', 'experience', 'skills', 'projects', 'contact'].map((item) => (
-              <li key={item} className="w-full">
-                <button 
-                  onClick={() => handleNavClick(item)}
-                  className="flex items-center justify-between w-full py-2 group"
-                >
-                  <span className="capitalize">{item}</span>
-                  <ChevronRight 
-                    size={20} 
-                    className="transform transition-transform group-hover:translate-x-1"
-                  />
-                </button>
-              </li>
-            ))}
+            {/* MOBILE MENU LINKS */}
+            {location.pathname === '/' ? (
+              // If on home page, use anchor links
+              <>
+                <li className="w-full">
+                  <a href="#about" className="flex items-center justify-between w-full py-2 group" onClick={closeMenu}>
+                    <span className="capitalize">About</span>
+                    <ChevronRight size={20} className="transform transition-transform group-hover:translate-x-1" />
+                  </a>
+                </li>
+                <li className="w-full">
+                  <a href="#experience" className="flex items-center justify-between w-full py-2 group" onClick={closeMenu}>
+                    <span className="capitalize">Experience</span>
+                    <ChevronRight size={20} className="transform transition-transform group-hover:translate-x-1" />
+                  </a>
+                </li>
+                <li className="w-full">
+                  <a href="#skills" className="flex items-center justify-between w-full py-2 group" onClick={closeMenu}>
+                    <span className="capitalize">Skills</span>
+                    <ChevronRight size={20} className="transform transition-transform group-hover:translate-x-1" />
+                  </a>
+                </li>
+                <li className="w-full">
+                  <a href="#projects" className="flex items-center justify-between w-full py-2 group" onClick={closeMenu}>
+                    <span className="capitalize">Projects</span>
+                    <ChevronRight size={20} className="transform transition-transform group-hover:translate-x-1" />
+                  </a>
+                </li>
+                <li className="w-full">
+                  <a href="#contact" className="flex items-center justify-between w-full py-2 group" onClick={closeMenu}>
+                    <span className="capitalize">Contact</span>
+                    <ChevronRight size={20} className="transform transition-transform group-hover:translate-x-1" />
+                  </a>
+                </li>
+              </>
+            ) : (
+              // If not on home page, link to home with hash
+              <>
+                <li className="w-full">
+                  <a href="/#about" className="flex items-center justify-between w-full py-2 group" onClick={closeMenu}>
+                    <span className="capitalize">About</span>
+                    <ChevronRight size={20} className="transform transition-transform group-hover:translate-x-1" />
+                  </a>
+                </li>
+                <li className="w-full">
+                  <a href="/#experience" className="flex items-center justify-between w-full py-2 group" onClick={closeMenu}>
+                    <span className="capitalize">Experience</span>
+                    <ChevronRight size={20} className="transform transition-transform group-hover:translate-x-1" />
+                  </a>
+                </li>
+                <li className="w-full">
+                  <a href="/#skills" className="flex items-center justify-between w-full py-2 group" onClick={closeMenu}>
+                    <span className="capitalize">Skills</span>
+                    <ChevronRight size={20} className="transform transition-transform group-hover:translate-x-1" />
+                  </a>
+                </li>
+                <li className="w-full">
+                  <a href="/#projects" className="flex items-center justify-between w-full py-2 group" onClick={closeMenu}>
+                    <span className="capitalize">Projects</span>
+                    <ChevronRight size={20} className="transform transition-transform group-hover:translate-x-1" />
+                  </a>
+                </li>
+                <li className="w-full">
+                  <a href="/#contact" className="flex items-center justify-between w-full py-2 group" onClick={closeMenu}>
+                    <span className="capitalize">Contact</span>
+                    <ChevronRight size={20} className="transform transition-transform group-hover:translate-x-1" />
+                  </a>
+                </li>
+              </>
+            )}
+            
+            {/* Photography Link in Mobile Menu */}
+            <li className="w-full">
+              <Link
+                to="/photography"
+                className="flex items-center justify-between w-full py-2"
+                onClick={closeMenu}
+              >
+                <span>Photography</span>
+                <ChevronRight 
+                  size={20} 
+                  className="transform"
+                />
+              </Link>
+            </li>
           </ul>
           
           <div className="flex gap-6 mt-12">

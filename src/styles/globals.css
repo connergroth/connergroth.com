@@ -3,11 +3,71 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap');
 @import url('https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap');
 
+/* Add this to the very top of the file to ensure it overrides everything */
+html {
+  scroll-behavior: auto !important;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* Disable smooth scrolling for all browsers */
+  html, body {
+    scroll-behavior: auto !important;
+  }
+  
+  html {
+    /* Explicitly disable smooth scrolling to avoid conflicts */
+    scroll-behavior: auto !important;
+    height: 100%;
+    overflow-x: hidden;
+  }
+  
+  body {
+    @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))] font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+    letter-spacing: -0.01em;
+    height: 100%;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: auto !important;
+  }
+  
+  /* Animation performance optimizations */
+  .will-change-transform {
+    will-change: transform;
+  }
+  
+  .animated-element {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000;
+  }
+  
+  /* Apply hardware acceleration to interactive elements */
+  button, 
+  a,
+  .btn,
+  .transition-all,
+  .transition-transform,
+  .hover\:scale-105,
+  .transform,
+  .animate-pulse,
+  .animate-bounce {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+  }
+  
+  /* Disable smooth scrolling in media query as well */
+  @media (prefers-reduced-motion: no-preference) {
+    :root, html, body {
+      scroll-behavior: auto !important;
+    }
+  }
+  
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
@@ -75,12 +135,6 @@
     @apply border-[hsl(var(--border))];
   }
   
-  body {
-    @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))] font-sans;
-    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
-    letter-spacing: -0.01em;
-  }
-  
   p {
     @apply leading-relaxed font-sans;
   }
@@ -90,9 +144,7 @@
   }
 
   /* Progress bar styles */
-  #progress-bar {
-    @apply fixed top-0 left-0 h-1 bg-[hsl(var(--primary))] z-50;
-  }
+  /* #progress-bar has been removed from CSS as it's now styled inline */
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading font-bold tracking-tight;
@@ -171,19 +223,41 @@
   /* Project Card Styles with 3D Flipping */
   .card-container {
     perspective: 1000px;
+    width: 100%;
+    height: 100%;
   }
 
   .project-card {
-    @apply transition-all duration-500;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
     transform-style: preserve-3d;
-  }
-
-  .backface-hidden {
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
   }
 
   .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
+  .backface-hidden {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Front side is visible by default */
+  .project-card > div:first-child {
+    z-index: 2;
+    transform: rotateY(0deg);
+  }
+
+  /* Back side is rotated and hidden by default */
+  .project-card > div:last-child {
     transform: rotateY(180deg);
   }
 
@@ -318,6 +392,30 @@
   .bg-accent-2 {
     @apply bg-gradient-to-b from-accent/5 to-transparent backdrop-blur-3xl;
   }
+
+  /* Project title styling */
+  .project-title {
+    @apply text-xl font-bold;
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+  
+  .dark .project-title {
+    @apply text-white;
+    background-image: none;
+  }
+  
+  /* Fix download button animation */
+  .btn-outline-hero.download-btn {
+    @apply relative overflow-hidden;
+  }
+  
+  .btn-outline-hero.download-btn svg {
+    @apply transition-transform duration-300;
+  }
+  
+  .btn-outline-hero.download-btn:hover svg {
+    transform: translateY(-4px);
+  }
 }
 
 @layer utilities {
@@ -347,6 +445,25 @@
   
   .animate-float {
     animation: float 5s ease-in-out infinite;
+  }
+
+  .animate-in {
+    animation-duration: 300ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-fill-mode: both;
+  }
+  
+  .fade-in {
+    animation-name: fadeIn;
+  }
+  
+  .slide-in-from-top {
+    animation-name: slideInFromTop;
+  }
+  
+  @keyframes slideInFromTop {
+    from { transform: translateY(-10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
   }
 
   .text-balance {
@@ -569,6 +686,22 @@
   @apply transition-transform duration-300;
 }
 
-.btn-outline-hero.download-btn:hover svg {
-  transform: translateY(-4px);
+/* Debugging styles for navigation */
+.target-flash {
+  animation: flash-border 1s ease-out;
+  scroll-margin-top: 80px; /* Add space for header */
+}
+
+@keyframes flash-border {
+  0% { box-shadow: 0 0 0 4px rgba(0, 255, 0, 0.5); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+}
+
+/* Ensure sections have proper scroll positioning */
+section {
+  scroll-margin-top: 80px; /* Matches the header height with some padding */
+}
+
+.section-padding {
+  @apply py-20 px-6 md:px-12 lg:px-24;
 } 

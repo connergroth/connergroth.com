@@ -1,0 +1,57 @@
+/* VSCO-style masonry grid layout */
+.masonry-grid {
+  column-count: 1;
+  column-gap: 4px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .masonry-grid {
+    column-count: 2;
+  }
+}
+
+@media (min-width: 768px) {
+  .masonry-grid {
+    column-count: 3;
+  }
+}
+
+@media (min-width: 1280px) {
+  .masonry-grid {
+    column-count: 4;
+  }
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 4px;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  display: block;
+}
+
+/* Photo hover effects */
+.masonry-item img {
+  transition: transform 0.5s ease;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0;
+}
+
+.masonry-item:hover img {
+  transform: scale(1.03);
+}
+
+/* Image title overlay */
+.masonry-item .absolute {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.3s ease;
+}
+
+.masonry-item:hover .absolute {
+  opacity: 1;
+} 

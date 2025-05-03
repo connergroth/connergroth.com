@@ -1,30 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Download } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollIndicator = document.getElementById('scroll-indicator');
-      if (scrollIndicator) {
-        const heroSection = document.getElementById('profile');
-        if (heroSection) {
-          const heroHeight = heroSection.offsetHeight;
-          if (window.scrollY > heroHeight * 0.5) {
-            scrollIndicator.style.opacity = '0';
-            scrollIndicator.style.visibility = 'hidden';
-          } else {
-            scrollIndicator.style.opacity = '1';
-            scrollIndicator.style.visibility = 'visible';
-          }
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+  // No useEffect for scroll indicator anymore - completely removed
 
   return (
     <section id="profile" className="min-h-screen flex flex-col justify-center items-center pt-16 pb-20 px-4 bg-grid bg-noise">
@@ -44,20 +22,21 @@ const HeroSection: React.FC = () => {
               Software Engineer Team Lead | Software Research Assistant | CS @ CU Boulder
             </p>
 
-            <div className="flex flex-wrap gap-4 mb-10" style={{ opacity: 0, animation: 'fadeIn 1s ease-out 2.5s forwards' }}>
+            <div className="flex flex-row gap-3 mb-10 w-full sm:w-auto justify-center md:justify-start" style={{ opacity: 0, animation: 'fadeIn 1s ease-out 2.5s forwards' }}>
               <button 
-                onClick={() => window.open('./assets/Conner Groth Resume.pdf')}
-                className="btn-outline-hero download-btn"
+                onClick={() => window.open('/assets/documents/Conner Groth Resume.pdf')}
+                className="btn-outline-hero download-btn text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3"
+                aria-label="Download CV"
               >
-                <Download size={18} />
+                <Download size={16} className="transition-transform duration-300" />
                 <span>Download CV</span>
               </button>
               <a 
                 href="#contact"
-                className="btn-outline-hero"
+                className="btn-outline-hero text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3"
               >
                 <span>Contact Info</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </a>
             </div>
 
@@ -89,18 +68,11 @@ const HeroSection: React.FC = () => {
               <div className="absolute top-1/2 left-1/2 w-64 h-64 md:w-[22rem] md:h-[22rem] bg-gradient-to-br from-primary/50 to-accent/50 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2 z-0"></div>
               
               <img 
-                src="./assets/connerpfp.png" 
+                src="/assets/images/connerpfp.png" 
                 alt="Conner Groth profile" 
                 className="relative w-72 h-72 md:w-96 md:h-96 object-cover z-10"
               />
             </div>
-          </div>
-        </div>
-        
-        <div id="scroll-indicator" className="fixed bottom-5 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-pulse animation-delay-3000 z-20 transition-opacity duration-500">
-          <span className="text-sm text-muted-foreground mb-2 backdrop-blur-sm bg-background/30 px-3 py-1 rounded-full">Scroll Down</span>
-          <div className="w-6 h-9 border-2 border-[hsl(var(--border))] rounded-full flex items-start justify-center p-1 bg-background/50 backdrop-blur-sm">
-            <div className="w-1 h-2 bg-primary rounded-full animate-bounce"></div>
           </div>
         </div>
       </div>

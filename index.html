@@ -3,19 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Conner Groth Portfolio</title>
-    <meta name="description" content="Conner Groth - Software Engineer and CS Student." />
-    <link rel="icon" type="image/png" href="./assets/connerpfp.png" />
-
-    <!-- Meta Tags for SEO -->
-    <meta property="og:title" content="Conner Groth | Software Engineer & AI Specialist" />
-    <meta property="og:description" content="Portfolio showcasing projects and skills in software development, AI, and web technologies." />
-    <meta property="og:image" content="./assets/connerpfp.png" />
-    <meta property="og:url" content="https://connergroth.me/" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" type="image/png" href="/assets/images/connerpfp.png" />
+    <meta name="description" content="Conner Groth - Software Engineer, Software Research Assistant at CU Boulder" />
+    
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
+    <meta property="og:title" content="Conner Groth | Software Engineer & CS Student" />
+    <meta property="og:description" content="CS Student and Software Engineer specializing in AI, web development, and data-driven applications." />
+    <meta property="og:image" content="/assets/images/connerpfp.png" />
+    
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@connergroth" />
-    <meta name="twitter:image" content="./assets/connerpfp.png" />
+    <meta name="twitter:title" content="Conner Groth | Software Engineer & CS Student" />
+    <meta name="twitter:description" content="CS Student and Software Engineer specializing in AI, web development, and data-driven applications." />
+    <meta name="twitter:image" content="/assets/images/connerpfp.png" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    
+    <title>Conner Groth | Software Engineer & CS Student</title>
     <meta name="author" content="Conner Groth" />
 
     <!-- Font optimization -->
@@ -49,7 +58,6 @@
       /* Prevent layout shift */
       html {
         font-size: 16px;
-        scroll-behavior: smooth;
       }
     </style>
   </head>
@@ -60,5 +68,12 @@
     <!-- Load external scripts -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Force disable smooth scrolling -->
+    <script>
+      // Ensure smooth scrolling is disabled at runtime
+      document.documentElement.style.scrollBehavior = 'auto';
+      document.body.style.scrollBehavior = 'auto';
+    </script>
   </body>
 </html> 

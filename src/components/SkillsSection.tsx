@@ -16,40 +16,40 @@ const SkillsSection: React.FC = () => {
       title: "Languages",
       icon: "code",
       skills: [
-        { name: "Python", icon: "./assets/Python-Dark.svg" },
-        { name: "C++", icon: "./assets/CPP.svg" },
-        { name: "C", icon: "./assets/C.svg" },
-        { name: "JavaScript", icon: "./assets/JavaScript.svg" },
-        { name: "HTML", icon: "./assets/HTML.svg" },
-        { name: "CSS", icon: "./assets/CSS.svg" }
+        { name: "Python", icon: "/assets/icons/Python-Dark.svg" },
+        { name: "C++", icon: "/assets/icons/CPP.svg" },
+        { name: "C", icon: "/assets/icons/C.svg" },
+        { name: "JavaScript", icon: "/assets/icons/JavaScript.svg" },
+        { name: "HTML", icon: "/assets/icons/HTML.svg" },
+        { name: "CSS", icon: "/assets/icons/CSS.svg" }
       ]
     },
     {
       title: "AI & Data",
       icon: "brain",
       skills: [
-        { name: "PyTorch", icon: "./assets/PyTorch-Dark.svg" },
-        { name: "PostgreSQL", icon: "./assets/PostgreSQL-Dark.svg" },
-        { name: "Redis", icon: "./assets/Redis-Dark.svg" }
+        { name: "PyTorch", icon: "/assets/icons/PyTorch-Dark.svg" },
+        { name: "PostgreSQL", icon: "/assets/icons/PostgreSQL-Dark.svg" },
+        { name: "Redis", icon: "/assets/icons/Redis-Dark.svg" }
       ]
     },
     {
       title: "Web & Backend",
       icon: "server",
       skills: [
-        { name: "React", icon: "./assets/React-Dark.svg" },
-        { name: "FastAPI", icon: "./assets/FastAPI.svg" },
-        { name: "Docker", icon: "./assets/Docker.svg" },
-        { name: "AWS", icon: "./assets/AWS-Dark.svg" }
+        { name: "React", icon: "/assets/icons/React-Dark.svg" },
+        { name: "FastAPI", icon: "/assets/icons/FastAPI.svg" },
+        { name: "Docker", icon: "/assets/icons/Docker.svg" },
+        { name: "AWS", icon: "/assets/icons/AWS-Dark.svg" }
       ]
     },
     {
       title: "Tools & Design",
       icon: "pencil",
       skills: [
-        { name: "Git", icon: "./assets/Git.svg" },
-        { name: "Postman", icon: "./assets/Postman.svg" },
-        { name: "Figma", icon: "./assets/Figma-Dark.svg" }
+        { name: "Git", icon: "/assets/icons/Git.svg" },
+        { name: "Postman", icon: "/assets/icons/Postman.svg" },
+        { name: "Figma", icon: "/assets/icons/Figma-Dark.svg" }
       ]
     }
   ];
@@ -75,7 +75,7 @@ const SkillsSection: React.FC = () => {
         );
     }
   };
-
+  
   return (
     <section id="skills" className="section-padding bg-accent-2/20 relative overflow-hidden">
       {/* Background pattern removed for cleaner look */}

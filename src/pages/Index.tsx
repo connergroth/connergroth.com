@@ -8,7 +8,6 @@ import ProjectsSection from '../components/ProjectsSection';
 import ContactSection from '../components/ContactSection';
 import Footer from '../components/Footer';
 import Loader from '../components/Loader';
-import ProgressBar from '../components/ProgressBar';
 import { setupRevealAnimation, setupProjectCardFlip } from '../utils/revealOnScroll';
 import { ThemeProvider } from '../hooks/useTheme';
 
@@ -35,7 +34,6 @@ const Index = () => {
     <ThemeProvider>
       <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
         <Loader isLoading={isLoading} />
-        <ProgressBar />
         
         {!isLoading && (
           <>

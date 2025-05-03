@@ -1,12 +1,44 @@
 import React from 'react';
 import { ArrowUp } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
 const Footer: React.FC = () => {
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+  const location = useLocation();
+  
+  // Direct scroll to top function that uses vanilla JS
+  const handleScrollToTop = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent default behavior
+    
+    try {
+      // Method 1: Most direct method
+      window.scrollTo({
+        top: 0,
+        behavior: 'auto' // Force auto behavior
+      });
+      
+      // Method 2: Fallback using direct DOM manipulation
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0; // For Safari
+      
+      // Method 3: Using requestAnimationFrame for smoother experience
+      const scrollToTopGradually = () => {
+        const currentPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+        
+        if (currentPosition > 0) {
+          // Jump directly to top - no smooth scrolling
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+        }
+      };
+      
+      // Execute scroll
+      requestAnimationFrame(scrollToTopGradually);
+      
+      console.log("Scrolling to top!");
+    } catch (err) {
+      console.error("Error scrolling to top:", err);
+    }
   };
 
   return (
@@ -19,25 +51,117 @@ const Footer: React.FC = () => {
           </div>
           
           <ul className="flex flex-wrap justify-center gap-4 md:gap-6 mb-6 md:mb-0">
-            {['about', 'experience', 'skills', 'projects', 'contact'].map((item) => (
-              <li key={item}>
-                <a 
-                  href={`#${item}`}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors capitalize"
-                >
-                  {item}
-                </a>
-              </li>
-            ))}
+            {/* Direct HTML links - different based on current page */}
+            {location.pathname === '/' ? (
+              // On home page - use direct anchor links
+              <>
+                <li>
+                  <a 
+                    href="#about"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors capitalize"
+                  >
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="#experience"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors capitalize"
+                  >
+                    Experience
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="#skills"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors capitalize"
+                  >
+                    Skills
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="#projects"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors capitalize"
+                  >
+                    Projects
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="#contact"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors capitalize"
+                  >
+                    Contact
+                  </a>
+                </li>
+              </>
+            ) : (
+              // Not on home page - link to home with hash
+              <>
+                <li>
+                  <a 
+                    href="/#about"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors capitalize"
+                  >
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="/#experience"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors capitalize"
+                  >
+                    Experience
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="/#skills"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors capitalize"
+                  >
+                    Skills
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="/#projects"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors capitalize"
+                  >
+                    Projects
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="/#contact"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors capitalize"
+                  >
+                    Contact
+                  </a>
+                </li>
+              </>
+            )}
+            <li>
+              <Link 
+                to="/photography"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors capitalize"
+              >
+                Photography
+              </Link>
+            </li>
           </ul>
           
-          <button 
-            onClick={scrollToTop}
-            className="p-3 border border-[hsl(var(--border))] rounded-full hover:bg-secondary transition-colors"
+          {/* Scroll to top button with reverted styling */}
+          <a 
+            href="#"
+            onClick={handleScrollToTop}
+            className="btn-icon-outline flex items-center justify-center hover:text-primary"
             aria-label="Scroll to top"
+            role="button"
+            title="Scroll to top"
           >
             <ArrowUp size={18} />
-          </button>
+          </a>
         </div>
         
         <div className="mt-8 pt-6 border-t border-[hsl(var(--border))]/60 text-center">

@@ -35,7 +35,7 @@ const ProjectsSection: React.FC = () => {
         "Environmental impact tracking and statistics",
         "Mobile-friendly responsive design"
       ],
-      image: "./assets/EcoVisionDemoImage.jpg",
+      image: "/assets/images/EcoVisionDemoImage.jpg",
       technologies: ["PyTorch-Dark.svg", "TensorFlow-Dark.svg", "NextJS-Dark.svg", "React-Dark.svg", "OpenAI.svg", "TypeScript.svg", "TailwindCSS-Dark.svg", "Python-Dark.svg", "FastAPI.svg", "Docker.svg"],
       github: "https://github.com/connergroth/EcoVision",
       demo: "https://ecovisionlive.vercel.app",
@@ -57,12 +57,8 @@ const ProjectsSection: React.FC = () => {
         "OMDb and YouTube API integration for trailers and metadata",
         "Secure login and session-based authentication with PostgreSQL backend"
       ],
-      image: "./assets/moviemate.PNG",
-      technologies: ["NodeJS.svg",
-      "JavaScript.svg",
-      "Express.svg",
-      "PostgreSQL-Dark.svg",
-      "Bootstrap.svg"],
+      image: "/assets/images/moviemate.PNG",
+      technologies: ["NodeJS.svg", "JavaScript.svg", "Express.svg", "PostgreSQL-Dark.svg", "Bootstrap.svg"],
       github: "https://github.com/Joe-Z-School/CSCI3308-MovieMate",
       demo: "https://csci3308-moviemate.onrender.com",
       video: "https://vimeo.com/1078150699?share=copy",
@@ -84,15 +80,8 @@ const ProjectsSection: React.FC = () => {
         "PDF export using Puppeteer",
         "End-to-end full-stack architecture with live deployment"
       ],
-      image: "./assets/tailoriq.png",
-      technologies: [
-        "React-Dark.svg",
-        "TypeScript.svg",
-        "TailwindCSS-Dark.svg",
-        "Firebase-Dark.svg",
-        "OpenAI.svg",
-        "Express.svg"
-      ],
+      image: "/assets/images/tailoriq.png",
+      technologies: ["React-Dark.svg", "TypeScript.svg", "TailwindCSS-Dark.svg", "Firebase-Dark.svg", "OpenAI.svg", "Express.svg"],
       github: "https://github.com/connergroth/tailoriq",
       demo: "https://tailoriq.onrender.com/",
       status: "complete",
@@ -113,7 +102,7 @@ const ProjectsSection: React.FC = () => {
         "Rate limiting to prevent abuse and ensure service stability",
         "Detailed API documentation with interactive examples"
       ],
-      image: "./assets/AOTY API Logo.png",
+      image: "/assets/images/AOTY API Logo.png",
       technologies: ["Python-Dark.svg", "FastAPI.svg", "PostgreSQL-Dark.svg", "Redis-Dark.svg", "Docker.svg", "AWS-Dark.svg"],
       github: "https://github.com/connergroth/aoty-api",
       status: "complete",
@@ -132,7 +121,7 @@ const ProjectsSection: React.FC = () => {
         "Automatic deletion and reupload",
         "Batch processing capabilities"
       ],
-      image: "./assets/strimDemoImage.PNG",
+      image: "/assets/images/strimDemoImage.PNG",
       technologies: ["Python-Dark.svg", "Flask-Dark.svg", "JavaScript.svg", "HTML.svg", "CSS.svg"],
       github: "https://github.com/connergroth/Strim",
       demo: "https://strimrun.vercel.app",
@@ -155,15 +144,8 @@ const ProjectsSection: React.FC = () => {
         "Redis caching for scalable performance",
         "User ratings and mood/genre-based filtering"
       ],
-      image: "./assets/sonance.png",
-      technologies: [
-        "Python-Dark.svg",
-        "FastAPI.svg",
-        "PostgreSQL-Dark.svg",
-        "Redis-Dark.svg",
-        "Docker.svg",
-        "Spotify.svg",
-      ],
+      image: "/assets/images/sonance.png",
+      technologies: ["Python-Dark.svg", "FastAPI.svg", "PostgreSQL-Dark.svg", "Redis-Dark.svg", "Docker.svg", "Spotify.svg"],
       github: "https://github.com/connergroth/sonance",
       demo: "", // Add once deployed
       status: "in-progress",
@@ -205,14 +187,10 @@ const ProjectsSection: React.FC = () => {
             >
               <div className="relative h-[550px] md:h-[580px] card-container">
                 <div 
-                  className={`
-                    absolute w-full h-full transition-transform duration-500 transform-style-3d 
-                    ${flippedCards[project.id] ? 'rotate-y-180' : ''} project-card
-                  `}
+                  className={`project-card ${flippedCards[project.id] ? 'rotate-y-180' : ''}`}
                 >
                   {/* Front of card */}
-                  <div className="bg-card rounded-2xl border border-[hsl(var(--border))]/50 shadow-sm overflow-hidden
-                    absolute w-full h-full inset-0 backface-hidden card-hover-outline">
+                  <div className="backface-hidden bg-card rounded-2xl border border-[hsl(var(--border))]/50 shadow-sm overflow-hidden card-hover-outline">
                     <div className="h-48 overflow-hidden project-card-image">
                       <img 
                         src={project.image} 
@@ -222,7 +200,7 @@ const ProjectsSection: React.FC = () => {
                     </div>
                     <div className="p-5 h-[calc(100%-12rem)] flex flex-col project-card-content">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{project.title}</h3>
+                        <h3 className="project-title">{project.title}</h3>
                         {project.isLive && (
                           <span className="text-xs font-medium bg-green-500/10 text-green-500 px-2 py-1 rounded-full border border-green-500/20">
                             Live
@@ -237,7 +215,7 @@ const ProjectsSection: React.FC = () => {
                         {project.technologies.map((tech, techIndex) => (
                           <img 
                             key={techIndex} 
-                            src={`./assets/${tech}`} 
+                            src={`/assets/icons/${tech}`} 
                             alt={tech.split('.')[0]}
                             title={tech.split('.')[0].split('-')[0]}
                             className="w-6 h-6 object-contain hover:scale-110 transition-transform"
@@ -287,11 +265,10 @@ const ProjectsSection: React.FC = () => {
                   </div>
                   
                   {/* Back of card */}
-                  <div className="bg-card rounded-2xl border border-[hsl(var(--border))]/50 shadow-sm
-                    absolute w-full h-full inset-0 backface-hidden rotate-y-180 flex flex-col">
-                    <div className="p-4 flex-1">
+                  <div className="backface-hidden bg-card rounded-2xl border border-[hsl(var(--border))]/50 shadow-sm flex flex-col">
+                    <div className="p-4 flex-1 overflow-auto">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{project.title}</h3>
+                        <h3 className="project-title">{project.title}</h3>
                         <button
                           onClick={(e) => handleFlipToFront(project.id, e)}
                           className="btn-icon p-1.5 text-foreground/60 hover:text-foreground"
@@ -327,7 +304,7 @@ const ProjectsSection: React.FC = () => {
                                 className="flex items-center gap-1 bg-secondary/50 px-1.5 py-0.5 rounded-md"
                               >
                                 <img 
-                                  src={`./assets/${tech}`} 
+                                  src={`/assets/icons/${tech}`} 
                                   alt={tech.split('.')[0]}
                                   className="w-4 h-4 object-contain"
                                 />

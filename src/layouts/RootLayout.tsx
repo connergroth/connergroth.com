@@ -39,8 +39,6 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
 
   return (
     <div className={theme}>
-      <div id="progress-bar" style={{ width: `${Math.min((lastScrollY / (document.body.scrollHeight - window.innerHeight)) * 100, 100)}%` }} />
-      
       <header className={`sticky-header ${scrolled ? 'shadow-sm' : ''} ${hideHeader ? 'header-hidden' : ''}`}>
         <div className="container mx-auto py-4 px-4 flex items-center justify-between">
           <a href="/" className="font-display text-xl font-bold text-gradient">Conner Groth</a>
