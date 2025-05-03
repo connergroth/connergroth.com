@@ -68,7 +68,7 @@ const PhotographyContent = () => {
       location: 'New York City, NY'
     },
     {
-      src: '/assets/photos/flatirons.JPG',
+      src: '/assets/photos/falt.JPG',
       title: 'Flatirons',
       location: 'Boulder, Colorado'
     },
