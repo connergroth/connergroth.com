@@ -68,7 +68,7 @@ const PhotographyContent = () => {
       location: 'New York City, NY'
     },
     {
-      src: '/assets/photos/faltirons.JPG',
+      src: '/assets/photos/flatirons.JPG',
       title: 'Flatirons',
       location: 'Boulder, Colorado'
     },
@@ -88,7 +88,7 @@ const PhotographyContent = () => {
       location: 'New York City, NY'
     },
     {
-      src: '/assets/photos/sunruse\'.JPG',
+      src: '/assets/photos/sunrise.JPG',
       title: 'Sunrise',
       location: 'Rocky Mountain National Park'
     },
