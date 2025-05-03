@@ -68,18 +68,13 @@ const PhotographyContent = () => {
       location: 'New York City, NY'
     },
     {
-      src: '/assets/photos/falt.JPG',
+      src: '/assets/photos/flatirons.JPG',
       title: 'Flatirons',
       location: 'Boulder, Colorado'
     },
     {
       src: '/assets/photos/kauaiaribnb.JPG',
       title: 'Kauai View',
-      location: 'Kauai, Hawaii'
-    },
-    {
-      src: '/assets/photos/waves.JPG',
-      title: 'Ocean Waves',
       location: 'Kauai, Hawaii'
     },
     {
