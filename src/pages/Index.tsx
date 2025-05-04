@@ -1,15 +1,13 @@
 import React, { useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import HeroSection from '../components/HeroSection';
-import AboutSection from '../components/AboutSection';
-import ExperienceSection from '../components/ExperienceSection';
-import SkillsSection from '../components/SkillsSection';
-import ProjectsSection from '../components/ProjectsSection';
-import ContactSection from '../components/ContactSection';
+import { ThemeProvider } from '../hooks/useTheme';
+import Header from '../components/Header';
+import Hero from '../sections/Hero';
+import Projects from '../sections/Projects';
+import About from '../sections/About';
+import Contact from '../sections/Contact';
 import Footer from '../components/Footer';
 import Loader from '../components/Loader';
-import { setupRevealAnimation, setupProjectCardFlip } from '../utils/revealOnScroll';
-import { ThemeProvider } from '../hooks/useTheme';
+import { setupRevealAnimation, setupSectionAnimations } from '../utils/revealOnScroll';
 
 const Index = () => {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -23,31 +21,46 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, []);
   
+  // Initialize animations once loading is complete
   useEffect(() => {
     if (!isLoading) {
-      setupRevealAnimation();
-      setupProjectCardFlip();
+      // Wait a small amount of time for the DOM to fully render
+      setTimeout(() => {
+        setupRevealAnimation();
+        setupSectionAnimations();
+      }, 100);
     }
   }, [isLoading]);
   
+  const Spacer = () => (
+    <div className="sm:mt-[30vh] mt-[20vh]" aria-hidden="true">
+      <div></div>
+    </div>
+  );
+  
   return (
     <ThemeProvider>
-      <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
-        <Loader isLoading={isLoading} />
-        
-        {!isLoading && (
-          <>
-            <Navbar />
-            <HeroSection />
-            <AboutSection />
-            <ExperienceSection />
-            <SkillsSection />
-            <ProjectsSection />
-            <ContactSection />
-            <Footer />
-          </>
-        )}
-      </main>
+      <Loader isLoading={isLoading} />
+      
+      {!isLoading && (
+        <>
+          <Header />
+          <main className="absolute top-0 left-0 z-10 w-full h-full">
+            <div className="md:max-w-7xl 2xl:mx-auto xl:mx-32 lg:mx-32 md:mx-24 sm:mx-16 mx-10">
+              <Hero />
+              <Spacer />
+              <About />
+              <Spacer />
+              <Projects />
+              <div className="mt-[18vh]" aria-hidden="true">
+                <div></div>
+              </div>
+              <Contact />
+              <Footer />
+            </div>
+          </main>
+        </>
+      )}
     </ThemeProvider>
   );
 };

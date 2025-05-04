@@ -3,6 +3,7 @@ import SectionHeading from './SectionHeading';
 import { Mail, Linkedin, Github, Send, CheckCircle } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import confetti from 'canvas-confetti';
+import ContactForm from './HeroContactForm';
 
 const ContactSection: React.FC = () => {
   const { toast } = useToast();
@@ -187,79 +188,8 @@ const ContactSection: React.FC = () => {
           {/* Contact Form */}
           <div className="lg:col-span-3 reveal reveal-delay-200">
             <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-[hsl(var(--border))]/30 relative overflow-hidden">
-              {isSuccess ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-card/95 backdrop-blur-sm z-10 animate-fade-in">
-                  <div className="text-primary w-20 h-20 mb-4 animate-bounce">
-                    <CheckCircle size={80} />
-                  </div>
-                  <h3 className="text-2xl font-heading font-bold mb-2">Message Sent!</h3>
-                  <p className="text-muted-foreground">I'll get back to you soon</p>
-                </div>
-              ) : null}
-              
               <h3 className="text-xl font-heading font-bold mb-6 text-gradient">Send Me A Message</h3>
-              
-              <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium mb-2">Name</label>
-                  <input 
-                    type="text" 
-                    id="name" 
-                    name="name" 
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Your name" 
-                    className="w-full px-4 py-3 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))]/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium mb-2">Email</label>
-                  <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Your email address" 
-                    className="w-full px-4 py-3 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))]/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium mb-2">Message</label>
-                  <textarea 
-                    id="message" 
-                    name="message" 
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder="Write your message here..."
-                    rows={5}
-                    className="w-full px-4 py-3 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))]/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"
-                    required
-                  ></textarea>
-                </div>
-                
-                <button 
-                  type="submit" 
-                  className="btn btn-primary w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg disabled:opacity-70 disabled:cursor-not-allowed"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <Send size={18} />
-                      Send Message
-                    </>
-                  )}
-                </button>
-              </form>
+              <ContactForm />
             </div>
           </div>
         </div>

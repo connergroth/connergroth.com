@@ -1,11 +1,17 @@
 import React from 'react';
 import SectionHeading from './SectionHeading';
+import ScrollHint from './ScrollHint';
 import { Link } from 'react-router-dom';
 
 const AboutSection: React.FC = () => {
   return (
     <section id="about" className="section-padding bg-secondary/10">
       <div className="container mx-auto">
+        {/* Scroll hint at the top of about section */}
+        <div className="mb-12 -mt-6">
+          <ScrollHint className="custom-fade-in" />
+        </div>
+        
         <SectionHeading subtitle="Get To Know More" title="About Me" />
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-16">

@@ -1,53 +1,32 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 
-type Theme = 'dark' | 'light';
+type Theme = 'dark';
 
 interface ThemeContextType {
   theme: Theme;
-  setTheme: (theme: Theme) => void;
-  toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'light',
-  setTheme: () => {},
-  toggleTheme: () => {},
+  theme: 'dark',
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>('light');
-
   useEffect(() => {
-    // Check if user has a preference stored
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
+    // Apply dark mode to body and html elements directly
+    document.documentElement.classList.add('dark');
+    document.body.classList.add('dark');
+    document.documentElement.style.backgroundColor = '#000';
+    document.body.style.backgroundColor = '#000';
     
-    // If saved preference exists, use it
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    }
-    // Otherwise, check for system preference
-    else {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setTheme(prefersDark ? 'dark' : 'light');
-      document.documentElement.classList.toggle('dark', prefersDark);
-    }
+    // Force dark mode regardless of any saved preferences
+    localStorage.setItem('theme', 'dark');
   }, []);
 
-  const updateTheme = (newTheme: Theme) => {
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
-    setTheme(newTheme);
-  };
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    updateTheme(newTheme);
-  };
-
   return (
-    <ThemeContext.Provider value={{ theme, setTheme: updateTheme, toggleTheme }}>
-      {children}
+    <ThemeContext.Provider value={{ theme: 'dark' }}>
+      <div className="bg-black">
+        {children}
+      </div>
     </ThemeContext.Provider>
   );
 };

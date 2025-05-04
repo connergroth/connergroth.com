@@ -2,10 +2,21 @@ import React from 'react';
 import { Download } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
-  // No useEffect for scroll indicator anymore - completely removed
-
   return (
-    <section id="profile" className="min-h-screen flex flex-col justify-center items-center pt-16 pb-20 px-4 bg-grid bg-noise">
+    <section id="profile" className="min-h-screen flex flex-col justify-center items-center pt-16 pb-20 px-4 bg-grid bg-noise relative overflow-hidden">
+      {/* Background overlay */}
+      <div className="absolute inset-0 bg-black opacity-90 z-0"></div>
+      
+      {/* Using a wrapper div for one animation and the image for another to avoid transform conflicts */}
+      <div className="absolute right-[5%] md:right-0 lg:-right-[10%] top-1/2 -translate-y-1/2 w-[60vw] md:w-[70vw] lg:w-[80vw] z-[5] orb-spin">
+        <img
+          src="/assets/images/blackhole_orb.png"
+          alt=""
+          className="orb orb-float w-full h-auto"
+          style={{ opacity: 1 }}
+        />
+      </div>
+      
       <div className="container mx-auto flex flex-col items-center relative z-10">
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-center md:justify-between gap-12">
           <div className="order-2 md:order-1 w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
@@ -64,9 +75,6 @@ const HeroSection: React.FC = () => {
 
           <div className="order-1 md:order-2 w-full md:w-2/5 flex justify-center animate-float">
             <div className="relative">
-              {/* Background glow effect */}
-              <div className="absolute top-1/2 left-1/2 w-64 h-64 md:w-[22rem] md:h-[22rem] bg-gradient-to-br from-primary/50 to-accent/50 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2 z-0"></div>
-              
               <img 
                 src="/assets/images/connerpfp.png" 
                 alt="Conner Groth profile" 
