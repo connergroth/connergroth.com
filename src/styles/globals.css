@@ -630,6 +630,7 @@ canvas {
   pointer-events: none !important;
   transition: opacity 0.5s ease-in-out !important;
   overflow: hidden !important;
+  opacity: 0.85 !important; /* Added global opacity setting */
 }
 
 /* Position-specific styling for hero and footer blobs */
@@ -667,6 +668,7 @@ canvas {
 
 /* Static blob specific styling */
 .blob-static canvas {
+  opacity: .8;
   position: absolute !important;
   top: 0 !important;
   left: 0 !important;
@@ -931,7 +933,7 @@ canvas.blob-fixed {
 
 /* Static blob (stays in place) */
 canvas.blob-static {
-  opacity: .5;
+  opacity: .8;
   position: absolute !important;
   top: 0 !important;
   left: 0 !important;

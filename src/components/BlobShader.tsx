@@ -15,7 +15,7 @@ interface BlobShaderProps {
 
 export default function BlobShader({ 
   size = 60, 
-  opacity = 0.7, 
+  opacity = 0.9, 
   position = 'hero', 
   fixed = false,
   extend = false,
@@ -84,7 +84,7 @@ export default function BlobShader({
         // Add fixed or static class
         canvasElement.classList.add(fixed ? 'blob-fixed' : 'blob-static');
         
-        p.pixelDensity(0.75); // Lower resolution for better performance
+        p.pixelDensity(1.0); // Increased from 0.75 for better quality
         p.noStroke();
         
         try {
