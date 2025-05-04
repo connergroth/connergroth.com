@@ -9,7 +9,7 @@ interface HeroProps {
   style?: React.CSSProperties;
 }
 
-const Hero: React.FC<HeroProps> = ({ id = 'hero', className = '', style }) => {
+const Hero: React.FC<HeroProps> = ({ id = 'home', className = '', style }) => {
   return (
     <section 
       id={id}
