@@ -13,7 +13,7 @@ function Footer({ className = '', style }: FooterProps) {
       id="footer-anchor"
     >
       <div className="relative z-10 py-10 mx-auto max-w-xl text-center">
-        <p className="text-[#60a5fa]">
+        <p className="text-primary">
           Built with React &amp; Tailwind - <a href="https://github.com/connergroth/PortfolioWebsite" target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80 transition-opacity">See inside!</a>
         </p>
         <p className="text-gray-300 mt-2">
