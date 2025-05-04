@@ -28,12 +28,12 @@ const Index = () => {
         {!isLoading && (
           <>
             <Header />
-            <div className="h-screen snap-y snap-mandatory overflow-y-scroll">
-              <Hero className="snap-start" />
-              <Projects className="snap-start" />
-              <About className="snap-start" />
-              <Contact className="snap-start" />
-              <Footer className="snap-end" />
+            <div className="h-screen overflow-y-scroll scroll-smooth" style={{ scrollSnapType: 'y mandatory' }}>
+              <Hero className="scroll-mt-16" style={{ scrollSnapAlign: 'start' }} />
+              <Projects className="scroll-mt-16" style={{ scrollSnapAlign: 'start' }} />
+              <About className="scroll-mt-16" style={{ scrollSnapAlign: 'start' }} />
+              <Contact className="scroll-mt-16" style={{ scrollSnapAlign: 'start' }} />
+              <Footer style={{ scrollSnapAlign: 'end' }} />
             </div>
           </>
         )}

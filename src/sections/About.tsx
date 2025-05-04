@@ -5,13 +5,15 @@ import { Code, Cpu, Brain } from 'lucide-react';
 interface AboutProps {
   id?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-const About: React.FC<AboutProps> = ({ id = 'about', className = '' }) => {
+const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) => {
   return (
     <section 
       id={id}
-      className={`min-h-screen flex flex-col justify-center px-4 md:px-8 lg:px-16 py-24 snap-start ${className}`}
+      className={`min-h-screen flex flex-col justify-center px-4 md:px-8 lg:px-16 py-24 ${className}`}
+      style={style}
     >
       <div className="max-w-7xl mx-auto">
         <motion.h2 

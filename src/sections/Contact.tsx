@@ -5,13 +5,15 @@ import { Mail, Github, Linkedin } from 'lucide-react';
 interface ContactProps {
   id?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-const Contact: React.FC<ContactProps> = ({ id = 'contact', className = '' }) => {
+const Contact: React.FC<ContactProps> = ({ id = 'contact', className = '', style }) => {
   return (
     <section 
       id={id}
-      className={`min-h-screen flex flex-col justify-center px-4 md:px-8 lg:px-16 py-24 snap-start ${className}`}
+      className={`min-h-screen flex flex-col justify-center px-4 md:px-8 lg:px-16 py-24 ${className}`}
+      style={style}
     >
       <div className="max-w-7xl mx-auto">
         <motion.h2 

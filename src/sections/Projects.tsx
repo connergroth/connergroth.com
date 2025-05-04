@@ -5,13 +5,15 @@ import ProjectCard from '../components/ProjectCard';
 interface ProjectsProps {
   id?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-const Projects: React.FC<ProjectsProps> = ({ id = 'projects', className = '' }) => {
+const Projects: React.FC<ProjectsProps> = ({ id = 'projects', className = '', style }) => {
   return (
     <section 
       id={id}
-      className={`min-h-screen flex flex-col justify-center items-center px-4 md:px-8 lg:px-16 py-24 snap-start ${className}`}
+      className={`min-h-screen flex flex-col justify-center items-center px-4 md:px-8 lg:px-16 py-24 ${className}`}
+      style={style}
     >
       <div className="w-full max-w-7xl mx-auto">
         <motion.h2 

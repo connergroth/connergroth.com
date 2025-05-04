@@ -4,11 +4,15 @@ import { Github, Linkedin, Mail } from 'lucide-react';
 
 interface FooterProps {
   className?: string;
+  style?: React.CSSProperties;
 }
 
-const Footer: React.FC<FooterProps> = ({ className = '' }) => {
+const Footer: React.FC<FooterProps> = ({ className = '', style }) => {
   return (
-    <footer className={`py-8 px-4 md:px-8 lg:px-16 border-t border-base-200 dark:border-base-800 ${className}`}>
+    <footer 
+      className={`py-8 px-4 md:px-8 lg:px-16 border-t border-base-200 dark:border-base-800 ${className}`}
+      style={style}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div>
