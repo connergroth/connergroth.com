@@ -92,7 +92,7 @@ const Header = () => {
         {/* Mobile Menu Button */}
         <button 
           onClick={toggleMobileMenu}
-          className="md:hidden flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white focus:outline-none"
+          className="md:hidden flex items-center justify-center p-2 rounded-md text-white hover:text-primary focus:outline-none"
           aria-expanded={mobileMenuOpen}
           aria-label="Toggle menu"
         >
