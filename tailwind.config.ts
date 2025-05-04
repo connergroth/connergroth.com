@@ -5,6 +5,7 @@ const config: Config = {
   content: [
     "./src/**/*.{ts,tsx}",
     "./index.html",
+    "./src/styles/**/*.css"
   ],
   theme: {
     container: {
@@ -22,10 +23,10 @@ const config: Config = {
         display: ["Clash Display", "Cal Sans", "sans-serif"],
       },
       colors: {
+        background: "#000",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",

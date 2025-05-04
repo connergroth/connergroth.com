@@ -1,6 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Github, Linkedin, Mail } from 'lucide-react';
+import BlobShader from '../components/BlobShader';
 
 interface FooterProps {
   className?: string;
@@ -10,50 +9,29 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ className = '', style }) => {
   return (
     <footer 
-      className={`py-8 px-4 md:px-8 lg:px-16 border-t border-base-200 dark:border-base-800 ${className}`}
+      className={`mt-[40vh] text-center text-sm relative z-10 pt-20 ${className}`}
       style={style}
+      id="footer-anchor"
     >
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div>
-            <h3 className="text-xl font-heading font-medium">Conner Groth</h3>
-            <p className="text-sm text-base-500 dark:text-base-400">Software Engineer & CS Student</p>
-          </div>
-          
-          <div className="flex gap-4 items-center">
-            <a 
-              href="https://github.com/connergroth"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 hover:text-accent-500 dark:hover:text-accent-400 transition-colors"
-              aria-label="GitHub Profile"
-            >
-              <Github size={20} />
-            </a>
-            <a 
-              href="https://linkedin.com/in/connergroth"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 hover:text-accent-500 dark:hover:text-accent-400 transition-colors"
-              aria-label="LinkedIn Profile"
-            >
-              <Linkedin size={20} />
-            </a>
-            <a 
-              href="mailto:connergroth@gmail.com"
-              className="p-2 hover:text-accent-500 dark:hover:text-accent-400 transition-colors"
-              aria-label="Email"
-            >
-              <Mail size={20} />
-            </a>
-          </div>
-        </div>
-        
-        <div className="mt-8 pt-4 border-t border-base-200/60 dark:border-base-800/60 text-center">
-          <p className="text-xs text-base-500 dark:text-base-400">
-            &copy; {new Date().getFullYear()} Conner Groth. All rights reserved.
-          </p>
-        </div>
+      {/* Footer Blob - positioned absolutely within the footer */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ zIndex: -1 }}>
+        <BlobShader size={30} opacity={0.6} position="footer" fixed={false} />
+      </div>
+      
+      {/* Large blob surrounding the footer content */}
+      <div className="relative mx-auto mb-16 overflow-hidden" style={{ width: '90%', maxWidth: '800px', height: '300px', zIndex: 10 }}>
+        <BlobShader size={50} opacity={0.4} position="footer" fixed={false} />
+      </div>
+      
+      {/* Footer content */}
+      <div className="relative z-20 py-16 mx-auto max-w-xl">
+        <p className="text-[#60a5fa]">
+          Built with React &amp; Tailwind - <a href="https://github.com/connergroth/PortfolioWebsite" target="_blank" rel="noopener noreferer" className="underline hover:opacity-80 transition-opacity">See inside!</a>
+        </p>
+        <p className="text-gray-300 mt-2">
+          © Conner Groth {new Date().getFullYear()}. All rights reserved.
+        </p>
+        <div className="h-10" aria-hidden="true"></div>
       </div>
     </footer>
   );

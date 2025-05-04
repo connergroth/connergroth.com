@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Code, Cpu, Brain } from 'lucide-react';
 
 interface AboutProps {
@@ -12,63 +11,44 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
   return (
     <section 
       id={id}
-      className={`min-h-screen flex flex-col justify-center px-4 md:px-8 lg:px-16 py-24 ${className}`}
+      className={`custom-transition opacity-0 ${className}`}
       style={style}
     >
-      <div className="max-w-7xl mx-auto">
-        <motion.h2 
-          className="text-4xl md:text-5xl font-semibold leading-tight font-heading mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, ease: 'easeOut' }}
-        >
-          About
-        </motion.h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2, ease: 'easeOut', delay: 0.1 }}
-          >
-            <p className="text-base-700/90 dark:text-base-300/90 mb-6 leading-relaxed">
-              I'm a Software Engineer and Research Assistant based in Boulder, CO, with a passion for building performant, accessible web applications and exploring machine learning solutions.
-            </p>
-            <p className="text-base-700/90 dark:text-base-300/90 mb-8 leading-relaxed">
-              Currently pursuing a Computer Science degree at CU Boulder, I combine academic knowledge with practical experience in modern frameworks and tools. My focus areas include full-stack development, AI/ML integration, and creating intuitive user experiences.
-            </p>
-            
-            <div className="flex flex-wrap gap-6">
-              <div className="flex items-center gap-2">
-                <Code size={20} className="text-accent-500 dark:text-accent-400" />
-                <span className="font-medium">Python</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Cpu size={20} className="text-accent-500 dark:text-accent-400" />
-                <span className="font-medium">React</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Brain size={20} className="text-accent-500 dark:text-accent-400" />
-                <span className="font-medium">ML</span>
-              </div>
-            </div>
-          </motion.div>
-          
-          <motion.div
-            className="flex justify-center md:justify-end"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.2, ease: 'easeOut', delay: 0.2 }}
-          >
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-accent-400/20 to-accent-600/20 rounded-full blur-xl"></div>
-              <img 
-                src="/assets/images/connerpfp.png" 
-                alt="Conner Groth profile" 
-                className="w-64 h-64 rounded-full object-cover relative z-10 border-4 border-accent-200 dark:border-accent-800"
-              />
-            </div>
-          </motion.div>
+      <h1 className="font-serif font-bold sm:text-6xl text-4xl">About Me</h1>
+      <br />
+      <h2 className="font-serif font-bold sm:text-3xl text-xl">
+        I'm a Computer Science Student, Software Engineer, and Research Assistant based in Boulder, CO. I am passionate about building elegant and thoughtful web applications and exploring machine learning.
+      </h2>
+      
+      {/* Badges row */}
+      <ul className="flex flex-wrap gap-3 mt-8 mb-6">
+        {['React', 'TypeScript', 'Next.js', 'Python', 'TensorFlow', 'PostgreSQL']
+          .map(tag => (
+            <li key={tag} className="bg-gray-800 hover:bg-gray-700 transition-colors duration-300 text-gray-300 px-3 py-1 rounded-full text-sm">
+              {tag}
+            </li>
+         ))}
+      </ul>
+      
+      <div className="card mb-8" style={{ borderRadius: '0.9rem' }}>
+        <a href="https://github.com/connergroth" target="_blank" rel="noopener noreferrer">
+          <h2>Open Source Projects</h2>
+          <p>Check out my GitHub for my open source projects and contributions</p>
+        </a>
+      </div>
+      
+      <div className="lg:hidden md:hidden block flex justify-between text-center p-4 mt-2">
+        <div>
+          <div className="text-3xl font-bold">3+</div>
+          <div className="text-lg text-gray-500">Years Experience</div>
+        </div>
+        <div>
+          <div className="text-3xl font-bold">20+</div>
+          <div className="text-lg text-gray-500">Projects</div>
+        </div>
+        <div>
+          <div className="text-3xl font-bold">10+</div>
+          <div className="text-lg text-gray-500">Technologies</div>
         </div>
       </div>
     </section>

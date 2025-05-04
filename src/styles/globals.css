@@ -39,28 +39,24 @@ html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: auto !important;
+    background-color: #000 !important; /* Ensure black background */
   }
 
   body::before {
-    @apply fixed inset-0 -z-10 animate-spin-slow;
+    @apply fixed inset-0 -z-10;
     content: "";
-    background: conic-gradient(
-      theme('colors.accent.400'),
-      theme('colors.accent.600') 40deg,
-      theme('colors.base.900') 300deg
+    background: radial-gradient(
+      circle at center,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.95) 80%
     );
+    pointer-events: none;
   }
   
   body::after {
     @apply fixed inset-0 -z-10 pointer-events-none opacity-[0.04];
     content: "";
     background-image: var(--noise-url);
-  }
-  
-  @media (prefers-reduced-motion: reduce) {
-    body::before {
-      animation: none;
-    }
   }
   
   /* Animation performance optimizations */
@@ -446,6 +442,8 @@ html {
 }
 
 @layer utilities {
+  .writing-mode-vertical-rl { writing-mode: vertical-rl; }
+  
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -461,7 +459,7 @@ html {
     50% { transform: translateY(-15px); }
     100% { transform: translateY(0px); }
   }
-  
+
   .animate-fade-in {
     animation: fadeIn 1s ease-out forwards;
   }
@@ -615,6 +613,77 @@ html {
   .animation-delay-3000 {
     animation-delay: 3s;
   }
+
+  .custom-fade-in { @apply opacity-0 animate-[fadeIn_1s_ease-out_forwards]; }
+  .anim-delay-400 { animation-delay: .4s; }
+  .anim-delay-800 { animation-delay: .8s; }
+  .custom-fade-in-socials { @apply opacity-0 animate-[fadeIn_1s_ease-out_forwards]; animation-delay:1.2s; }
+  @keyframes fadeIn { to { opacity:1; transform:none; } }
+}
+
+/* Remove all previous canvas styling to start fresh */
+canvas {
+  display: block !important;
+  pointer-events: none !important;
+  transition: opacity 0.5s ease-in-out !important;
+  overflow: hidden !important;
+}
+
+/* Position-specific styling for hero and footer blobs */
+.blob-hero canvas {
+  z-index: 0 !important;
+  -webkit-mask-image: linear-gradient(to bottom, 
+    rgba(0, 0, 0, 1) 0%, 
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(0, 0, 0, 0.5) 75%,
+    rgba(0, 0, 0, 0) 100%
+  ) !important;
+  mask-image: linear-gradient(to bottom, 
+    rgba(0, 0, 0, 1) 0%, 
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(0, 0, 0, 0.5) 75%,
+    rgba(0, 0, 0, 0) 100%
+  ) !important;
+}
+
+.blob-footer canvas {
+  z-index: 0 !important;
+  -webkit-mask-image: linear-gradient(to top, 
+    rgba(0, 0, 0, 1) 0%, 
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(0, 0, 0, 0.5) 75%,
+    rgba(0, 0, 0, 0) 100%
+  ) !important;
+  mask-image: linear-gradient(to top, 
+    rgba(0, 0, 0, 1) 0%, 
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(0, 0, 0, 0.5) 75%,
+    rgba(0, 0, 0, 0) 100%
+  ) !important;
+}
+
+/* Static blob specific styling */
+.blob-static canvas {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Fixed blob specific styling (if needed) */
+.blob-fixed canvas {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* This ensures z-index stacking context works properly */
+section, footer {
+  position: relative;
+  z-index: 10;
 }
 
 /* Loader styles */
@@ -731,4 +800,149 @@ section {
 
 .section-padding {
   @apply py-20 px-6 md:px-12 lg:px-24;
+}
+
+/* Remove the old orb animations */
+/* @keyframes spin-orb { ... } (delete) */
+/* @keyframes float-orb { ... } (delete) */
+/* .orb-spin { ... } (delete) */
+/* .orb-float { ... } (delete) */
+/* .orb { ... } (delete) */
+
+@media (prefers-reduced-motion: reduce) { 
+  /* @keyframes spin-orb, @keyframes float-orb { ... } (delete) */
+} 
+
+/* New classes for grahamzemel.com design */
+.socials-row {
+  @apply flex gap-4 items-center mt-6;
+}
+
+.icon {
+  @apply w-6 h-6 transition-all duration-300 hover:scale-110;
+}
+
+.meet-button {
+  @apply absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-md;
+}
+
+.contact-button {
+  @apply absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-600 rounded-md;
+}
+
+.learn-more-btn {
+  @apply flex items-center px-3 py-2 rounded bg-gray-800 hover:bg-gray-700 transition-all duration-300;
+}
+
+.tag {
+  @apply px-3 py-1 rounded-full text-xs font-semibold;
+}
+
+.card {
+  @apply p-6 bg-gray-800 bg-opacity-40 rounded-lg transition-all duration-300 hover:bg-opacity-60;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.projects-container {
+  @apply w-full overflow-hidden;
+}
+
+.project-list {
+  @apply snap-x snap-mandatory;
+}
+
+.project-list > article {
+  @apply snap-center shrink-0;
+}
+
+.custom-transition {
+  @apply transition-opacity duration-700 ease-in-out;
+  opacity: 0;
+}
+
+.custom-transition.visible {
+  opacity: 1;
+}
+
+/* Remove hover trigger to fix inconsistent behavior */
+/* section.custom-transition:hover {
+  opacity: 1;
+} */
+
+@keyframes fadeIn { to { opacity:1; transform:none; } }
+
+.email {
+  @apply text-foreground hover:text-primary transition-colors;
+}
+
+/* Hero-specific blob styling */
+canvas.blob-hero {
+  z-index: 0 !important;
+  -webkit-mask-image: linear-gradient(to bottom, 
+    rgba(0, 0, 0, 1) 0%, 
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(0, 0, 0, 0.5) 75%,
+    rgba(0, 0, 0, 0) 100%
+  ) !important;
+  mask-image: linear-gradient(to bottom, 
+    rgba(0, 0, 0, 1) 0%, 
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(0, 0, 0, 0.5) 75%,
+    rgba(0, 0, 0, 0) 100%
+  ) !important;
+}
+
+/* Footer-specific blob styling */
+canvas.blob-footer {
+  z-index: 0 !important;
+  -webkit-mask-image: linear-gradient(to top, 
+    rgba(0, 0, 0, 1) 0%, 
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(0, 0, 0, 0.5) 75%,
+    rgba(0, 0, 0, 0) 100%
+  ) !important;
+  mask-image: linear-gradient(to top, 
+    rgba(0, 0, 0, 1) 0%, 
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(0, 0, 0, 0.5) 75%,
+    rgba(0, 0, 0, 0) 100%
+  ) !important;
+}
+
+/* Fixed blob (follows the viewport) */
+canvas.blob-fixed {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Static blob (stays in place) */
+canvas.blob-static {
+  opacity: .5;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Add a negative margin utility for positioning */
+.-mt-screen {
+  margin-top: -100vh;
+}
+
+/* This ensures z-index stacking context works properly */
+section {
+  position: relative;
+  z-index: 10;
 } 

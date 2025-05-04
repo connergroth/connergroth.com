@@ -1,5 +1,6 @@
-// This is a placeholder for the Sonner component
-// In a real implementation, we would use the actual Sonner library
-export function Toaster() {
+import React from 'react';
+
+export const Toaster: React.FC = () => {
+  // This is a minimal implementation to fix the import error
   return <div id="sonner-toaster" />;
-} 
+}; 

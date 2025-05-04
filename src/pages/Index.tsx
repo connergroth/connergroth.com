@@ -7,6 +7,7 @@ import About from '../sections/About';
 import Contact from '../sections/Contact';
 import Footer from '../components/Footer';
 import Loader from '../components/Loader';
+import { setupRevealAnimation, setupSectionAnimations } from '../utils/revealOnScroll';
 
 const Index = () => {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -20,24 +21,46 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, []);
   
+  // Initialize animations once loading is complete
+  useEffect(() => {
+    if (!isLoading) {
+      // Wait a small amount of time for the DOM to fully render
+      setTimeout(() => {
+        setupRevealAnimation();
+        setupSectionAnimations();
+      }, 100);
+    }
+  }, [isLoading]);
+  
+  const Spacer = () => (
+    <div className="sm:mt-[30vh] mt-[20vh]" aria-hidden="true">
+      <div></div>
+    </div>
+  );
+  
   return (
     <ThemeProvider>
-      <main className="min-h-screen text-foreground">
-        <Loader isLoading={isLoading} />
-        
-        {!isLoading && (
-          <>
-            <Header />
-            <div className="h-screen overflow-y-scroll scroll-smooth" style={{ scrollSnapType: 'y mandatory' }}>
-              <Hero className="scroll-mt-16" style={{ scrollSnapAlign: 'start' }} />
-              <Projects className="scroll-mt-16" style={{ scrollSnapAlign: 'start' }} />
-              <About className="scroll-mt-16" style={{ scrollSnapAlign: 'start' }} />
-              <Contact className="scroll-mt-16" style={{ scrollSnapAlign: 'start' }} />
-              <Footer style={{ scrollSnapAlign: 'end' }} />
+      <Loader isLoading={isLoading} />
+      
+      {!isLoading && (
+        <>
+          <Header />
+          <main className="absolute top-0 left-0 z-10 w-full h-full">
+            <div className="md:max-w-7xl 2xl:mx-auto xl:mx-32 lg:mx-32 md:mx-24 sm:mx-16 mx-10">
+              <Hero />
+              <Spacer />
+              <About />
+              <Spacer />
+              <Projects />
+              <div className="mt-[18vh]" aria-hidden="true">
+                <div></div>
+              </div>
+              <Contact />
+              <Footer />
             </div>
-          </>
-        )}
-      </main>
+          </main>
+        </>
+      )}
     </ThemeProvider>
   );
 };
