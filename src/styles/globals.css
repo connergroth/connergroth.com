@@ -203,7 +203,7 @@ html {
   }
   
   .mobile-menu {
-    @apply fixed inset-0 bg-[hsl(var(--background))]/95 backdrop-blur-lg z-50 transition-transform duration-500 ease-in-out;
+    @apply fixed inset-0 bg-black z-50 transition-transform duration-500 ease-in-out;
   }
   
   .mobile-menu.open {
