@@ -8,7 +8,7 @@ interface FooterProps {
 function Footer({ className = '', style }: FooterProps) {
   return (
     <footer 
-      className={`mt-[40vh] relative z-10 pt-20 ${className}`}
+      className={`mt-[15vh] relative z-10 pt-10 ${className}`}
       style={style}
       id="footer-anchor"
     >
