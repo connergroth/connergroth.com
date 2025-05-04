@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Photography from "./pages/Photography";
 
 const queryClient = new QueryClient();
 
@@ -34,7 +33,6 @@ const App = () => (
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/photography" element={<Photography />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

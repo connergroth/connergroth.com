@@ -123,32 +123,6 @@ const Navbar: React.FC = () => {
                 <li><a href="/#contact" className="text-foreground/80 hover:text-foreground transition-colors capitalize px-2 py-1">Contact</a></li>
               </>
             )}
-            
-            {/* More Dropdown */}
-            <li className="relative" ref={dropdownRef}>
-              <button 
-                onClick={toggleDropdown}
-                className="flex items-center gap-1 text-foreground/80 hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
-              >
-                More <ChevronDown size={16} className={`transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {dropdownOpen && (
-                <div 
-                  className="absolute top-full right-0 mt-1 py-2 w-48 bg-card rounded-lg shadow-lg border border-border/40 z-10 backdrop-blur-sm overflow-hidden animate-in fade-in"
-                  style={{ transformOrigin: 'top right', animationDuration: '200ms' }}
-                >
-                  <Link 
-                    to="/photography"
-                    className="block px-4 py-2 text-sm text-foreground/80 hover:text-foreground transition-colors w-full text-left flex items-center gap-2"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>
-                    Photography
-                  </Link>
-                </div>
-              )}
-            </li>
           </ul>
           
           {/* Theme Toggle */}
@@ -255,21 +229,6 @@ const Navbar: React.FC = () => {
                 </li>
               </>
             )}
-            
-            {/* Photography Link in Mobile Menu */}
-            <li className="w-full">
-              <Link
-                to="/photography"
-                className="flex items-center justify-between w-full py-2"
-                onClick={closeMenu}
-              >
-                <span>Photography</span>
-                <ChevronRight 
-                  size={20} 
-                  className="transform"
-                />
-              </Link>
-            </li>
           </ul>
           
           <div className="flex gap-6 mt-12">
