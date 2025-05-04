@@ -15,9 +15,9 @@ interface BlobShaderProps {
 
 export default function BlobShader({ 
   size = 60, 
-  opacity = 0.6, 
+  opacity = 0.7, 
   position = 'hero', 
-  fixed = true,
+  fixed = false,
   extend = false,
   height,
   className = ''

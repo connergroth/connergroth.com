@@ -22,7 +22,7 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
       
       {/* Badges row */}
       <ul className="flex flex-wrap gap-3 mt-8 mb-6">
-        {['React', 'TypeScript', 'Next.js', 'Python', 'TensorFlow', 'PostgreSQL']
+        {['Python', 'C++', 'React', 'JavaScript', 'Next.js', 'PostgreSQL']
           .map(tag => (
             <li key={tag} className="bg-gray-800 hover:bg-gray-700 transition-colors duration-300 text-gray-300 px-3 py-1 rounded-full text-sm">
               {tag}
