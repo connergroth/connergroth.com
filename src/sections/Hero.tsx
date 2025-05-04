@@ -16,9 +16,9 @@ const Hero: React.FC<HeroProps> = ({ id = 'hero', className = '', style }) => {
       className={`relative min-h-screen flex flex-col justify-center pt-32 pb-24 ${className}`}
       style={style}
     >
-      {/* Blob container positioned absolutely within the hero section */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ zIndex: 0 }}>
-        <BlobShader size={30} opacity={0.7} position="hero" fixed={false} />
+      {/* Blob container positioned absolutely within the hero section with extended height */}
+      <div className="absolute inset-0 w-full h-[150vh] overflow-visible" style={{ zIndex: 0 }}>
+        <BlobShader size={30} opacity={0.7} position="hero" fixed={false} extend={true} />
       </div>
       
       <SideBars />
@@ -38,9 +38,12 @@ const Hero: React.FC<HeroProps> = ({ id = 'hero', className = '', style }) => {
             </a>
           </p>
         </div>
+        
+        <div className="mt-12">
+        </div>
       </div>
     </section>
   );
 };
 
-export default Hero; 
+export default Hero;

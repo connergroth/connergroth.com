@@ -6,18 +6,25 @@ import { useEffect, useRef } from 'react';
 interface BlobShaderProps {
   size?: number; // Size percentage (100 = full screen, 50 = half size)
   opacity?: number; // Opacity of the blob
-  position?: 'hero' | 'footer'; // Position of the blob
+  position?: 'hero' | 'footer' | 'mini'; // Position of the blob
   fixed?: boolean; // Whether the blob should stay fixed during scrolling
+  extend?: boolean; // Whether to extend the blob beyond its container
+  height?: string; // Custom height for the container
+  className?: string; // Additional classes
 }
 
 export default function BlobShader({ 
   size = 60, 
-  opacity = 0.8, 
+  opacity = 0.7, 
   position = 'hero', 
-  fixed = true 
+  fixed = false,
+  extend = false,
+  height,
+  className = ''
 }: BlobShaderProps) {
   // Use a ref to track and clean up the p5 instance
   const instanceRef = useRef<p5 | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     // Clean up any existing p5 instance first to prevent duplicates
@@ -62,10 +69,16 @@ export default function BlobShader({
         canvasElement.style.pointerEvents = 'none';
         canvasElement.style.zIndex = '0';
         
-        // Add position-specific class to the parent div, not canvas
-        const parentEl = canvasElement.parentElement;
-        if (parentEl) {
-          parentEl.classList.add(`blob-${position}`);
+        // Position-specific styling
+        if (position === 'hero') {
+          canvasElement.classList.add('blob-hero');
+          if (extend) {
+            canvasElement.classList.add('blob-extend');
+          }
+        } else if (position === 'footer') {
+          canvasElement.classList.add('blob-footer');
+        } else if (position === 'mini') {
+          canvasElement.classList.add('blob-mini');
         }
         
         // Add fixed or static class
@@ -146,8 +159,19 @@ export default function BlobShader({
         instanceRef.current = null;
       }
     };
-  }, [size, opacity, position, fixed]);
+  }, [size, opacity, position, fixed, extend]);
   
-  // Create a div container that will receive the blob-position class
-  return <div className="blob-container"></div>;
-} 
+  // Create a div container with appropriate styling
+  return (
+    <div 
+      ref={containerRef}
+      className={`blob-container ${className} ${position === 'mini' ? 'blob-mini-container' : ''}`}
+      style={{ 
+        height: height || (position === 'mini' ? '100%' : 'auto'),
+        position: 'relative',
+        overflow: extend ? 'visible' : 'hidden',
+        zIndex: 0
+      }}
+    />
+  );
+}

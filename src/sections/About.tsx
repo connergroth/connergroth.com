@@ -22,7 +22,7 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
       
       {/* Badges row */}
       <ul className="flex flex-wrap gap-3 mt-8 mb-6">
-        {['React', 'TypeScript', 'Next.js', 'Python', 'TensorFlow', 'PostgreSQL']
+        {['Python', 'C++', 'React', 'JavaScript', 'Next.js', 'PostgreSQL']
           .map(tag => (
             <li key={tag} className="bg-gray-800 hover:bg-gray-700 transition-colors duration-300 text-gray-300 px-3 py-1 rounded-full text-sm">
               {tag}
@@ -37,7 +37,7 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
         </a>
       </div>
       
-      <div className="lg:hidden md:hidden block flex justify-between text-center p-4 mt-2">
+      {/* <div className="lg:hidden md:hidden block flex justify-between text-center p-4 mt-2">
         <div>
           <div className="text-3xl font-bold">3+</div>
           <div className="text-lg text-gray-500">Years Experience</div>
@@ -51,6 +51,7 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
           <div className="text-lg text-gray-500">Technologies</div>
         </div>
       </div>
+    */}
     </section>
   );
 };

@@ -22,7 +22,7 @@ const programmingProjects: Project[] = [
     title: "EcoVision",
     description: "An intelligent recycling assistant leveraging computer vision and AI to identify recyclable items in real-time with personalized disposal instructions.",
     image: "/assets/images/EcoVisionDemoImage.jpg",
-    technologies: ["PyTorch", "TensorFlow", "Next.js", "React", "OpenAI", "TypeScript", "Tailwind CSS", "Python", "FastAPI", "Docker"],
+    technologies: ["PyTorch", "Next.js", "React", "OpenAI", "TypeScript", "Tailwind CSS", "Python", "FastAPI", "Docker"],
     liveUrl: "https://ecovisionlive.vercel.app",
     githubUrl: "https://github.com/connergroth/EcoVision"
   },

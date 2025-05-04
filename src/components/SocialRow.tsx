@@ -51,7 +51,7 @@ export default function SocialRow({ className = '' }: SocialRowProps) {
       </a>
       
       <a 
-        href="mailto:conner.groth@gmail.com" 
+        href="mailto:connergroth@gmail.com" 
         aria-label="Email"
         className="text-foreground hover:text-primary transition-colors"
       >
