@@ -18,20 +18,25 @@ const Footer: React.FC<FooterProps> = ({ className = '', style }) => {
         <BlobShader size={30} opacity={0.6} position="footer" fixed={false} />
       </div>
       
-      {/* Large blob surrounding the footer content */}
-      <div className="relative mx-auto mb-16 overflow-hidden" style={{ width: '90%', maxWidth: '800px', height: '300px', zIndex: 10 }}>
-        <BlobShader size={50} opacity={0.4} position="footer" fixed={false} />
+      {/* A standalone mini blob styled like the project tech tags */}
+      <div className="relative mx-auto w-64 h-64 mb-16 bg-[#2563eb]/10 rounded-full flex items-center justify-center" style={{ zIndex: 20 }}>
+        <div className="w-56 h-56 rounded-full overflow-hidden">
+          <BlobShader size={100} opacity={0.9} position="hero" fixed={false} />
+        </div>
       </div>
       
-      {/* Footer content */}
-      <div className="relative z-20 py-16 mx-auto max-w-xl">
-        <p className="text-[#60a5fa]">
-          Built with React &amp; Tailwind - <a href="https://github.com/connergroth/PortfolioWebsite" target="_blank" rel="noopener noreferer" className="underline hover:opacity-80 transition-opacity">See inside!</a>
-        </p>
-        <p className="text-gray-300 mt-2">
-          © Conner Groth {new Date().getFullYear()}. All rights reserved.
-        </p>
-        <div className="h-10" aria-hidden="true"></div>
+      {/* Footer content with mini blob surrounding it */}
+      <div className="relative z-10 py-16 bg-black bg-opacity-50 rounded-lg mx-auto max-w-xl">
+        {/* Content appears on top of the mini blob */}
+        <div className="relative z-10">
+          <p className="text-[#60a5fa]">
+            Built with React &amp; Tailwind - <a href="https://github.com/connergroth/PortfolioWebsite" target="_blank" rel="noopener noreferer" className="underline hover:opacity-80 transition-opacity">See inside!</a>
+          </p>
+          <p className="text-gray-300 mt-2">
+            © Conner Groth {new Date().getFullYear()}. All rights reserved.
+          </p>
+          <div className="h-10" aria-hidden="true"></div>
+        </div>
       </div>
     </footer>
   );
