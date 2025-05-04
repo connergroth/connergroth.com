@@ -1,15 +1,12 @@
 import React, { useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import HeroSection from '../components/HeroSection';
-import AboutSection from '../components/AboutSection';
-import ExperienceSection from '../components/ExperienceSection';
-import SkillsSection from '../components/SkillsSection';
-import ProjectsSection from '../components/ProjectsSection';
-import ContactSection from '../components/ContactSection';
+import { ThemeProvider } from '../hooks/useTheme';
+import Header from '../components/Header';
+import Hero from '../sections/Hero';
+import Projects from '../sections/Projects';
+import About from '../sections/About';
+import Contact from '../sections/Contact';
 import Footer from '../components/Footer';
 import Loader from '../components/Loader';
-import { setupRevealAnimation, setupProjectCardFlip } from '../utils/revealOnScroll';
-import { ThemeProvider } from '../hooks/useTheme';
 
 const Index = () => {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -23,28 +20,21 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, []);
   
-  useEffect(() => {
-    if (!isLoading) {
-      setupRevealAnimation();
-      setupProjectCardFlip();
-    }
-  }, [isLoading]);
-  
   return (
     <ThemeProvider>
-      <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      <main className="min-h-screen text-foreground">
         <Loader isLoading={isLoading} />
         
         {!isLoading && (
           <>
-            <Navbar />
-            <HeroSection />
-            <AboutSection />
-            <ExperienceSection />
-            <SkillsSection />
-            <ProjectsSection />
-            <ContactSection />
-            <Footer />
+            <Header />
+            <div className="h-screen snap-y snap-mandatory overflow-y-scroll">
+              <Hero className="snap-start" />
+              <Projects className="snap-start" />
+              <About className="snap-start" />
+              <Contact className="snap-start" />
+              <Footer className="snap-end" />
+            </div>
           </>
         )}
       </main>

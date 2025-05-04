@@ -17,7 +17,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["Inter var", "Inter", "sans-serif"],
-        heading: ["Cal Sans", "Inter var", "sans-serif"],
+        heading: ["Space Grotesk", "sans-serif"],
         mono: ["Fira Code VF", "Fira Code", "monospace"],
         display: ["Clash Display", "Cal Sans", "sans-serif"],
       },
@@ -46,6 +46,28 @@ const config: Config = {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          50: "#f0fffc",
+          100: "#e0fff8",
+          200: "#c0ffef",
+          300: "#51ffda",
+          400: "#33ffc1",
+          500: "#00ffb1",
+          600: "#00cc8e",
+          700: "#00a875",
+          800: "#00855d",
+          900: "#006344",
+        },
+        base: {
+          50: "#f3f4f6",
+          100: "#e5e7eb",
+          200: "#d1d5db",
+          300: "#9ca3af",
+          400: "#6b7280",
+          500: "#4b5563",
+          600: "#374151",
+          700: "#1f2937",
+          800: "#1a2233",
+          900: "#111827",
         },
         card: {
           DEFAULT: "hsl(var(--card))",
@@ -104,18 +126,27 @@ const config: Config = {
             transform: "translate(calc(-50% - 0.5rem))",
           },
         },
+        spin: {
+          to: {
+            transform: "rotate(360deg)",
+          },
+        }
       },
       animation: {
         "infinite-scroll": "infinite-scroll 25s linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        spotlight: "spotlight 2s ease .75s 1 forwards",
-        shimmer: "shimmer 2s linear infinite",
-        scroll: "scroll 35s linear infinite",
+        "spotlight": "spotlight 2s ease .75s 1 forwards",
+        "shimmer": "shimmer 2s linear infinite",
+        "scroll": "scroll 35s linear infinite",
+        "spin-slow": "spin 15s linear infinite",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("tailwindcss-scroll-snap"),
+  ],
 };
 
 export default config; 

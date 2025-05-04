@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap');
 @import url('https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 /* Add this to the very top of the file to ensure it overrides everything */
 html {
@@ -25,6 +26,10 @@ html {
     overflow-x: hidden;
   }
   
+  :root {
+    --noise-url: url("/assets/textures/noise.png");
+  }
+  
   body {
     @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))] font-sans;
     font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
@@ -34,6 +39,28 @@ html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: auto !important;
+  }
+
+  body::before {
+    @apply fixed inset-0 -z-10 animate-spin-slow;
+    content: "";
+    background: conic-gradient(
+      theme('colors.accent.400'),
+      theme('colors.accent.600') 40deg,
+      theme('colors.base.900') 300deg
+    );
+  }
+  
+  body::after {
+    @apply fixed inset-0 -z-10 pointer-events-none opacity-[0.04];
+    content: "";
+    background-image: var(--noise-url);
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    body::before {
+      animation: none;
+    }
   }
   
   /* Animation performance optimizations */
