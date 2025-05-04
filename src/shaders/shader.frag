@@ -47,14 +47,12 @@ void main() {
   // Calculate the shape
   float shape = 1.0 - smoothstep(0.0, 0.15, pow(abs(r - 0.5), iPower) / iPower);
   
-  // The hex color #60a5fa converted to RGB (96/255, 165/255, 250/255)
-  vec3 blueRgb = vec3(0.376, 0.647, 0.98);
-  
-  // Get a slightly varying version of the blue color for animation
-  float t = iTime * 0.05;
-  
-  // Subtle animation effect around the base blue color
-  vec3 color = blueRgb * (1.0 + 0.1 * sin(t + uv.x * 0.3 + uv.y * 0.3));
+  // Create a color based on position and time
+  vec3 color = hsv2rgb(vec3(
+    fract(iTime * 0.05 + uv.x * 0.1 + uv.y * 0.1), // Hue changes with time and position
+    0.7,  // Saturation
+    0.7   // Value/brightness
+  ));
   
   // Apply color to shape with controllable opacity
   gl_FragColor = vec4(color * shape, shape * iOpacity);

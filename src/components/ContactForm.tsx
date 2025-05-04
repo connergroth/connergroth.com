@@ -143,7 +143,7 @@ const ContactForm = () => {
           </button>
           
           <a 
-            href="mailto:conner.groth@gmail.com" 
+            href="mailto:connergroth@gmail.com" 
             className="relative h-12 px-6 flex justify-center items-center w-full md:w-auto transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
           >
             <div className="absolute inset-0 bg-[#070a0d] border border-gray-800 rounded-md"></div>

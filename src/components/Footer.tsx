@@ -1,5 +1,5 @@
 import React from 'react';
-import BlobShader from '../components/BlobShader';
+import BlobShader from './BlobShader';
 
 interface FooterProps {
   className?: string;
@@ -9,7 +9,7 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ className = '', style }) => {
   return (
     <footer 
-      className={`mt-[40vh] text-center text-sm relative z-10 pt-20 ${className}`}
+      className={`mt-[40vh] relative z-10 pt-20 ${className}`}
       style={style}
       id="footer-anchor"
     >
@@ -18,19 +18,26 @@ const Footer: React.FC<FooterProps> = ({ className = '', style }) => {
         <BlobShader size={30} opacity={0.6} position="footer" fixed={false} />
       </div>
       
-      {/* A standalone mini blob styled like the project tech tags */}
-      <div className="relative mx-auto w-64 h-64 mb-16 bg-[#2563eb]/10 rounded-full flex items-center justify-center" style={{ zIndex: 20 }}>
-        <div className="w-56 h-56 rounded-full overflow-hidden">
-          <BlobShader size={100} opacity={0.9} position="hero" fixed={false} />
+      {/* Footer content with centered mini blob */}
+      <div className="relative text-center">
+        {/* Enhanced mini blob container with better visibility */}
+        <div className="relative mx-auto w-80 h-80 mb-8 rounded-full overflow-hidden flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm rounded-full"></div>
+          <div className="relative w-full h-full">
+            <BlobShader 
+              size={120} 
+              opacity={0.95} 
+              position="mini" 
+              fixed={false} 
+              extend={false}
+            />
+          </div>
         </div>
-      </div>
-      
-      {/* Footer content with mini blob surrounding it */}
-      <div className="relative z-10 py-16 bg-black bg-opacity-50 rounded-lg mx-auto max-w-xl">
-        {/* Content appears on top of the mini blob */}
-        <div className="relative z-10">
+        
+        {/* Footer content on top of the mini blob */}
+        <div className="relative z-10 py-10 mx-auto max-w-xl">
           <p className="text-[#60a5fa]">
-            Built with React &amp; Tailwind - <a href="https://github.com/connergroth/PortfolioWebsite" target="_blank" rel="noopener noreferer" className="underline hover:opacity-80 transition-opacity">See inside!</a>
+            Built with React &amp; Tailwind - <a href="https://github.com/connergroth/PortfolioWebsite" target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80 transition-opacity">See inside!</a>
           </p>
           <p className="text-gray-300 mt-2">
             © Conner Groth {new Date().getFullYear()}. All rights reserved.
@@ -42,4 +49,4 @@ const Footer: React.FC<FooterProps> = ({ className = '', style }) => {
   );
 };
 
-export default Footer; 
+export default Footer;

@@ -37,7 +37,7 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
         </a>
       </div>
       
-      <div className="lg:hidden md:hidden block flex justify-between text-center p-4 mt-2">
+      {/* <div className="lg:hidden md:hidden block flex justify-between text-center p-4 mt-2">
         <div>
           <div className="text-3xl font-bold">3+</div>
           <div className="text-lg text-gray-500">Years Experience</div>
@@ -51,6 +51,7 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
           <div className="text-lg text-gray-500">Technologies</div>
         </div>
       </div>
+    */}
     </section>
   );
 };

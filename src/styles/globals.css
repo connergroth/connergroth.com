@@ -442,7 +442,10 @@ html {
 }
 
 @layer utilities {
-  .writing-mode-vertical-rl { writing-mode: vertical-rl; }
+  .writing-mode-vertical-rl { 
+    writing-mode: vertical-rl; 
+    text-orientation: mixed;
+  }
   
   @keyframes fadeIn {
     from { opacity: 0; }
