@@ -37,7 +37,7 @@ const Hero: React.FC<HeroProps> = ({ id = 'home', className = '', style }) => {
             Conner Groth
           </h1>
           <p className="hero-subtitle mt-4 text-lg sm:text-xl md:text-2xl custom-fade-in anim-delay-400">
-            Software Engineer | CS Student | Research Assistant
+            Software Engineer | CS Student | Undergraduate Researcher
           </p>
           <p className="hero-subbertitle mt-2 text-base md:text-lg custom-fade-in anim-delay-800">
             <a href="https://connergroth.com" className="hover:text-primary transition-colors">
