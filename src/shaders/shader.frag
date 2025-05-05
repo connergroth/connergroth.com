@@ -51,7 +51,7 @@ void main() {
   vec3 color = hsv2rgb(vec3(
     fract(iTime * 0.05 + uv.x * 0.1 + uv.y * 0.1), // Hue changes with time and position
     0.7,  // Saturation
-    0.9   // Value/brightness
+    0.7   // Value/brightness
   ));
   
   // Apply color to shape with controllable opacity
