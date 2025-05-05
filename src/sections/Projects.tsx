@@ -22,7 +22,7 @@ const programmingProjects: Project[] = [
     title: "EcoVision",
     description: "An intelligent recycling assistant leveraging computer vision and AI to identify recyclable items in real-time with personalized disposal instructions.",
     image: "/assets/images/EcoVisionDemoImage.jpg",
-    technologies: ["PyTorch", "Next.js", "React", "OpenAI", "TypeScript", "Tailwind CSS", "Python", "FastAPI", "Docker"],
+    technologies: ["PyTorch", "Next.js", "React", "OpenAI API", "TypeScript", "Tailwind CSS", "Python", "FastAPI", "Docker"],
     liveUrl: "https://ecovisionlive.vercel.app",
     githubUrl: "https://github.com/connergroth/EcoVision"
   },
@@ -30,7 +30,7 @@ const programmingProjects: Project[] = [
     title: "TailorIQ",
     description: "An AI-powered resume builder that instantly generates polished, ATS-optimized resumes tailored to specific job descriptions.",
     image: "/assets/images/tailoriq.png",
-    technologies: ["React", "TypeScript", "Tailwind CSS", "Firebase", "OpenAI", "Express"],
+    technologies: ["React", "TypeScript", "Tailwind CSS", "Firebase", "OpenAI API", "Express", "Puppeteer"],
     liveUrl: "https://tailoriq.onrender.com/",
     githubUrl: "https://github.com/connergroth/tailoriq"
   },
@@ -38,7 +38,7 @@ const programmingProjects: Project[] = [
     title: "MovieMate",
     description: "A full-featured social platform for movie lovers to connect, rate films, and discover trending releases — all powered by real-time messaging and movie data APIs.",
     image: "/assets/images/moviemate.PNG",
-    technologies: ["Node.js", "JavaScript", "Express", "PostgreSQL", "Bootstrap"],
+    technologies: ["Node.js", "JavaScript", "Express", "PostgreSQL", "Handlebars", "Bootstrap"],
     liveUrl: "https://csci3308-moviemate.onrender.com",
     githubUrl: "https://github.com/Joe-Z-School/CSCI3308-MovieMate"
   }
