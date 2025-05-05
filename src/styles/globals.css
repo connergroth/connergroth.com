@@ -653,16 +653,18 @@ canvas {
 .blob-footer canvas {
   z-index: 0 !important;
   -webkit-mask-image: linear-gradient(to top, 
-    rgba(0, 0, 0, 1) 0%, 
-    rgba(0, 0, 0, 0.9) 50%,
-    rgba(0, 0, 0, 0.5) 75%,
-    rgba(0, 0, 0, 0) 100%
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.3) 25%,
+    rgba(0, 0, 0, 0.7) 50%,
+    rgba(0, 0, 0, 0.9) 75%,
+    rgba(0, 0, 0, 1) 100%
   ) !important;
   mask-image: linear-gradient(to top, 
-    rgba(0, 0, 0, 1) 0%, 
-    rgba(0, 0, 0, 0.9) 50%,
-    rgba(0, 0, 0, 0.5) 75%,
-    rgba(0, 0, 0, 0) 100%
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.3) 25%,
+    rgba(0, 0, 0, 0.7) 50%,
+    rgba(0, 0, 0, 0.9) 75%,
+    rgba(0, 0, 0, 1) 100%
   ) !important;
 }
 
@@ -919,16 +921,18 @@ canvas.blob-hero {
 canvas.blob-footer {
   z-index: 0 !important;
   -webkit-mask-image: linear-gradient(to top, 
-    rgba(0, 0, 0, 1) 0%, 
-    rgba(0, 0, 0, 0.9) 50%,
-    rgba(0, 0, 0, 0.5) 75%,
-    rgba(0, 0, 0, 0) 100%
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.3) 25%,
+    rgba(0, 0, 0, 0.7) 50%,
+    rgba(0, 0, 0, 0.9) 75%,
+    rgba(0, 0, 0, 1) 100%
   ) !important;
   mask-image: linear-gradient(to top, 
-    rgba(0, 0, 0, 1) 0%, 
-    rgba(0, 0, 0, 0.9) 50%,
-    rgba(0, 0, 0, 0.5) 75%,
-    rgba(0, 0, 0, 0) 100%
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.3) 25%,
+    rgba(0, 0, 0, 0.7) 50%,
+    rgba(0, 0, 0, 0.9) 75%,
+    rgba(0, 0, 0, 1) 100%
   ) !important;
 }
 
