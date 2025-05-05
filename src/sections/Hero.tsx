@@ -46,12 +46,16 @@ const Hero: React.FC<HeroProps> = ({ id = 'home', className = '', style }) => {
           </p>
           
           {/* Social Media icons for mobile */}
-          <div className="md:hidden flex gap-4 mt-4 custom-fade-in anim-delay-1000">
-            {socialLinks.map((link) => (
+          <div className="md:hidden flex gap-4 mt-4">
+            {socialLinks.map((link, index) => (
               <a 
                 key={link.label}
                 href={link.href}
                 className="text-foreground/80 hover:text-primary transition-colors"
+                style={{ 
+                  opacity: 0,
+                  animation: `fadeIn 0.8s ease-out ${1.2 + (index * 0.1)}s forwards`
+                }}
                 target="_blank"
                 rel="noreferrer"
                 aria-label={link.label}
