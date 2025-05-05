@@ -136,7 +136,7 @@ const Header = () => {
             </div>
             
             {/* Mobile instagram handle display */}
-            <p className="text-gray-500 text-sm mt-4">@connergroth</p>
+            <p className="text-gray-500 text-sm mt-4">connergroth@gmail.com</p>
           </nav>
         </div>
       </div>
