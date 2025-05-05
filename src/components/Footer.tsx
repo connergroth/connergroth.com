@@ -15,7 +15,7 @@ function Footer({ className = '', style }: FooterProps) {
     >
       {/* Blob background for footer */}
       <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ zIndex: 0 }}>
-        <BlobShader size={40} opacity={0.5} position="footer" fixed={false} />
+        <BlobShader size={50} opacity={0.3} position="footer" fixed={false} />
       </div>
       
       <div className="relative z-10 py-10 mx-auto max-w-xl text-center">
