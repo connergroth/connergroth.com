@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
-import { Menu, X, Github, Linkedin, Mail } from 'lucide-react';
+import { Menu, X, Github, Linkedin, Instagram } from 'lucide-react';
 
 const useHeaderShrink = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -54,7 +54,7 @@ const Header = () => {
   const socialLinks = [
     { href: "https://github.com/connergroth", label: "GitHub", icon: <Github className="w-6 h-6" /> },
     { href: "https://linkedin.com/in/connergroth", label: "LinkedIn", icon: <Linkedin className="w-6 h-6" /> },
-    { href: "mailto:connergroth@gmail.com", label: "Email", icon: <Mail className="w-6 h-6" /> }
+    { href: "https://instagram.com/connergroth", label: "Instagram", icon: <Instagram className="w-6 h-6" /> }
   ];
 
   return (
@@ -135,8 +135,8 @@ const Header = () => {
               ))}
             </div>
             
-            {/* Mobile email display */}
-            <p className="text-gray-500 text-sm mt-4">connergroth@gmail.com</p>
+            {/* Mobile instagram handle display */}
+            <p className="text-gray-500 text-sm mt-4">@connergroth</p>
           </nav>
         </div>
       </div>
