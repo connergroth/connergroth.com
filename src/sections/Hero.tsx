@@ -2,6 +2,7 @@ import React from 'react';
 import BlobShader from '../components/BlobShader';
 import ScrollHint from '../components/ScrollHint';
 import SideBars from '../components/SideBars';
+import { Github, Linkedin, Mail } from 'lucide-react';
 
 interface HeroProps {
   id?: string;
@@ -10,6 +11,12 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ id = 'home', className = '', style }) => {
+  const socialLinks = [
+    { href: "https://github.com/connergroth", label: "GitHub", icon: <Github className="w-6 h-6" /> },
+    { href: "https://linkedin.com/in/connergroth", label: "LinkedIn", icon: <Linkedin className="w-6 h-6" /> },
+    { href: "mailto:connergroth@gmail.com", label: "Email", icon: <Mail className="w-6 h-6" /> }
+  ];
+
   return (
     <section 
       id={id}
@@ -37,6 +44,22 @@ const Hero: React.FC<HeroProps> = ({ id = 'home', className = '', style }) => {
               connergroth.com
             </a>
           </p>
+          
+          {/* Social Media icons for mobile */}
+          <div className="md:hidden flex gap-4 mt-4 custom-fade-in anim-delay-1000">
+            {socialLinks.map((link) => (
+              <a 
+                key={link.label}
+                href={link.href}
+                className="text-foreground/80 hover:text-primary transition-colors"
+                target="_blank"
+                rel="noreferrer"
+                aria-label={link.label}
+              >
+                {link.icon}
+              </a>
+            ))}
+          </div>
         </div>
         
         <div className="mt-12">
