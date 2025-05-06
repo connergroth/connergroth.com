@@ -29,7 +29,7 @@ const programmingProjects: Project[] = [
   {
     title: "TailorIQ",
     description: "An AI-powered resume builder that instantly generates polished, ATS-optimized resumes tailored to specific job descriptions.",
-    image: "/assets/images/tailoriq.png",
+    image: "/assets/images/tailoriqdemo.png",
     technologies: ["React", "TypeScript", "Tailwind CSS", "Firebase", "OpenAI API", "Express", "Puppeteer"],
     liveUrl: "https://tailoriq.onrender.com/",
     githubUrl: "https://github.com/connergroth/tailoriq"
@@ -38,7 +38,7 @@ const programmingProjects: Project[] = [
     title: "MovieMate",
     description: "A full-featured social platform for movie lovers to connect, rate films, and discover trending releases — all powered by real-time messaging and movie data APIs.",
     image: "/assets/images/moviemate.PNG",
-    technologies: ["Node.js", "JavaScript", "Express", "PostgreSQL", "Handlebars", "Bootstrap"],
+    technologies: ["Node.js", "JavaScript", "Express", "Socket.io", "PostgreSQL", "Handlebars", "Bootstrap"],
     liveUrl: "https://csci3308-moviemate.onrender.com",
     githubUrl: "https://github.com/Joe-Z-School/CSCI3308-MovieMate"
   }
