@@ -1,5 +1,4 @@
 import React from 'react';
-import { Code, Cpu, Brain } from 'lucide-react';
 
 interface AboutProps {
   id?: string;

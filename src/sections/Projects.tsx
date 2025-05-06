@@ -29,7 +29,7 @@ const programmingProjects: Project[] = [
   {
     title: "TailorIQ",
     description: "An AI-powered resume builder that instantly generates polished, ATS-optimized resumes tailored to specific job descriptions.",
-    image: "/assets/images/tailoriqdemo.png",
+    image: "/assets/images/tailor.png",
     technologies: ["React", "TypeScript", "Tailwind CSS", "Firebase", "OpenAI API", "Express", "Puppeteer"],
     liveUrl: "https://tailoriq.onrender.com/",
     githubUrl: "https://github.com/connergroth/tailoriq"
