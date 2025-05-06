@@ -24,7 +24,7 @@ A modern, responsive portfolio website built with React, TypeScript, and Tailwin
 ## Project Structure
 
 ```
-portfolio-website/
+connergroth.com/
 ├── src/                     # Source files
 │   ├── components/          # Reusable UI components
 │   │   ├── BlobShader.tsx   # WebGL shader component for blob effects
