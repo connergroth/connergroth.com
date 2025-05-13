@@ -72,7 +72,7 @@ const mlProjects: Project[] = [
   }
 ];
 
-const ProjectCategory: React.FC<{ title: string, projects: Project[] }> = ({ title, projects }) => (
+const ProjectCategory: React.FC<{ title: string | React.ReactNode, projects: Project[] }> = ({ title, projects }) => (
   <>
     <h2 className="mt-24 font-serif font-bold sm:text-3xl text-2xl">
       {title} →
@@ -89,8 +89,9 @@ const ProjectCategory: React.FC<{ title: string, projects: Project[] }> = ({ tit
             <div className="flex flex-col md:w-[22rem]">
               <img 
                 src={project.image} 
-                className="aspect-video object-cover rounded-t-lg pointer-events-none" 
-                alt={project.title} 
+                className="aspect-video object-cover rounded-t-lg pointer-events-none w-full" 
+                alt={project.title}
+                style={{ imageRendering: 'auto', maxHeight: '250px' }}
               />
               <div className="p-4 flex flex-col grow justify-between">
                 <div>
@@ -144,10 +145,17 @@ const Projects: React.FC<ProjectsProps> = ({ id = 'projects', className = '', st
       className={`custom-transition opacity-0 ${className}`}
       style={style}
     >
-      <h1 className="font-serif font-bold sm:text-6xl text-4xl">My Work</h1>
+      <h1 className="font-serif font-bold sm:text-6xl text-4xl"><span style={{ letterSpacing: '-0.01em' }}>M</span>y Work</h1>
       
       <ProjectCategory title="Programming Projects" projects={programmingProjects} />
-      <ProjectCategory title="DevOps Projects" projects={devopsProjects} />
+      <ProjectCategory 
+        title={
+          <>
+            De<span style={{ letterSpacing: '0.03em' }}>v</span><span style={{ letterSpacing: '0.01em' }}>O</span>ps Projects
+          </>
+        } 
+        projects={devopsProjects} 
+      />
       <ProjectCategory title="ML Projects" projects={mlProjects} />
     </section>
   );

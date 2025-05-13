@@ -7,6 +7,12 @@
 /* Add this to the very top of the file to ensure it overrides everything */
 html {
   scroll-behavior: auto !important;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 @tailwind base;
@@ -17,6 +23,8 @@ html {
   /* Disable smooth scrolling for all browsers */
   html, body {
     scroll-behavior: auto !important;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
   }
   
   html {
@@ -40,6 +48,8 @@ html {
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: auto !important;
     background-color: #000 !important; /* Ensure black background */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
   }
 
   body::before {
@@ -753,17 +763,30 @@ section, footer {
   }
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - showing thumb but hiding track */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-[hsl(var(--background))];
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-[hsl(var(--primary))]/20 rounded-full hover:bg-[hsl(var(--primary))]/30;
+  background-color: rgba(57, 142, 247, 0.4);
+  border-radius: 20px;
+  border: 2px solid transparent;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(57, 142, 247, 0.7);
+}
+
+/* Firefox */
+html, body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(57, 142, 247, 0.4) transparent;
 }
 
 .btn-outline {
