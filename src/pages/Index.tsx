@@ -7,6 +7,8 @@ import About from '../sections/About';
 import Contact from '../sections/Contact';
 import Footer from '../components/Footer';
 import Loader from '../components/Loader';
+import SEO from '../components/SEO';
+import { PersonSchema, WebsiteSchema } from '../components/StructuredData';
 import { setupRevealAnimation, setupSectionAnimations } from '../utils/revealOnScroll';
 
 const Index = () => {
@@ -40,6 +42,28 @@ const Index = () => {
   
   return (
     <ThemeProvider>
+      <SEO 
+        title="Home"
+        description="Conner Groth - Software Engineer and CS Student passionate about building innovative solutions. View my portfolio, projects, and skills."
+        keywords="Conner Groth, software engineer, portfolio, web development, CS student, projects, programming"
+      />
+      <PersonSchema
+        name="Conner Groth"
+        jobTitle="Software Engineer"
+        url="https://connergroth.com"
+        imageUrl="/assets/images/favicon.png"
+        description="Software Engineer and CS Student specializing in AI, web development, and data-driven applications."
+        sameAs={[
+          "https://github.com/ConnerGroth",
+          "https://linkedin.com/in/connergroth"
+        ]}
+      />
+      <WebsiteSchema
+        name="Conner Groth - Portfolio"
+        url="https://connergroth.com"
+        description="Personal portfolio website of Conner Groth, a Software Engineer and CS Student"
+        author="Conner Groth"
+      />
       <Loader isLoading={isLoading} />
       
       {!isLoading && (

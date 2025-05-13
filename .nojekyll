@@ -1,4 +1,0 @@
- - name: Ensure CNAME and config files are copied
-  run: |
-    # Create .nojekyll file
-    touch dist/.nojekyll

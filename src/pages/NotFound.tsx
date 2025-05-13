@@ -1,10 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import SEO from '../components/SEO';
+import { BreadcrumbSchema } from '../components/StructuredData';
 
 const NotFound: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-4">
+      <SEO 
+        title="Page Not Found"
+        description="The page you are looking for might have been removed, had its name changed, or is temporarily unavailable."
+        keywords="404, not found, error page"
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", item: "https://connergroth.com" },
+          { name: "Page Not Found", item: window.location.href }
+        ]}
+      />
       <div className="text-center max-w-md">
         <h1 className="text-6xl font-bold text-primary mb-4">404</h1>
         <h2 className="text-2xl font-semibold mb-6">Page Not Found</h2>
