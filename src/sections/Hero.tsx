@@ -51,7 +51,7 @@ const Hero: React.FC<HeroProps> = ({ id = 'home', className = '', style }) => {
               <a 
                 key={link.label}
                 href={link.href}
-                className="text-foreground/80 hover:text-primary transition-colors"
+                className="text-gray-400 hover:text-primary transition-colors"
                 style={{ 
                   opacity: 0,
                   animation: `fadeIn 0.8s ease-out ${1.2 + (index * 0.1)}s forwards`
