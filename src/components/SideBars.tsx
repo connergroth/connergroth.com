@@ -1,7 +1,7 @@
 import { Github, Linkedin, Instagram } from "lucide-react";
 
 export default function SideBars() {
-  const iconClasses = "w-6 h-6 transition-colors text-gray-400 hover:text-white";
+  const iconClasses = "w-6 h-6 transition-colors text-gray-400 hover:text-primary";
   return (
     <>
       {/* Social column - hidden on mobile */}
@@ -16,7 +16,7 @@ export default function SideBars() {
       {/* Email column - hidden on mobile */}
       <div className="fixed bottom-0 right-8 hidden md:flex flex-col items-center z-50">
         <a href="mailto:connergroth@gmail.com"
-           className="rotate-180 writing-mode-vertical-rl text-sm tracking-widest text-gray-400 hover:text-white select-none transition-colors">
+           className="rotate-180 writing-mode-vertical-rl text-sm tracking-widest text-gray-400 hover:text-primary select-none transition-colors">
           connergroth@gmail.com
         </a>
         <span className="block w-px h-24 bg-gray-500 mt-2" />

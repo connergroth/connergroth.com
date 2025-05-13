@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { Menu, X, Github, Linkedin, Instagram } from 'lucide-react';
 
@@ -67,13 +66,13 @@ const Header = () => {
         )}
       >
         <div className="flex items-center">
-          <Link to="/" className="flex items-center">
+          <a href="#home" className="flex items-center">
             <img 
               src={logoSrc} 
               alt="Conner Groth" 
               className="h-10 w-auto object-contain"
             />
-          </Link>
+          </a>
         </div>
         
         {/* Desktop Navigation */}
@@ -82,7 +81,7 @@ const Header = () => {
             <a 
               key={link.label}
               href={link.href} 
-              className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+              className="text-sm font-medium text-gray-400 hover:text-primary transition-colors"
             >
               {link.label}
             </a>
@@ -124,7 +123,7 @@ const Header = () => {
                 <a 
                   key={link.label}
                   href={link.href}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-400 hover:text-primary transition-colors"
                   target="_blank"
                   rel="noreferrer"
                   aria-label={link.label}
@@ -136,7 +135,7 @@ const Header = () => {
             </div>
             
             {/* Mobile instagram handle display */}
-            <p className="text-gray-500 text-sm mt-4">connergroth@gmail.com</p>
+            <p className="text-gray-400 text-sm mt-4">connergroth@gmail.com</p>
           </nav>
         </div>
       </div>

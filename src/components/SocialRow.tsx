@@ -14,7 +14,7 @@ export default function SocialRow({ className = '' }: SocialRowProps) {
         target="_blank" 
         rel="noopener noreferrer"
         aria-label="LinkedIn"
-        className="text-foreground hover:text-primary transition-colors"
+        className="text-gray-400 hover:text-primary transition-colors"
       >
         <svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="icon">
           <title>LinkedIn</title>
@@ -29,7 +29,7 @@ export default function SocialRow({ className = '' }: SocialRowProps) {
         target="_blank" 
         rel="noopener noreferrer"
         aria-label="Twitter"
-        className="text-foreground hover:text-primary transition-colors"
+        className="text-gray-400 hover:text-primary transition-colors"
       >
         <svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="icon">
           <title>Twitter</title>
@@ -42,7 +42,7 @@ export default function SocialRow({ className = '' }: SocialRowProps) {
         target="_blank" 
         rel="noopener noreferrer"
         aria-label="GitHub"
-        className="text-foreground hover:text-primary transition-colors"
+        className="text-gray-400 hover:text-primary transition-colors"
       >
         <svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="icon">
           <title>GitHub</title>
@@ -53,7 +53,7 @@ export default function SocialRow({ className = '' }: SocialRowProps) {
       <a 
         href="mailto:connergroth@gmail.com" 
         aria-label="Email"
-        className="text-foreground hover:text-primary transition-colors"
+        className="text-gray-400 hover:text-primary transition-colors"
       >
         <svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="icon">
           <title>Email</title>
