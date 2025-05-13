@@ -60,9 +60,9 @@ const Header = () => {
     <>
       <header 
         className={cn(
-          'fixed top-0 left-0 right-0 h-16 z-50 transition-all duration-300',
+          'absolute top-0 left-0 right-0 h-16 z-50',
           'flex items-center justify-between px-4 md:px-8 lg:px-12',
-          isScrolled ? 'bg-[#000]' : 'bg-transparent'
+          'bg-transparent'
         )}
       >
         <div className="flex items-center">

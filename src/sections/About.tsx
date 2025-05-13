@@ -13,14 +13,14 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
       className={`custom-transition opacity-0 ${className}`}
       style={style}
     >
-      <h1 className="font-serif font-bold sm:text-6xl text-4xl">About Me</h1>
+      <h1 className="font-serif font-bold sm:text-6xl text-4xl"><span style={{ letterSpacing: '0.01em' }}>A</span>bout Me</h1>
       <br />
-      <h2 className="font-serif font-bold sm:text-3xl text-xl">
+      <p className="font-sans font-normal text-lg sm:text-xl md:text-2xl">
         I'm a Computer Science Student, Software Engineer, and Undergraduate Researcher based in Boulder, CO. I am passionate about building elegant and thoughtful web applications and exploring machine learning. 
-      </h2>
-      <h2 className="font-serif font-bold sm:text-3xl text-xl">
+      </p>
+      <p className="font-sans font-normal text-lg sm:text-xl md:text-2xl mt-4">
         Currently, I am working on Synthetic Biology software tools such as SeqImprove at the Genetic Logic Lab. I am also building Sonance, a machine learning powered music recommendation system.
-      </h2>
+      </p>
       
       {/* Badges row */}
       <ul className="flex flex-wrap gap-3 mt-8 mb-6">
