@@ -81,7 +81,7 @@ const Header = () => {
             <a 
               key={link.label}
               href={link.href} 
-              className="text-sm font-medium text-gray-400 hover:text-primary transition-colors"
+              className="text-sm font-medium text-gray-300 hover:text-primary transition-colors"
             >
               {link.label}
             </a>
@@ -91,7 +91,7 @@ const Header = () => {
         {/* Mobile Menu Button */}
         <button 
           onClick={toggleMobileMenu}
-          className="md:hidden flex items-center justify-center p-2 rounded-md text-white hover:text-primary focus:outline-none"
+          className="md:hidden flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-primary focus:outline-none"
           aria-expanded={mobileMenuOpen}
           aria-label="Toggle menu"
         >
@@ -110,7 +110,7 @@ const Header = () => {
               <a 
                 key={link.label}
                 href={link.href} 
-                className="text-xl font-medium text-white hover:text-primary transition-colors"
+                className="text-xl font-medium text-gray-300 hover:text-primary transition-colors"
                 onClick={closeMobileMenu}
               >
                 {link.label}
@@ -123,7 +123,7 @@ const Header = () => {
                 <a 
                   key={link.label}
                   href={link.href}
-                  className="text-gray-400 hover:text-primary transition-colors"
+                  className="text-gray-300 hover:text-primary transition-colors"
                   target="_blank"
                   rel="noreferrer"
                   aria-label={link.label}
@@ -135,7 +135,7 @@ const Header = () => {
             </div>
             
             {/* Mobile instagram handle display */}
-            <p className="text-gray-400 text-sm mt-4">connergroth@gmail.com</p>
+            <p className="text-gray-300 text-sm mt-4">connergroth@gmail.com</p>
           </nav>
         </div>
       </div>
