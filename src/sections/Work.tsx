@@ -66,10 +66,12 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
                 <h2 className="text-xl font-semibold">{exp.title}</h2>
                 <span className="text-gray-400">–</span>
                 <h3 className="text-lg text-primary">{exp.company}</h3>
-                <span className="text-gray-400">|</span>
-                <span className="text-gray-400">{exp.location}</span>
-                <span className="text-gray-400">|</span>
-                <span className="text-gray-400">{exp.date}</span>
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 text-gray-400">
+                  <span className="hidden sm:inline">|</span>
+                  <span>{exp.location}</span>
+                  <span className="hidden sm:inline">|</span>
+                  <span>{exp.date}</span>
+                </div>
               </div>
               <p className="text-gray-300 mt-2">{exp.description}</p>
               <div className="flex flex-wrap gap-2 mt-3">
@@ -99,10 +101,12 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
                 <h2 className="text-xl font-semibold">{exp.title}</h2>
                 <span className="text-gray-400">–</span>
                 <h3 className="text-lg text-primary">{exp.company}</h3>
-                <span className="text-gray-400">|</span>
-                <span className="text-gray-400">{exp.location}</span>
-                <span className="text-gray-400">|</span>
-                <span className="text-gray-400">{exp.date}</span>
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 text-gray-400">
+                  <span className="hidden sm:inline">|</span>
+                  <span>{exp.location}</span>
+                  <span className="hidden sm:inline">|</span>
+                  <span>{exp.date}</span>
+                </div>
               </div>
               <p className="text-gray-300 mt-2">{exp.description}</p>
               <div className="flex flex-wrap gap-2 mt-3">
