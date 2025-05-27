@@ -19,12 +19,12 @@ interface ProjectsProps {
 
 const programmingProjects: Project[] = [
   {
-    title: "EcoVision",
-    description: "An intelligent recycling assistant leveraging computer vision and AI to identify recyclable items in real-time with personalized disposal instructions.",
-    image: "/assets/images/EcoVisionDemoImage.jpg",
-    technologies: ["PyTorch", "Next.js", "React", "OpenAI API", "TypeScript", "Tailwind CSS", "Python", "FastAPI", "Docker"],
-    liveUrl: "https://ecovisionlive.vercel.app",
-    githubUrl: "https://github.com/connergroth/EcoVision"
+    title: "MovieMate",
+    description: "A full-featured social platform for movie lovers to connect, rate films, and discover trending releases — all powered by real-time messaging and movie data APIs.",
+    image: "/assets/images/moviemate.PNG",
+    technologies: ["Node.js", "JavaScript", "Express", "Socket.io", "PostgreSQL", "Handlebars", "Bootstrap"],
+    liveUrl: "https://csci3308-moviemate.onrender.com",
+    githubUrl: "https://github.com/Joe-Z-School/CSCI3308-MovieMate"
   },
   {
     title: "TailorIQ",
@@ -33,14 +33,6 @@ const programmingProjects: Project[] = [
     technologies: ["React", "TypeScript", "Tailwind CSS", "Firebase", "OpenAI API", "Express", "Puppeteer"],
     liveUrl: "https://tailoriq.onrender.com/",
     githubUrl: "https://github.com/connergroth/tailoriq"
-  },
-  {
-    title: "MovieMate",
-    description: "A full-featured social platform for movie lovers to connect, rate films, and discover trending releases — all powered by real-time messaging and movie data APIs.",
-    image: "/assets/images/moviemate.PNG",
-    technologies: ["Node.js", "JavaScript", "Express", "Socket.io", "PostgreSQL", "Handlebars", "Bootstrap"],
-    liveUrl: "https://csci3308-moviemate.onrender.com",
-    githubUrl: "https://github.com/Joe-Z-School/CSCI3308-MovieMate"
   }
 ];
 
@@ -64,19 +56,48 @@ const devopsProjects: Project[] = [
 
 const mlProjects: Project[] = [
   {
-    title: "Sonance",
+    title: "Tensoe",
     description: "A hybrid music recommendation engine powered by collaborative filtering, content-based analysis, and user ratings from Spotify, Last.fm, and Albumoftheyear.org.",
-    image: "/assets/images/sonance.png",
+    image: "/assets/images/tensoe.png",
     technologies: ["Python", "FastAPI", "PostgreSQL", "Redis", "Docker", "Spotify API"],
-    githubUrl: "https://github.com/connergroth/sonance"
+    liveUrl: "https://tensoe.com",
+    githubUrl: "https://github.com/connergroth/Tensoe"
+  },
+  {
+    title: "EcoVision",
+    description: "An intelligent recycling assistant leveraging computer vision and AI to identify recyclable items in real-time with personalized disposal instructions.",
+    image: "/assets/images/EcoVisionDemoImage.jpg",
+    technologies: ["PyTorch", "Next.js", "React", "OpenAI API", "TypeScript", "Tailwind CSS", "Python", "FastAPI", "Docker"],
+    liveUrl: "https://ecovisionlive.vercel.app",
+    githubUrl: "https://github.com/connergroth/EcoVision"
   }
 ];
 
-const ProjectCategory: React.FC<{ title: string | React.ReactNode, projects: Project[] }> = ({ title, projects }) => (
+const studioProjects: Project[] = [
+  {
+    title: "PulsePlan",
+    description: "An AI-powered academic planner that intelligently manages your time based on energy levels, due dates, and preferences. Features seamless Canvas and Google Calendar integration.",
+    image: "/assets/images/pulseplan.jpg",
+    technologies: ["React", "TypeScript", "GPT-4", "Custom ML", "Canvas API", "Google Calendar API"],
+    liveUrl: "https://pulseplan.app",
+    githubUrl: "https://github.com/flyonthewalldev/pulseplan"
+  },
+];
+
+const ProjectCategory: React.FC<{ 
+  title: string | React.ReactNode, 
+  projects: Project[],
+  subheading?: string | React.ReactNode 
+}> = ({ title, projects, subheading }) => (
   <>
     <h2 className="mt-24 font-serif font-bold sm:text-3xl text-2xl">
       {title} →
     </h2>
+    {subheading && (
+      <p className="mt-2 text-gray-400 text-lg">
+        {subheading}
+      </p>
+    )}
     
     <div className="projects-container">
       <div className="project-list flex flex-col md:flex-row overflow-x-auto no-scrollbar md:gap-8">
@@ -147,6 +168,37 @@ const Projects: React.FC<ProjectsProps> = ({ id = 'projects', className = '', st
     >
       <h1 className="font-serif font-bold sm:text-6xl text-4xl"><span style={{ letterSpacing: '-0.01em' }}>M</span>y Work</h1>
       
+      <ProjectCategory title="ML Projects" projects={mlProjects} />
+
+      {/* Fly on the Wall Header */}
+      <div className="mt-24">
+        <h2 className="font-serif font-bold sm:text-3xl text-2xl">
+          Fl<span style={{ letterSpacing: '0.01em' }}>y</span> on the Wall →
+        </h2>
+        <p className="mt-4 text-gray-300 text-lg">
+          My roommates and I co-founded Fly on the Wall, a student-led software studio focused on building thoughtful, AI-powered products with personality.
+        </p>
+        <ul className="mt-2 text-gray-400 text-lg list-disc list-inside">
+          <li>We move fast, design intentionally, and build tools that solve real problems—starting with PulsePlan, our intelligent academic planner.</li>
+          <li>
+            <a 
+              href="https://flyonthewalldev.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80 transition-colors"
+            >
+              Explore at flyonthewalldev.com
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <ProjectCategory 
+        title="Studio Projects"
+        subheading="Apps built under Fly on the Wall"
+        projects={studioProjects}
+      />
+
       <ProjectCategory title="Programming Projects" projects={programmingProjects} />
       <ProjectCategory 
         title={
@@ -156,7 +208,6 @@ const Projects: React.FC<ProjectsProps> = ({ id = 'projects', className = '', st
         } 
         projects={devopsProjects} 
       />
-      <ProjectCategory title="ML Projects" projects={mlProjects} />
     </section>
   );
 };

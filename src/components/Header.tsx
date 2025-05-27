@@ -19,7 +19,7 @@ const useHeaderShrink = () => {
 
 const Header = () => {
   const isScrolled = useHeaderShrink();
-  const [logoSrc] = useState('/assets/logos/handwritten.png');
+  const [logoSrc] = useState('/assets/logos/initials.png');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -44,7 +44,6 @@ const Header = () => {
   }, [mobileMenuOpen]);
 
   const navLinks = [
-    { href: "#home", label: "Home" },
     { href: "#about", label: "About" },
     { href: "#projects", label: "Projects" },
     { href: "#contact", label: "Contact" }
@@ -66,7 +65,7 @@ const Header = () => {
         )}
       >
         <div className="flex items-center">
-          <a href="#home" className="flex items-center">
+          <a href="#about" className="flex items-center">
             <img 
               src={logoSrc} 
               alt="Conner Groth" 

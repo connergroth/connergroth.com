@@ -19,7 +19,7 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
         I'm a Computer Science Student, Software Engineer, and Undergraduate Researcher based in Boulder, CO. I am passionate about building elegant and thoughtful web applications and exploring machine learning. 
       </p>
       <p className="font-sans font-normal text-lg sm:text-xl md:text-2xl mt-4">
-        Currently, I am working on Synthetic Biology software tools such as SeqImprove at the Genetic Logic Lab. I am also building Sonance, a machine learning powered music recommendation system.
+        Currently, I am working on Synthetic Biology software tools such as SeqImprove at the Genetic Logic Lab. I am also building Tensoe, a machine learning powered music recommendation system.
       </p>
       
       {/* Badges row */}
