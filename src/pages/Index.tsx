@@ -10,6 +10,8 @@ import Loader from '../components/Loader';
 import SEO from '../components/SEO';
 import { PersonSchema, WebsiteSchema } from '../components/StructuredData';
 import { setupRevealAnimation, setupSectionAnimations } from '../utils/revealOnScroll';
+import FlyOnTheWall from '../sections/FlyOnTheWall';
+import Work from '../sections/Work';
 
 const Index = () => {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -75,10 +77,12 @@ const Index = () => {
               <Spacer />
               <About />
               <Spacer />
+              <Work />
+              <Spacer />
               <Projects />
-              <div className="mt-[18vh]" aria-hidden="true">
-                <div></div>
-              </div>
+              <Spacer />
+              <FlyOnTheWall />
+              <Spacer />
               <Contact />
               <Footer />
             </div>

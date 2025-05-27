@@ -34,7 +34,7 @@ const Hero: React.FC<HeroProps> = ({ id = 'home', className = '', style }) => {
       <div className="relative z-10">
         <div className="max-w-4xl">
           <h1 className="hero-title font-serif font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl custom-fade-in tracking-tight">
-            <span style={{ letterSpacing: '0.01em' }}>C</span>o<span style={{ letterSpacing: '0.01em' }}>n</span>n<span style={{ letterSpacing: '0.01em' }}>e</span>r Gro<span style={{ letterSpacing: '0.03em' }}>th</span>
+            <span style={{ letterSpacing: '0.01em' }}>C</span>o<span style={{ letterSpacing: '0.0005em' }}>n</span>n<span style={{ letterSpacing: '0.01em' }}>e</span>r Gro<span style={{ letterSpacing: '0.03em' }}>th</span>
           </h1>
           <p className="hero-subtitle mt-4 text-lg sm:text-xl md:text-2xl custom-fade-in anim-delay-400">
             Software Engineer | CS Student | Undergraduate Researcher
