@@ -19,7 +19,6 @@ const useHeaderShrink = () => {
 
 const Header = () => {
   const isScrolled = useHeaderShrink();
-  const [logoSrc] = useState('/assets/logos/initials.png');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -45,7 +44,9 @@ const Header = () => {
 
   const navLinks = [
     { href: "#about", label: "About" },
+    { href: "#work", label: "Work" },
     { href: "#projects", label: "Projects" },
+    { href: "#fly-on-the-wall", label: "Studio" },
     { href: "#contact", label: "Contact" }
   ];
 
@@ -66,11 +67,9 @@ const Header = () => {
       >
         <div className="flex items-center">
           <a href="#about" className="flex items-center">
-            <img 
-              src={logoSrc} 
-              alt="Conner Groth" 
-              className="h-10 w-auto object-contain"
-            />
+            <span className="font-serif font-bold text-2xl tracking-tight text-gray-300 md:text-gray-300 text-white">
+              <span style={{ letterSpacing: '0.01em' }}>C</span>G
+            </span>
           </a>
         </div>
         
@@ -90,7 +89,7 @@ const Header = () => {
         {/* Mobile Menu Button */}
         <button 
           onClick={toggleMobileMenu}
-          className="md:hidden flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-primary focus:outline-none"
+          className="md:hidden flex items-center justify-center p-2 rounded-md text-white hover:text-primary focus:outline-none"
           aria-expanded={mobileMenuOpen}
           aria-label="Toggle menu"
         >

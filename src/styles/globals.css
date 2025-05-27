@@ -896,11 +896,11 @@ section {
 }
 
 .project-list {
-  @apply snap-x snap-mandatory;
+  /* @apply snap-x snap-mandatory; */
 }
 
 .project-list > article {
-  @apply snap-center shrink-0;
+  /* @apply snap-center shrink-0; */
 }
 
 .custom-transition {
