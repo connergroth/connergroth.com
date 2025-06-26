@@ -1,6 +1,4 @@
 import React, { useRef, useState } from 'react';
-// ProjectCard is imported but not used in this file
-// import ProjectCard from '../components/ProjectCard';
 
 interface Project {
   title: string;
@@ -8,6 +6,8 @@ interface Project {
   image: string;
   technologies: string[];
   liveUrl?: string;
+  landingPage?: string;
+  appStoreUrl?: string;
   githubUrl?: string;
 }
 
@@ -17,11 +17,39 @@ interface ProjectsProps {
   style?: React.CSSProperties;
 }
 
+const mlProjects: Project[] = [
+  {
+    title: "PulsePlan",
+    description: "An AI-powered academic planner that intelligently manages your time based on energy levels, due dates, and preferences. Features seamless Canvas and Google Calendar integration.",
+    image: "/assets/images/pulseplan.PNG",
+    technologies: ["React Native", "Next.js", "Supabase", "n8n", "REST APIs"],
+    landingPage: "https://pulseplan.app",
+    appStoreUrl: "https://apps.apple.com/us/app/pulseplan/id6754444444",
+    githubUrl: "https://github.com/flyonthewalldev/pulseplan"
+  },
+  {
+    title: "EcoVision",
+    description: "An intelligent recycling assistant leveraging computer vision and AI to identify recyclable items in real-time with personalized disposal instructions.",
+    image: "/assets/images/EcoVisionDemoImage.jpg",
+    technologies: ["PyTorch", "Next.js", "React", "TypeScript", "Tailwind CSS", "Python", "FastAPI", "Docker", "GPT-4"],
+    liveUrl: "https://ecovisionlive.vercel.app",
+    githubUrl: "https://github.com/connergroth/EcoVision"
+  },
+  {
+    title: "Tensoe",
+    description: "A hybrid music recommendation engine powered by collaborative filtering, content-based analysis, and user ratings from Spotify, Last.fm, and Albumoftheyear.org.",
+    image: "/assets/images/tensoe.png",
+    technologies: ["PyTorch", "Python", "FastAPI", "React", "PostgreSQL", "Redis", "Spotify API"],
+    liveUrl: "https://tensoe.com",
+    githubUrl: "https://github.com/connergroth/Tensoe"
+  }
+];
+
 const programmingProjects: Project[] = [
   {
     title: "MovieMate",
     description: "A full-featured social platform for movie lovers to connect, rate films, and discover trending releases — all powered by real-time messaging and movie data APIs.",
-    image: "/assets/images/moviemate.PNG",
+    image: "/assets/images/moviemate.jpg",
     technologies: ["Node.js", "JavaScript", "Express", "Socket.io", "PostgreSQL", "Handlebars", "Bootstrap", "OMDB API"],
     liveUrl: "https://csci3308-moviemate.onrender.com",
     githubUrl: "https://github.com/Joe-Z-School/CSCI3308-MovieMate"
@@ -49,40 +77,6 @@ const programmingProjects: Project[] = [
     liveUrl: "https://strimrun.vercel.app",
     githubUrl: "https://github.com/connergroth/Strim"
   }
-];
-
-const devopsProjects: Project[] = [
-  // (now empty)
-];
-
-const mlProjects: Project[] = [
-  {
-    title: "Tensoe",
-    description: "A hybrid music recommendation engine powered by collaborative filtering, content-based analysis, and user ratings from Spotify, Last.fm, and Albumoftheyear.org.",
-    image: "/assets/images/tensoe.png",
-    technologies: ["PyTorch", "Python", "FastAPI", "PostgreSQL", "Redis", "Docker", "Spotify API"],
-    liveUrl: "https://tensoe.com",
-    githubUrl: "https://github.com/connergroth/Tensoe"
-  },
-  {
-    title: "EcoVision",
-    description: "An intelligent recycling assistant leveraging computer vision and AI to identify recyclable items in real-time with personalized disposal instructions.",
-    image: "/assets/images/EcoVisionDemoImage.jpg",
-    technologies: ["PyTorch", "Next.js", "React", "TypeScript", "Tailwind CSS", "Python", "FastAPI", "Docker", "GPT-4"],
-    liveUrl: "https://ecovisionlive.vercel.app",
-    githubUrl: "https://github.com/connergroth/EcoVision"
-  }
-];
-
-const studioProjects: Project[] = [
-  {
-    title: "PulsePlan",
-    description: "An AI-powered academic planner that intelligently manages your time based on energy levels, due dates, and preferences. Features seamless Canvas and Google Calendar integration.",
-    image: "/assets/images/pulseplan.jpg",
-    technologies: ["React", "TypeScript", "GPT-4", "Custom ML", "Google Calendar API"],
-    liveUrl: "https://pulseplan.app",
-    githubUrl: "https://github.com/flyonthewalldev/pulseplan"
-  },
 ];
 
 const ProjectCategory: React.FC<{ 
@@ -185,6 +179,22 @@ const ProjectCategory: React.FC<{
                           <span className="ml-1.5 font-bold">Try it!</span>
                         </a>
                       )}
+                      {project.landingPage && (
+                        <a className="learn-more-btn text-xs py-1.5 cursor-pointer" href={project.landingPage} target="_blank" rel="noopener noreferer">
+                          <svg className="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z" />
+                          </svg>
+                          <span className="ml-1.5 font-bold">Landing Page</span>
+                        </a>
+                      )}
+                      {project.appStoreUrl && (
+                        <a className="learn-more-btn text-xs py-1.5 cursor-pointer" href={project.appStoreUrl} target="_blank" rel="noopener noreferer">
+                          <svg className="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                          </svg>
+                          <span className="ml-1.5 font-bold">App Store</span>
+                        </a>
+                      )}
                       {project.githubUrl && (
                         <a className="learn-more-btn text-xs py-1.5 cursor-pointer" href={project.githubUrl} target="_blank" rel="noopener noreferer">
                           <svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
@@ -215,20 +225,9 @@ const Projects: React.FC<ProjectsProps> = ({ id = 'projects', className = '', st
     >
       <h1 className="font-serif font-bold sm:text-6xl text-4xl"><span style={{ letterSpacing: '-0.01em' }}>M</span>y Work</h1>
       
-      <ProjectCategory title="ML Projects" projects={mlProjects} />
-      <ProjectCategory title="Studio Projects" projects={studioProjects} />
+      <ProjectCategory title="AI & ML Projects" projects={mlProjects} />
       <ProjectCategory title="Programming Projects" projects={programmingProjects} />
-      {/* Only show DevOps Projects if there are any */}
-      {devopsProjects.length > 0 && (
-        <ProjectCategory 
-          title={
-            <>
-              De<span style={{ letterSpacing: '0.03em' }}>v</span><span style={{ letterSpacing: '0.01em' }}>O</span>ps Projects
-            </>
-          } 
-          projects={devopsProjects} 
-        />
-      )}
+
     </section>
   );
 };

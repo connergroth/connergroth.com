@@ -39,11 +39,6 @@ const Hero: React.FC<HeroProps> = ({ id = 'home', className = '', style }) => {
           <p className="hero-subtitle mt-4 text-lg sm:text-xl md:text-2xl custom-fade-in anim-delay-400">
             Software Engineer | CS Student | Undergraduate Researcher
           </p>
-          <p className="hero-subbertitle mt-2 text-base md:text-lg custom-fade-in anim-delay-800">
-            <a href="https://connergroth.com" className="hover:text-primary transition-colors">
-              connergroth.com
-            </a>
-          </p>
           
           {/* Social Media icons for mobile */}
           <div className="md:hidden flex gap-4 mt-4">
