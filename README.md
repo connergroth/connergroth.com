@@ -1,6 +1,6 @@
-# Conner Groth Portfolio Website
+# Portfolio Website
 
-A modern, responsive portfolio website built with React, TypeScript, and Tailwind CSS featuring interactive WebGL shader effects.
+A sleek portfolio website featuring my experience, projects, and links.
 
 ## Features
 
