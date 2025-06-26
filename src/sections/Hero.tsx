@@ -1,6 +1,5 @@
 import React from 'react';
 import BlobShader from '../components/BlobShader';
-import ScrollHint from '../components/ScrollHint';
 import SideBars from '../components/SideBars';
 import { Github, Linkedin, Mail } from 'lucide-react';
 
