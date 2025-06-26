@@ -13,7 +13,7 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
       company: "University of Colorado Boulder – Genetic Logic Lab",
       location: "Boulder, CO",
       date: "May 2025 – Present",
-      description: "Contributing to full-stack development using React, Python (Flask), and modern web technologies while debugging and optimizing data pipelines for complex structured biological data. Implementing backend integrations with external APIs and third-party libraries, enhancing frontend state management, component design, and UI/UX workflows, and collaborating in an agile environment to deliver production-level research software.",
+      description: "Contributing to full-stack development of research software using React and Python (Flask), with a focus on structured biological data. Enhancing backend integrations, data pipelines, and frontend state management while collaborating in an agile environment to deliver production-ready tools for the lab.",
       tags: ["Python", "Flask", "React", "APIs", "Data Pipelines", "UI/UX", "Agile", "Full-Stack Development"]
     },
     {
@@ -21,7 +21,7 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
       company: "Ryno Industries",
       location: "Erie, CO",
       date: "May 2023 – Aug 2023",
-      description: "Developed and optimized the company website to enhance usability, aesthetic appeal, and performance, resulting in a 20% increase in user engagement. Built responsive components using HTML, CSS, and JavaScript, ensuring cross-device compatibility. Worked closely with leadership to translate business goals into visual updates and interactive features.",
+      description: "Redesigned and optimized the company website for usability, performance, and visual appeal—boosting user engagement by 20%. Built responsive components with HTML, CSS, and JavaScript in close collaboration with leadership.",
       tags: ["HTML", "CSS", "JavaScript", "UI/UX"]
     },
   ];
@@ -32,7 +32,7 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
       company: "Blueprint Boulder",
       location: "Boulder, CO",
       date: "March 2025 – Present",
-      description: "Leading a software engineering team in building a production-grade web application for Need Project, a non-profit company providing care for special needs children while acting as primary liaison between engineering and client stakeholders to translate requirements into technical specifications. Overseeing system architecture, feature planning, and sprint management to ensure on-time delivery, contributing to full-stack development across frontend, backend, and database systems, and managing agile development cycles, technical team communication, and project delivery.",
+      description: "Leading full-stack development for a production-grade web app for Need Project, a nonprofit serving special needs families. Acting as the primary liaison between engineering and stakeholders, overseeing system architecture, sprint planning, and agile delivery.",
       tags: ["Leadership", "Client Liaison", "System Architecture", "Sprint Management", "Full-Stack Development", "Agile", "Team Communication"]
     },
     {
@@ -40,7 +40,7 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
       company: "Fly on the Wall",
       location: "Boulder, CO",
       date: "May 2025 – Present",
-      description: "Founded and currently lead an early-stage tech startup focused on building AI-powered productivity tools while defining product vision, user experience strategy, and growth roadmap for student-focused applications. Building and launching branding, landing pages, and onboarding systems to begin early user acquisition and testing, managing product planning, cross-functional workflows, and lean execution while handling design, development, and deployment. Developing backend and mobile applications using FastAPI, React Native, Supabase, and AI agent workflows to support product goals.",
+      description: "Founder of an early-stage startup building AI-powered productivity tools for students. Leading product vision, branding, and growth strategy while developing and launching mobile and backend systems using FastAPI, React Native, and Supabase.",
       tags: ["Leadership", "Product Strategy", "Brand Development", "Full-Stack Development", "React Native", "Next.js", "Supabase", "AI Workflows"]
     },
   ];
