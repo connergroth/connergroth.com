@@ -119,15 +119,15 @@ const ContactForm = () => {
         <div className="flex flex-col md:flex-row gap-4">
           <button 
             type="submit" 
-            className="relative h-12 px-6 flex justify-center items-center w-full md:w-auto transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
+            className="relative h-12 px-6 flex justify-center items-center w-full md:w-auto transition-all duration-300 hover:opacity-90 hover:scale-105 active:scale-[0.98] group"
             disabled={isSubmitting}
           >
-            <div className="absolute inset-0 bg-[#070a0d] border border-primary rounded-md"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-md"></div>
-            <div className="text-center text-primary text-sm font-sans font-medium z-10 flex items-center">
+            <div className="absolute inset-0 bg-blue-600 border border-blue-600 rounded-md"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-md"></div>
+            <div className="text-center text-white text-sm font-sans font-medium z-10 flex items-center">
               {isSubmitting ? (
                 <>
-                  <div className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2"></div>
+                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                   Sending...
                 </>
               ) : (
@@ -144,11 +144,11 @@ const ContactForm = () => {
           
           <a 
             href="mailto:connergroth@gmail.com" 
-            className="relative h-12 px-6 flex justify-center items-center w-full md:w-auto transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
+            className="relative h-12 px-6 flex justify-center items-center w-full md:w-auto transition-all duration-300 hover:opacity-90 hover:scale-105 active:scale-[0.98] group"
           >
-            <div className="absolute inset-0 bg-[#070a0d] border border-primary rounded-md"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary/20 rounded-md"></div>
-            <div className="text-center text-primary text-sm font-sans font-medium z-10 flex items-center">
+            <div className="absolute inset-0 bg-blue-600 border border-blue-600 rounded-md"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-md"></div>
+            <div className="text-center text-white text-sm font-sans font-medium z-10 flex items-center">
               <svg className="w-4 h-4 mr-2 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                 <path fill="currentColor" d="M16.1 260.2c-22.6 12.9-20.5 47.3 3.6 57.3L160 376V479.3c0 18.1 14.6 32.7 32.7 32.7c9.7 0 18.9-4.3 25.1-11.8l62-74.3 123.9 51.6c18.9 7.9 40.8-4.5 43.9-24.7l64-416c1.9-12.1-3.4-24.3-13.5-31.2s-23.3-7.5-34-1.4l-448 256zm52.1 25.5L409.7 90.6 190.1 336l1.2 1L68.2 285.7zM403.3 425.4L236.7 355.9 450.8 116.6 403.3 425.4z" />
               </svg>
