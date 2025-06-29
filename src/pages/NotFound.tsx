@@ -27,7 +27,7 @@ const NotFound: React.FC = () => {
         </p>
         <Link 
           to="/" 
-          className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 hover:scale-105 text-white rounded-lg font-medium transition-all duration-300 group"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 hover:scale-105 text-white rounded-lg font-medium transition-all duration-300 group"
         >
           <ArrowLeft size={18} className="transition-transform duration-300 group-hover:-translate-x-1" />
           Back to Home

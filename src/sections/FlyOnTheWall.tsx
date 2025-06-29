@@ -32,7 +32,7 @@ const FlyOnTheWall: React.FC<FlyOnTheWallProps> = ({ id = 'fly-on-the-wall', cla
             href="https://pulseplan.app" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 hover:scale-105 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 mb-6 group"
+            className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 hover:scale-105 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 mb-6 group"
           >
             View PulsePlan
             <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

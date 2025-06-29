@@ -22,7 +22,7 @@ const mlProjects: Project[] = [
     title: "PulsePlan",
     description: "An AI-powered academic planner that auto-schedules tasks using energy levels, deadlines, and personal routines. Includes smart Canvas syncing, Calendar integrations, and adaptive planning.",
     image: "/assets/images/pulseplan.PNG",
-    technologies: ["React Native", "Next.js", "Supabase", "n8n", "REST APIs"],
+    technologies: ["React Native", "Node.js", "Supabase", "n8n", "REST APIs"],
     landingPage: "https://pulseplan.app",
     appStoreUrl: "https://apps.apple.com/us/app/pulseplan/id6754444444",
     githubUrl: "https://github.com/flyonthewalldev/pulseplan"
