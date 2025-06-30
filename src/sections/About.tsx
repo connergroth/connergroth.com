@@ -48,7 +48,7 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
             <div className="mb-6">
               <h3 className="text-sm font-medium text-gray-400 mb-3">Languages</h3>
               <ul className="flex flex-wrap gap-3">
-                {['Python', 'C++', 'C', 'JavaScript', 'TypeScript', 'HTML', 'CSS', 'SQL'].map(tag => (
+                {['Python', 'JavaScript', 'TypeScript','C++', 'C',  'HTML', 'CSS', 'SQL'].map(tag => (
                   <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
                     {tag}
                   </li>
@@ -60,7 +60,7 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
             <div className="mb-6">
               <h3 className="text-sm font-medium text-gray-400 mb-3">Frameworks & Libraries</h3>
               <ul className="flex flex-wrap gap-3">
-                {['React', 'Next.js', 'React Native', 'FastAPI', 'Flask'].map(tag => (
+                {['React', 'Next.js', 'Node.js', 'React Native', 'FastAPI', 'Flask'].map(tag => (
                   <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
                     {tag}
                   </li>

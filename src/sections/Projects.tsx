@@ -22,16 +22,24 @@ const mlProjects: Project[] = [
     title: "PulsePlan",
     description: "An AI-powered academic planner that auto-schedules tasks using energy levels, deadlines, and personal routines. Includes smart Canvas syncing, Calendar integrations, and adaptive planning.",
     image: "/assets/images/pulseplan.PNG",
-    technologies: ["React Native", "Node.js", "Supabase", "n8n", "REST APIs"],
+    technologies: ["React Native", "TypeScript", "Node.js", "n8n", "Supabase", "Redis", "REST APIs", "OpenAI API"],
     landingPage: "https://pulseplan.app",
     appStoreUrl: "https://apps.apple.com/us/app/pulseplan/id6754444444",
     githubUrl: "https://github.com/flyonthewalldev/pulseplan"
   },
   {
+    title: "SeqImprove",
+    description: "An AI-assisted sequence annotation tool to help synthetic biology researchers curate and annotate genetic designs in SBOL format.  It provides automated annotation suggestions and an intuitive interface for adding metadata to genetic designs.",
+    image: "/assets/images/seqimprove.png", 
+    technologies: ["React", "JavaScript", "Zustand", "Python", "Flask", "Azure", "SBOL", "SynBioHub APIs"],
+    liveUrl: "https://seqimprove.synbiohub.org",
+    githubUrl: "https://github.com/MyersResearchGroup/SeqImprove"
+  },
+  {
     title: "EcoVision",
     description: "An intelligent recycling assistant leveraging computer vision and AI to identify recyclable items in real-time with personalized disposal instructions.",
     image: "/assets/images/EcoVisionDemoImage.jpg",
-    technologies: ["PyTorch", "Next.js", "React", "TypeScript", "Tailwind CSS", "Python", "FastAPI", "Docker", "GPT-4"],
+    technologies: ["PyTorch", "Next.js", "React", "TypeScript", "Tailwind CSS", "Python", "FastAPI", "Docker", "OpenAI API"],
     liveUrl: "https://ecovisionlive.vercel.app",
     githubUrl: "https://github.com/connergroth/EcoVision"
   },
@@ -58,7 +66,7 @@ const programmingProjects: Project[] = [
     title: "TailorIQ",
     description: "An AI-powered resume builder that instantly generates polished, ATS-optimized resumes tailored to specific job descriptions.",
     image: "/assets/images/tailoriqdemo.PNG",
-    technologies: ["React", "TypeScript", "Tailwind CSS", "Firebase", "GPT-4", "Express", "Puppeteer"],
+    technologies: ["React", "TypeScript", "Tailwind CSS", "Firebase", "OpenAI API", "Express", "Puppeteer"],
     liveUrl: "https://tailoriq.onrender.com/",
     githubUrl: "https://github.com/connergroth/tailoriq"
   },
@@ -66,14 +74,14 @@ const programmingProjects: Project[] = [
     title: "AOTY API",
     description: "A high-performance, unofficial REST API for albumoftheyear.org that provides comprehensive album data, ratings, and user profiles with intelligent caching and robust rate limiting.",
     image: "/assets/images/AOTY API Logo.png",
-    technologies: ["Python", "FastAPI", "PostgreSQL", "Redis", "Docker", "AWS"],
+    technologies: ["Python", "FastAPI", "PostgreSQL", "Redis", "Docker"],
     githubUrl: "https://github.com/connergroth/aoty-api"
   },
   {
     title: "Strim",
     description: "A powerful tool for trimming Strava activities and editing metadata with automatic deletion and reupload using the Strava API.",
-    image: "/assets/images/strimDemoImage.PNG",
-    technologies: ["Python", "Flask", "JavaScript", "HTML", "CSS"],
+    image: "/assets/images/strim.PNG",
+    technologies: ["Python", "Flask", "JavaScript", "HTML", "CSS", "Strava API"],
     liveUrl: "https://strimrun.vercel.app",
     githubUrl: "https://github.com/connergroth/Strim"
   }
