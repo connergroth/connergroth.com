@@ -53,23 +53,25 @@ const FlyOnTheWall: React.FC<FlyOnTheWallProps> = ({ id = 'fly-on-the-wall', cla
           </p>
         </div>
 
-        <div className="card mt-8" style={{ borderRadius: '0.9rem' }}>
-          <a href="https://github.com/flyonthewalldev" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
-            <Github className="w-6 h-6 text-gray-300" />
-            <div>
-              <h2>GitHub Organization</h2>
-              <p>Check out our startup projects</p>
-            </div>
-          </a>
-        </div>
-        <div className="card mt-8" style={{ borderRadius: '0.9rem' }}>
-          <a href="https://linkedin.com/company/flyonthewalldev" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
-            <Linkedin className="w-6 h-6 text-gray-300" />
-            <div>
-              <h2>LinkedIn Company Page</h2>
-              <p>Connect with us!</p>
-            </div>
-          </a>
+        <div className="flex flex-col md:flex-row gap-6 mt-8">
+          <div className="card flex-1" style={{ borderRadius: '0.9rem' }}>
+            <a href="https://github.com/flyonthewalldev" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
+              <Github className="w-6 h-6 text-gray-300" />
+              <div>
+                <h2>GitHub Organization</h2>
+                <p>Check out our work</p>
+              </div>
+            </a>
+          </div>
+          <div className="card flex-1" style={{ borderRadius: '0.9rem' }}>
+            <a href="https://linkedin.com/company/flyonthewalldev" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
+              <Linkedin className="w-6 h-6 text-gray-300" />
+              <div>
+                <h2>LinkedIn Company Page</h2>
+                <p>Connect with us</p>
+              </div>
+            </a>
+          </div>
         </div>
       </div>
     </section>

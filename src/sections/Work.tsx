@@ -9,6 +9,14 @@ interface WorkProps {
 const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
   const workExperiences = [
     {
+      title: "Software Engineer Intern",
+      company: "Soaper LLC",
+      location: "Remote",
+      date: "July 2025 – Present",
+      description: "Developing secure, biometric-authenticated patient and clinician interfaces for a full-stack EMR platform. Spearheaded biometric login feature using facial recognition flow and token-based authentication. Designed and implemented scalable backend APIs using FastAPI, ensuring secure medical data handling.",
+      tags: ["React", "TypeScript", "Python", "FastAPI", "AWS", "Full-Stack Development"]
+    },
+    {
       title: "Undergraduate Researcher - Software Engineering",
       company: "University of Colorado Boulder – Genetic Logic Lab",
       location: "Boulder, CO",
@@ -115,12 +123,12 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
       <h1 className="font-serif font-bold sm:text-6xl text-4xl"><span style={{ letterSpacing: '-0.08em' }}>W</span>ork <span style={{ letterSpacing: '0.05em' }}>E</span><span style={{ letterSpacing: '0.06em' }}>x</span><span style={{ letterSpacing: '0.01em' }}>p</span><span style={{ letterSpacing: '0.03em' }}>e</span><span style={{ letterSpacing: '0.03em' }}>r</span>ien<span style={{ letterSpacing: '0.03em' }}>c</span>e</h1>
       
       <h2 className="mt-12 font-serif font-bold sm:text-3xl text-2xl">Professional Experience &rarr;</h2>
-      <div className="grid gap-6 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
         {workExperiences.map((exp, index) => renderCard(exp, index))}
       </div>
       
       <h2 className="mt-12 font-serif font-bold sm:text-3xl text-2xl">Leadership Experience &rarr;</h2>
-      <div className="grid gap-6 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
         {leadershipExperiences.map((exp, index) => renderCard(exp, index))}
       </div>
     </section>

@@ -36,7 +36,7 @@ const Hero: React.FC<HeroProps> = ({ id = 'home', className = '', style }) => {
             <span style={{ letterSpacing: '0.01em' }}>C</span>o<span style={{ letterSpacing: '0.0005em' }}>n</span>n<span style={{ letterSpacing: '0.01em' }}>e</span>r Gro<span style={{ letterSpacing: '0.03em' }}>th</span>
           </h1>
           <p className="hero-subtitle mt-4 text-lg sm:text-xl md:text-2xl custom-fade-in anim-delay-400">
-            Software Engineer | CS Student | Undergraduate Researcher
+           CS Student | Software Engineer Intern | Undergraduate Researcher
           </p>
           
           {/* Social Media icons for mobile */}

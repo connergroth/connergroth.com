@@ -44,87 +44,97 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
           <div className="flex-1">
             <h2 className="text-xl font-semibold mb-6">Tech Stack Overview</h2>
 
-            {/* Languages */}
-            <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-400 mb-3">Languages</h3>
-              <ul className="flex flex-wrap gap-3">
-                {['Python', 'JavaScript', 'TypeScript','C++', 'C',  'HTML', 'CSS', 'SQL'].map(tag => (
-                  <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
-                    {tag}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left Column */}
+              <div>
+                {/* Languages */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-400 mb-3">Languages</h3>
+                  <ul className="flex flex-wrap gap-3">
+                    {['Python', 'JavaScript', 'TypeScript','C++', 'C',  'HTML', 'CSS', 'SQL'].map(tag => (
+                      <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-            {/* Frameworks & Libraries */}
-            <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-400 mb-3">Frameworks & Libraries</h3>
-              <ul className="flex flex-wrap gap-3">
-                {['React', 'Next.js', 'Node.js', 'React Native', 'FastAPI', 'Flask'].map(tag => (
-                  <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
-                    {tag}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                {/* Frameworks & Libraries */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-400 mb-3">Frameworks & Libraries</h3>
+                  <ul className="flex flex-wrap gap-3">
+                    {['React', 'Next.js', 'Node.js', 'React Native', 'FastAPI', 'Flask'].map(tag => (
+                      <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-            {/* Database & Storage */}
-            <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-400 mb-3">Database & Storage</h3>
-              <ul className="flex flex-wrap gap-3">
-                {['PostgreSQL', 'Redis', 'Supabase', 'Firebase'].map(tag => (
-                  <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
-                    {tag}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                {/* Database & Storage */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-400 mb-3">Database & Storage</h3>
+                  <ul className="flex flex-wrap gap-3">
+                    {['PostgreSQL', 'Redis', 'Supabase', 'Firebase'].map(tag => (
+                      <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
 
-            {/* Machine Learning & Data */}
-            <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-400 mb-3">Machine Learning & Data</h3>
-              <ul className="flex flex-wrap gap-3">
-                {['PyTorch', 'OpenAI API', 'Gemini API', 'n8n', 'Hugging Face', 'Pandas', 'NumPy'].map(tag => (
-                  <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
-                    {tag}
-                  </li>
-                ))}
-              </ul>
-            </div>
+              {/* Right Column */}
+              <div>
+                {/* Machine Learning & Data */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-400 mb-3">Machine Learning & Data</h3>
+                  <ul className="flex flex-wrap gap-3">
+                    {['PyTorch', 'OpenAI API', 'Gemini API', 'n8n', 'Hugging Face', 'Pandas', 'NumPy'].map(tag => (
+                      <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-            {/* DevOps & Tools */}
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-3">DevOps & Tools</h3>
-              <ul className="flex flex-wrap gap-3">
-                {['Docker', 'Git', 'GitHub', 'Bash', 'Postman', 'AWS'].map(tag => (
-                  <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
-                    {tag}
-                  </li>
-                ))}
-              </ul>
+                {/* DevOps & Tools */}
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400 mb-3">DevOps & Tools</h3>
+                  <ul className="flex flex-wrap gap-3">
+                    {['Docker', 'Git', 'GitHub', 'Bash', 'Postman', 'AWS'].map(tag => (
+                      <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="card mb-8" style={{ borderRadius: '0.9rem' }}>
-        <a href="https://github.com/connergroth" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
-          <Github className="w-6 h-6 text-gray-300" />
-          <div>
-            <h2>Github Profile</h2>
-            <p>Check out my projects and contributions</p>
-          </div>
-        </a>
-      </div>
+      <div className="flex flex-col md:flex-row gap-6 mb-8">
+        <div className="card flex-1" style={{ borderRadius: '0.9rem' }}>
+          <a href="https://github.com/connergroth" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
+            <Github className="w-6 h-6 text-gray-300" />
+            <div>
+              <h2>Github Profile</h2>
+              <p>Check out my projects and contributions</p>
+            </div>
+          </a>
+        </div>
 
-      <div className="card" style={{ borderRadius: '0.9rem' }}>
-        <a href="/assets/documents/Conner Groth Resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
-          <FileDown className="w-6 h-6 text-gray-300" />
-          <div>
-            <h2>Resume</h2>
-            <p>Download my resume</p>
-          </div>
-        </a>
+        <div className="card flex-1" style={{ borderRadius: '0.9rem' }}>
+          <a href="/assets/documents/Conner Groth Resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
+            <FileDown className="w-6 h-6 text-gray-300" />
+            <div>
+              <h2>Resume</h2>
+              <p>Download my resume</p>
+            </div>
+          </a>
+        </div>
       </div>
       
       {/* <div className="lg:hidden md:hidden block flex justify-between text-center p-4 mt-2">
