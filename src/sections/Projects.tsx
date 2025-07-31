@@ -205,7 +205,7 @@ const ProjectCategory: React.FC<{
                         return iconName ? (
                           <div key={techIndex} className="flex items-center gap-1 tag bg-[#2563eb]/10 text-[#60a5fa] text-xs px-2.5 py-1 whitespace-nowrap">
                             <img 
-                              src={`https://skillicons.dev/icons?i=${iconName}`} 
+                              src={`/assets/icons/${iconName}.svg`} 
                               alt={tech}
                               className="w-3 h-3"
                             />

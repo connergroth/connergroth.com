@@ -50,9 +50,9 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
                 {['python', 'js', 'ts', 'cpp', 'c', 'html', 'css', 'react', 'nextjs', 'nodejs', 'flask', 'fastapi', 'pytorch', 'postgres', 'supabase', 'redis', 'firebase', 'docker', 'git', 'github', 'aws'].map((tech, index) => (
                   <img 
                     key={index}
-                    src={`https://skillicons.dev/icons?i=${tech}&theme=dark`} 
+                    src={`/assets/icons/${tech}.svg`} 
                     alt={tech}
-                    className="hover:scale-110 transition-transform duration-300 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14"
+                    className="hover:scale-110 transition-transform duration-300 w-13 h-13 sm:w-13 sm:h-13 md:w-13 md:h-13"
                   />
                 ))}
               </div>
