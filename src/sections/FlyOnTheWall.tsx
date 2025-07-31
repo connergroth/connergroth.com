@@ -14,8 +14,15 @@ const FlyOnTheWall: React.FC<FlyOnTheWallProps> = ({ id = 'fly-on-the-wall', cla
       className={`custom-transition opacity-0 ${className}`}
       style={style}
     >
-      <h1 className="font-serif font-bold sm:text-6xl text-4xl">
-      <span style={{ letterSpacing: '0.03em' }}>F</span><span style={{ letterSpacing: '0.04em' }}>l</span>y on <span style={{ letterSpacing: '0.04em' }}>t</span>he <span style={{ letterSpacing: '-0.08em' }}>W</span><span style={{ letterSpacing: '0.02em' }}>a</span><span style={{ letterSpacing: '0.005em' }}>l</span>l
+      <h1 className="font-serif font-bold sm:text-6xl text-4xl flex items-center gap-4">
+        <img 
+          src="/assets/images/flyonthewall.png" 
+          alt="Fly on the Wall"
+          className="w-12 h-12 sm:w-16 sm:h-16"
+        />
+        <span>
+          <span style={{ letterSpacing: '0.03em' }}>F</span><span style={{ letterSpacing: '0.04em' }}>l</span>y on <span style={{ letterSpacing: '0.04em' }}>t</span>he <span style={{ letterSpacing: '-0.08em' }}>W</span><span style={{ letterSpacing: '0.02em' }}>a</span><span style={{ letterSpacing: '0.005em' }}>l</span>l
+        </span>
       </h1>
       
       <div className="mt-8">

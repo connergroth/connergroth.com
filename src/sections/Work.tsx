@@ -1,5 +1,27 @@
 import React from 'react';
 
+// Helper function to map technology names to skill icons
+const getSkillIcon = (tech: string): string | null => {
+  const iconMap: { [key: string]: string } = {
+    'React': 'react',
+    'TypeScript': 'ts',
+    'Python': 'python',
+    'FastAPI': 'fastapi',
+    'AWS': 'aws',
+    'Flask': 'flask',
+    'HTML': 'html',
+    'CSS': 'css',
+    'JavaScript': 'js',
+    'UI/UX': 'figma',
+    'APIs': 'postman',
+    'Agile': 'github',
+    'Next.js': 'nextjs',
+    'React Native': 'react',
+    'Supabase': 'supabase'
+  };
+  return iconMap[tech] || null;
+};
+
 interface WorkProps {
   id?: string;
   className?: string;
@@ -9,19 +31,27 @@ interface WorkProps {
 const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
   const workExperiences = [
     {
-      title: "Software Engineer Intern",
+      title: "AI Software Engineer Intern",
       company: "Soaper LLC",
       location: "Remote",
       date: "July 2025 – Present",
-      description: "Developing secure, biometric-authenticated patient and clinician interfaces for a full-stack EMR platform. Spearheaded biometric login feature using facial recognition flow and token-based authentication. Designed and implemented scalable backend APIs using FastAPI, ensuring secure medical data handling.",
+      description: "Building secure patient and clinician interfaces for an EMR platform with biometric authentication and scalable backend APIs.",
       tags: ["React", "TypeScript", "Python", "FastAPI", "AWS", "Full-Stack Development"]
+    },
+    {
+      title: "Founding Software Engineer Intern",
+      company: "Mili Llama",
+      location: "Remote",
+      date: "July 2025 – August",
+      description: "Built an AI-first recruiting assistant for student-athletes as the sole engineer, focusing on NCAA compliance and intelligent school matching.",
+      tags: ["Next.js", "FastAPI", "Supabase", "TypeScript", "Full-Stack Development", "AI Workflows"]
     },
     {
       title: "Undergraduate Researcher - Software Engineering",
       company: "University of Colorado Boulder – Genetic Logic Lab",
       location: "Boulder, CO",
       date: "May 2025 – Present",
-      description: "Contributing to full-stack development of research software using React and Python (Flask), with a focus on structured biological data. Enhancing backend integrations, data pipelines, and frontend state management while collaborating in an agile environment to deliver production-ready tools for the lab.",
+      description: "Developing full-stack research software for biological data processing with React frontend and Python backend integrations.",
       tags: ["Python", "Flask", "React", "APIs", "Data Pipelines", "UI/UX", "Agile", "Full-Stack Development"]
     },
     {
@@ -29,7 +59,7 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
       company: "Ryno Industries",
       location: "Erie, CO",
       date: "May 2023 – Aug 2023",
-      description: "Redesigned and optimized the company website for usability, performance, and visual appeal—boosting user engagement by 20%. Built responsive components with HTML, CSS, and JavaScript in close collaboration with leadership.",
+      description: "Redesigned company website with responsive components, improving user engagement by 20%.",
       tags: ["HTML", "CSS", "JavaScript", "UI/UX"]
     },
   ];
@@ -40,7 +70,7 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
       company: "Blueprint Boulder",
       location: "Boulder, CO",
       date: "March 2025 – Present",
-      description: "Leading full-stack development for a production-grade web app for Need Project, a nonprofit serving special needs families. Acting as the primary liaison between engineering and stakeholders, overseeing system architecture, sprint planning, and agile delivery.",
+      description: "Leading full-stack development team for a nonprofit web application, managing client relations and system architecture.",
       tags: ["Leadership", "Client Liaison", "System Architecture", "Sprint Management", "Full-Stack Development", "Agile", "Team Communication"]
     },
     {
@@ -48,7 +78,7 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
       company: "Fly on the Wall",
       location: "Boulder, CO",
       date: "May 2025 – Present",
-      description: "Founder of an early-stage startup building AI-powered productivity tools for students. Leading product vision, branding, and growth strategy while developing and launching mobile and backend systems using FastAPI, React Native, and Supabase.",
+      description: "Co-founded startup building AI productivity tools for students, leading product development and mobile app launch.",
       tags: ["Leadership", "Product Strategy", "Brand Development", "Full-Stack Development", "React Native", "Next.js", "Supabase", "AI Workflows"]
     },
   ];
@@ -101,14 +131,26 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
         
         {/* Tags */}
         <div className="flex flex-wrap gap-2">
-          {exp.tags.map((tag, tagIndex) => (
-            <span 
-              key={tagIndex}
-              className="bg-[#2563eb]/10 text-[#60a5fa] px-3 py-1.5 rounded-full text-sm font-medium"
-            >
-              {tag}
-            </span>
-          ))}
+          {exp.tags.map((tag, tagIndex) => {
+            const iconName = getSkillIcon(tag);
+            return iconName ? (
+              <div key={tagIndex} className="flex items-center gap-1 bg-[#2563eb]/10 text-[#60a5fa] px-3 py-1.5 rounded-full text-sm font-medium">
+                <img 
+                  src={`https://skillicons.dev/icons?i=${iconName}`} 
+                  alt={tag}
+                  className="w-4 h-4"
+                />
+                <span>{tag}</span>
+              </div>
+            ) : (
+              <span 
+                key={tagIndex}
+                className="bg-[#2563eb]/10 text-[#60a5fa] px-3 py-1.5 rounded-full text-sm font-medium"
+              >
+                {tag}
+              </span>
+            );
+          })}
         </div>
       </div>
     </div>

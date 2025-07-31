@@ -44,70 +44,36 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
           <div className="flex-1">
             <h2 className="text-xl font-semibold mb-6">Tech Stack Overview</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Left Column */}
-              <div>
-                {/* Languages */}
-                <div className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-400 mb-3">Languages</h3>
-                  <ul className="flex flex-wrap gap-3">
-                    {['Python', 'JavaScript', 'TypeScript','C++', 'C',  'HTML', 'CSS', 'SQL'].map(tag => (
-                      <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Frameworks & Libraries */}
-                <div className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-400 mb-3">Frameworks & Libraries</h3>
-                  <ul className="flex flex-wrap gap-3">
-                    {['React', 'Next.js', 'Node.js', 'React Native', 'FastAPI', 'Flask'].map(tag => (
-                      <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Database & Storage */}
-                <div className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-400 mb-3">Database & Storage</h3>
-                  <ul className="flex flex-wrap gap-3">
-                    {['PostgreSQL', 'Redis', 'Supabase', 'Firebase'].map(tag => (
-                      <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <div className="w-full">
+              {/* Tech Stack Icons */}
+              <div className="flex flex-wrap justify-center gap-2 mb-8">
+                {['python', 'js', 'ts', 'cpp', 'c', 'html', 'css', 'react', 'nextjs', 'nodejs', 'flask', 'fastapi', 'pytorch', 'postgres', 'supabase', 'redis', 'firebase', 'docker', 'git', 'github', 'aws'].map((tech, index) => (
+                  <img 
+                    key={index}
+                    src={`https://skillicons.dev/icons?i=${tech}&theme=dark`} 
+                    alt={tech}
+                    className="hover:scale-110 transition-transform duration-300 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14"
+                  />
+                ))}
               </div>
-
-              {/* Right Column */}
-              <div>
-                {/* Machine Learning & Data */}
-                <div className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-400 mb-3">Machine Learning & Data</h3>
-                  <ul className="flex flex-wrap gap-3">
-                    {['PyTorch', 'OpenAI API', 'Gemini API', 'n8n', 'Hugging Face', 'Pandas', 'NumPy'].map(tag => (
-                      <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
+              
+              {/* Category Labels */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                <div className="bg-[#0a0e13]/30 p-4 rounded-lg">
+                  <h4 className="text-gray-300 font-semibold mb-3 text-lg">Languages</h4>
+                  <p className="text-gray-400 leading-relaxed">Python, JavaScript, TypeScript, C++, C</p>
                 </div>
-
-                {/* DevOps & Tools */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-400 mb-3">DevOps & Tools</h3>
-                  <ul className="flex flex-wrap gap-3">
-                    {['Docker', 'Git', 'GitHub', 'Bash', 'Postman', 'AWS'].map(tag => (
-                      <li key={tag} className="bg-[#2563eb]/10 text-[#60a5fa] hover:bg-[#2563eb]/20 transition-colors duration-300 px-3 py-1 rounded-full text-sm">
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
+                <div className="bg-[#0a0e13]/30 p-4 rounded-lg">
+                  <h4 className="text-gray-300 font-semibold mb-3 text-lg">Frontend</h4>
+                  <p className="text-gray-400 leading-relaxed">React, Next.js, HTML, CSS</p>
+                </div>
+                <div className="bg-[#0a0e13]/30 p-4 rounded-lg">
+                  <h4 className="text-gray-300 font-semibold mb-3 text-lg">Backend</h4>
+                  <p className="text-gray-400 leading-relaxed">Node.js, Flask, FastAPI, PyTorch</p>
+                </div>
+                <div className="bg-[#0a0e13]/30 p-4 rounded-lg">
+                  <h4 className="text-gray-300 font-semibold mb-3 text-lg">Tools & Cloud</h4>
+                  <p className="text-gray-400 leading-relaxed">Docker, Git, AWS, PostgreSQL, Redis</p>
                 </div>
               </div>
             </div>

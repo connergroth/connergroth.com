@@ -1,5 +1,33 @@
 import React, { useRef, useState } from 'react';
 
+// Helper function to map technology names to skill icons
+const getSkillIcon = (tech: string): string | null => {
+  const iconMap: { [key: string]: string } = {
+    'React': 'react',
+    'React Native': 'react',
+    'TypeScript': 'ts',
+    'JavaScript': 'js',
+    'Node.js': 'nodejs',
+    'Python': 'python',
+    'Flask': 'flask',
+    'FastAPI': 'fastapi',
+    'Next.js': 'nextjs',
+    'PyTorch': 'pytorch',
+    'PostgreSQL': 'postgres',
+    'Redis': 'redis',
+    'Docker': 'docker',
+    'Tailwind CSS': 'tailwind',
+    'Firebase': 'firebase',
+    'Express': 'express',
+    'HTML': 'html',
+    'CSS': 'css',
+    'Bootstrap': 'bootstrap',
+    'Supabase': 'supabase',
+    'Azure': 'azure'
+  };
+  return iconMap[tech] || null;
+};
+
 interface Project {
   title: string;
   description: string;
@@ -28,6 +56,14 @@ const mlProjects: Project[] = [
     githubUrl: "https://github.com/flyonthewalldev/pulseplan"
   },
   {
+    title: "Timbre",
+    description: "A hybrid music recommendation agent powered by collaborative filtering, content-based analysis, and user ratings from Spotify, Last.fm, and Albumoftheyear.org.",
+    image: "/assets/images/timbre.jpg",
+    technologies: ["PyTorch", "Python", "FastAPI", "React", "PostgreSQL", "Redis", "Spotify API"],
+    liveUrl: "https://tensoe.com",
+    githubUrl: "https://github.com/connergroth/Timbre"
+  },
+  {
     title: "SeqImprove",
     description: "An AI-assisted sequence annotation tool to help synthetic biology researchers curate and annotate genetic designs in SBOL format.  It provides automated annotation suggestions and an intuitive interface for adding metadata to genetic designs.",
     image: "/assets/images/seqimprove.png", 
@@ -42,14 +78,6 @@ const mlProjects: Project[] = [
     technologies: ["PyTorch", "Next.js", "React", "TypeScript", "Tailwind CSS", "Python", "FastAPI", "Docker", "OpenAI API"],
     liveUrl: "https://ecovisionlive.vercel.app",
     githubUrl: "https://github.com/connergroth/EcoVision"
-  },
-  {
-    title: "Tensoe",
-    description: "A hybrid music recommendation engine powered by collaborative filtering, content-based analysis, and user ratings from Spotify, Last.fm, and Albumoftheyear.org.",
-    image: "/assets/images/tensoe.png",
-    technologies: ["PyTorch", "Python", "FastAPI", "React", "PostgreSQL", "Redis", "Spotify API"],
-    liveUrl: "https://tensoe.com",
-    githubUrl: "https://github.com/connergroth/Tensoe"
   }
 ];
 
@@ -172,11 +200,23 @@ const ProjectCategory: React.FC<{
                   </div>
                   <div>
                     <div className="my-4 flex flex-wrap gap-2">
-                      {project.technologies.map((tech, techIndex) => (
-                        <span key={techIndex} className="tag bg-[#2563eb]/10 text-[#60a5fa] text-xs px-2.5 py-1 whitespace-nowrap">
-                          {tech}
-                        </span>
-                      ))}
+                      {project.technologies.map((tech, techIndex) => {
+                        const iconName = getSkillIcon(tech);
+                        return iconName ? (
+                          <div key={techIndex} className="flex items-center gap-1 tag bg-[#2563eb]/10 text-[#60a5fa] text-xs px-2.5 py-1 whitespace-nowrap">
+                            <img 
+                              src={`https://skillicons.dev/icons?i=${iconName}`} 
+                              alt={tech}
+                              className="w-3 h-3"
+                            />
+                            <span>{tech}</span>
+                          </div>
+                        ) : (
+                          <span key={techIndex} className="tag bg-[#2563eb]/10 text-[#60a5fa] text-xs px-2.5 py-1 whitespace-nowrap">
+                            {tech}
+                          </span>
+                        );
+                      })}
                     </div>
                     {/* Special case: if all 3 button types exist, group them all together */}
                     {(project.liveUrl || project.landingPage) && project.appStoreUrl && project.githubUrl ? (
