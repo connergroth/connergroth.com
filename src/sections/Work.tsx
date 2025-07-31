@@ -136,7 +136,7 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
             return iconName ? (
               <div key={tagIndex} className="flex items-center gap-1 bg-[#2563eb]/10 text-[#60a5fa] px-3 py-1.5 rounded-full text-sm font-medium">
                 <img 
-                  src={`/assets/icons/${iconName}.svg?v=${Date.now()}`} 
+                  src={`/assets/icons/${iconName}.svg`} 
                   alt={tag}
                   className="w-4 h-4"
                 />

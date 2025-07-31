@@ -50,7 +50,7 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
                 {['python', 'js', 'ts', 'cpp', 'c', 'html', 'css', 'react', 'nextjs', 'nodejs', 'flask', 'fastapi', 'pytorch', 'postgres', 'supabase', 'redis', 'firebase', 'docker', 'git', 'github', 'aws'].map((tech, index) => (
                   <img 
                     key={index}
-                    src={`/assets/icons/${tech}.svg?v=${Date.now()}`} 
+                    src={`/assets/icons/${tech}.svg`} 
                     alt={tech}
                     className="hover:scale-110 transition-transform duration-300 w-13 h-13 sm:w-13 sm:h-13 md:w-13 md:h-13"
                   />
