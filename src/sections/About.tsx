@@ -47,14 +47,37 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
             <div className="w-full">
               {/* Tech Stack Icons */}
               <div className="flex flex-wrap justify-center gap-2 mb-8">
-                {['python', 'js', 'ts', 'cpp', 'c', 'html', 'css', 'react', 'nextjs', 'nodejs', 'flask', 'fastapi', 'pytorch', 'postgres', 'supabase', 'redis', 'firebase', 'docker', 'git', 'github', 'aws'].map((tech, index) => (
-                  <img 
-                    key={index}
-                    src={`/assets/icons/${tech}.svg`} 
-                    alt={tech}
-                    className="hover:scale-110 transition-transform duration-300 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12"
-                  />
-                ))}
+                {['python', 'js', 'ts', 'cpp', 'c', 'html', 'css', 'react', 'nextjs', 'nodejs', 'flask', 'fastapi', 'pytorch', 'postgres', 'supabase', 'redis', 'firebase', 'docker', 'git', 'github', 'aws'].map((tech, index) => {
+                  const iconMap: { [key: string]: string } = {
+                    'cpp': 'cpp-icon',
+                    'c': 'c-icon',
+                    'html': 'html-icon',
+                    'css': 'css-icon',
+                    'nodejs': 'nodejs-icon',
+                    'flask': 'flask-icon',
+                    'fastapi': 'fastapi-icon',
+                    'pytorch': 'pytorch-icon',
+                    'firebase': 'firebase-icon',
+                    'git': 'git-icon'
+                  };
+                  
+                  const iconName = iconMap[tech] || tech;
+                  
+                  return (
+                    <img 
+                      key={index}
+                      src={`/assets/icons/${iconName}.svg`} 
+                      alt={tech}
+                      className="hover:scale-110 transition-transform duration-300 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12"
+                      onError={(e) => {
+                        console.log(`Failed to load icon: ${iconName}.svg`);
+                        e.currentTarget.style.border = '1px solid red';
+                        e.currentTarget.style.display = 'block';
+                      }}
+                      onLoad={() => console.log(`Successfully loaded: ${iconName}.svg`)}
+                    />
+                  );
+                })}
               </div>
               
               {/* Category Labels */}
