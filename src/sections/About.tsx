@@ -52,7 +52,7 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
                     key={index}
                     src={`/assets/icons/${tech}.svg`} 
                     alt={tech}
-                    className="hover:scale-110 transition-transform duration-300 w-13 h-13 sm:w-13 sm:h-13 md:w-13 md:h-13"
+                    className="hover:scale-110 transition-transform duration-300 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12"
                   />
                 ))}
               </div>
