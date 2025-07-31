@@ -53,6 +53,7 @@ const About: React.FC<AboutProps> = ({ id = 'about', className = '', style }) =>
                     'c': 'c-icon',
                     'html': 'html-icon',
                     'css': 'css-icon',
+                    'docker': 'docker-icon',
                     'nodejs': 'nodejs-icon',
                     'flask': 'flask-icon',
                     'fastapi': 'fastapi-icon',

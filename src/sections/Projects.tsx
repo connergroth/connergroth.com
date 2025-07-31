@@ -15,7 +15,7 @@ const getSkillIcon = (tech: string): string | null => {
     'PyTorch': 'pytorch-icon',
     'PostgreSQL': 'postgres',
     'Redis': 'redis',
-    'Docker': 'docker',
+    'Docker': 'docker-icon',
     'Tailwind CSS': 'tailwind',
     'Firebase': 'firebase-icon',
     'Express': 'express',

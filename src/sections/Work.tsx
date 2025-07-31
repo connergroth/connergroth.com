@@ -6,6 +6,7 @@ const getSkillIcon = (tech: string): string | null => {
     'React': 'react',
     'TypeScript': 'ts',
     'Python': 'python',
+    'Docker': 'docker-icon',
     'FastAPI': 'fastapi-icon',
     'AWS': 'aws',
     'Flask': 'flask-icon',
@@ -14,7 +15,7 @@ const getSkillIcon = (tech: string): string | null => {
     'JavaScript': 'js',
     'UI/UX': 'figma',
     'APIs': 'postman',
-    'Agile': 'github',
+    'Agile': 'github',  
     'Next.js': 'nextjs',
     'React Native': 'react',
     'Supabase': 'supabase'
