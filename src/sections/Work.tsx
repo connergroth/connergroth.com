@@ -13,8 +13,6 @@ const getSkillIcon = (tech: string): string | null => {
     'HTML': 'html-icon',
     'CSS': 'css-icon',
     'JavaScript': 'js',
-    'UI/UX': 'figma',
-    'APIs': 'postman',
     'Agile': 'github',  
     'Next.js': 'nextjs',
     'React Native': 'react',

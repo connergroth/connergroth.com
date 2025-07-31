@@ -16,14 +16,10 @@ const getSkillIcon = (tech: string): string | null => {
     'PostgreSQL': 'postgres',
     'Redis': 'redis',
     'Docker': 'docker-icon',
-    'Tailwind CSS': 'tailwind',
     'Firebase': 'firebase-icon',
-    'Express': 'express',
     'HTML': 'html-icon',
     'CSS': 'css-icon',
-    'Bootstrap': 'bootstrap',
-    'Supabase': 'supabase',
-    'Azure': 'azure'
+    'Supabase': 'supabase'
   };
   return iconMap[tech] || null;
 };
