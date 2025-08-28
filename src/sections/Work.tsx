@@ -30,18 +30,26 @@ interface WorkProps {
 const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
   const workExperiences = [
     {
-      title: "AI Software Engineer Intern",
-      company: "Soaper LLC",
+      title: "Machine Learning Engineer Intern",
+      company: "Sorcea Labs",
+      location: "Remote",
+      date: "September 2025 – Present",
+      description: "Engineering AWS Lambda + S3 pipeline to process millions of reviews using DynamoDB, for sentiment analysis-powered recommendations",
+      tags: ["Python", "PyTorch", "AWS", "DynamoDB", "S3", "Lambda"]
+    },
+    {
+      title: "AI Engineer Intern",
+      company: "Soaper",
       location: "Remote",
       date: "July 2025 – Present",
-      description: "Building secure patient and clinician interfaces for an EMR platform with biometric authentication and scalable backend APIs.",
-      tags: ["React", "TypeScript", "Python", "FastAPI", "AWS", "Full-Stack Development"]
+      description: "Engineered a voice-activated LLM system to trigger backend workflows and developed a HIPAA-compliant AI voice agent to call physicians in emergencies.",
+      tags: ["AI-Agents", "Python", "FastAPI", "AWS"]
     },
     {
       title: "Founding Software Engineer Intern",
       company: "Mili Llama",
       location: "Remote",
-      date: "July 2025 – August",
+      date: "July 2025 – August 2025",
       description: "Built an AI-first recruiting assistant for student-athletes as the sole engineer, focusing on NCAA compliance and intelligent school matching.",
       tags: ["Next.js", "FastAPI", "Supabase", "TypeScript", "Full-Stack Development", "AI Workflows"]
     },
@@ -53,14 +61,6 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
       description: "Developing full-stack research software for biological data processing with React frontend and Python backend integrations.",
       tags: ["Python", "Flask", "React", "APIs", "Data Pipelines", "UI/UX", "Agile", "Full-Stack Development"]
     },
-    {
-      title: "Software Engineer Intern",
-      company: "Ryno Industries",
-      location: "Erie, CO",
-      date: "May 2023 – Aug 2023",
-      description: "Redesigned company website with responsive components, improving user engagement by 20%.",
-      tags: ["HTML", "CSS", "JavaScript", "UI/UX"]
-    },
   ];
 
   const leadershipExperiences = [
@@ -68,7 +68,7 @@ const Work: React.FC<WorkProps> = ({ id = 'work', className = '', style }) => {
       title: "Software Engineer Team Lead",
       company: "Blueprint Boulder",
       location: "Boulder, CO",
-      date: "March 2025 – Present",
+      date: "August 2025 – Present",
       description: "Leading full-stack development team for a nonprofit web application, managing client relations and system architecture.",
       tags: ["Leadership", "Client Liaison", "System Architecture", "Sprint Management", "Full-Stack Development", "Agile", "Team Communication"]
     },

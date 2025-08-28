@@ -44,20 +44,20 @@ interface ProjectsProps {
 const mlProjects: Project[] = [
   {
     title: "PulsePlan",
-    description: "An AI-powered academic planner that auto-schedules tasks using energy levels, deadlines, and personal routines. Includes smart Canvas syncing, Calendar integrations, and adaptive planning.",
+    description: "AI-powered academic planner orchestrating LangGraph workflows for task analysis, calendar integration, and natural language planning, with multi-objective optimization for adaptive schedules.",
     image: "/assets/images/pulseplan.PNG",
-    technologies: ["React Native", "TypeScript", "Node.js", "n8n", "Supabase", "Redis", "REST APIs", "OpenAI API"],
+    technologies: ["LangGraph", "Python", "FastAPI", "React Native", "PostgreSQL", "Redis"],
     landingPage: "https://pulseplan.app",
     appStoreUrl: "https://apps.apple.com/us/app/pulseplan/id6754444444",
     githubUrl: "https://github.com/flyonthewalldev/pulseplan"
   },
   {
-    title: "Timbre",
-    description: "A hybrid music recommendation agent powered by collaborative filtering, content-based analysis, and user ratings from Spotify, Last.fm, and Albumoftheyear.org.",
-    image: "/assets/images/timbre.jpg",
-    technologies: ["PyTorch", "Python", "FastAPI", "React", "PostgreSQL", "Redis", "Spotify API"],
-    liveUrl: "https://tensoe.com",
-    githubUrl: "https://github.com/connergroth/Timbre"
+    title: "Timbrality",
+    description: "Music recommender using a personalzied AI agent and Hybrid ML model combining NMF collaborative filtering, two-tower content embeddings, audio feature synthesis, and meta-learning fusion for adaptive personalization.",
+    image: "/assets/images/timbrality.jpg",
+    technologies: ["PyTorch", "Python", "FastAPI", "React", "PostgreSQL", "Redis"],
+    liveUrl: "https://timbrality.com",
+    githubUrl: "https://github.com/connergroth/Timbrality"
   },
   {
     title: "SeqImprove",
