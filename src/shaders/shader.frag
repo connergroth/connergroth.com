@@ -8,52 +8,98 @@ uniform float iOpacity;
 
 varying vec2 vTexCoord;
 
-// Function to convert HSV to RGB
-vec3 hsv2rgb(vec3 c) {
-  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+// Smooth noise
+float hash(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
 }
 
-// Convert RGB to HSV
-vec3 rgb2hsv(vec3 c) {
-  vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-  vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
-  vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+float noise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  float a = hash(i);
+  float b = hash(i + vec2(1.0, 0.0));
+  float c = hash(i + vec2(0.0, 1.0));
+  float d = hash(i + vec2(1.0, 1.0));
+  return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
 
-  float d = q.x - min(q.w, q.y);
-  float e = 1.0e-10;
-  return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+// Fractional Brownian Motion for richer noise
+float fbm(vec2 p) {
+  float val = 0.0;
+  float amp = 0.5;
+  for (int i = 0; i < 4; i++) {
+    val += amp * noise(p);
+    p *= 2.0;
+    amp *= 0.5;
+  }
+  return val;
 }
 
 void main() {
-  vec2 uv = vTexCoord;
-  uv = uv * 2.0 - 1.0;
-  
-  // Adjust aspect ratio
-  uv.x *= iResolution.x / iResolution.y;
-  
-  // Calculate the polar coordinates
-  float r = length(uv);
-  float theta = atan(uv.y, uv.x);
-  
-  // Add the rotation based on time
-  theta += iAngle;
-  
-  // Convert back to cartesian coordinates
-  uv.x = r * cos(theta);
-  uv.y = r * sin(theta);
-  
-  // Calculate the shape
-  float shape = 1.0 - smoothstep(0.0, 0.15, pow(abs(r - 0.5), iPower) / iPower);
-  
-  // Create a color based on position and time
-  vec3 color = hsv2rgb(vec3(
-    fract(iTime * 0.05 + uv.x * 0.1 + uv.y * 0.1), // Hue changes with time and position
-    0.7,  // Saturation
-    0.5   // Value/brightness
-  ));
-  
-  // Apply color to shape with controllable opacity
+  // Screen-space UV: -1 to 1 on both axes (circle = circle on screen)
+  vec2 uv = vTexCoord * 2.0 - 1.0;
+
+  // Aspect-corrected UV for detail effects only
+  float aspect = iResolution.x / iResolution.y;
+  vec2 uvDetail = uv;
+  uvDetail.x *= aspect;
+
+  float t = iTime * 0.15;
+
+  // Subtle center drift in screen space
+  vec2 center = vec2(-0.12 + 0.03 * sin(t * 0.7), 0.02 * cos(t * 0.9));
+  vec2 p = uv - center;
+
+  // Distance in screen space — blob fills screen as a circle
+  float r = length(p);
+  float theta = atan(p.y, p.x);
+
+  // Organic edge distortion — multiple frequencies
+  float warp = 0.0;
+  warp += 0.12 * sin(theta * 2.0 + t * 2.5);
+  warp += 0.09 * sin(theta * 3.0 - t * 1.8 + 1.0);
+  warp += 0.06 * sin(theta * 5.0 + t * 3.2 + 2.5);
+  warp += 0.04 * sin(theta * 7.0 - t * 2.0);
+  warp += 0.07 * fbm(vec2(theta * 1.5, t * 1.2));
+
+  float distortedR = r - warp;
+
+  // Base shape
+  float baseRadius = 0.72;
+  float shape = 1.0 - smoothstep(baseRadius - 0.05, baseRadius + 0.18, distortedR);
+
+  // Secondary bulge in screen space
+  vec2 center2 = vec2(0.10 * cos(t * 1.3), 0.08 * sin(t * 1.1));
+  vec2 p2 = p - center2;
+  float r2 = length(p2);
+  float theta2 = atan(p2.y, p2.x);
+  float warp2 = 0.08 * sin(theta2 * 3.0 + t * 2.0) + 0.05 * sin(theta2 * 5.0 - t * 1.5);
+  float shape2 = 1.0 - smoothstep(0.3, 0.5, r2 - warp2);
+
+  // Merge shapes
+  shape = max(shape, shape2 * 0.7);
+
+  // Safe zone — guaranteed dark area covering the text, wide fade to blend with organic shape
+  float safeRadius = 0.40;
+  float safeShape = 1.0 - smoothstep(safeRadius, safeRadius + 0.30, r);
+  shape = max(shape, safeShape);
+
+  shape = clamp(shape, 0.0, 1.0);
+
+  // Fade to 0 near canvas edges to prevent hard cutoff lines
+  float edgeFade = smoothstep(0.0, 0.08, vTexCoord.x) * smoothstep(0.0, 0.08, 1.0 - vTexCoord.x)
+                 * smoothstep(0.0, 0.08, vTexCoord.y) * smoothstep(0.0, 0.08, 1.0 - vTexCoord.y);
+  shape *= edgeFade;
+
+  // Internal gradation — use aspect-corrected coords for detail richness
+  vec2 dp = uvDetail - center * vec2(aspect, 1.0);
+  float brightness = 0.04;
+  brightness += 0.05 * sin(dp.x * 3.0 + dp.y * 2.0 + t * 2.0);
+  brightness += 0.04 * sin(dp.x * 1.5 - dp.y * 4.0 + t * 1.5);
+  brightness += 0.03 * fbm(dp * 2.5 + t);
+
+  vec3 color = vec3(brightness);
+
   gl_FragColor = vec4(color * shape, shape * iOpacity);
-} 
+}

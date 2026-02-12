@@ -43,13 +43,12 @@ interface ProjectsProps {
 
 const mlProjects: Project[] = [
   {
-    title: "PulsePlan",
-    description: "AI-powered academic planner orchestrating LangGraph workflows for task analysis, calendar integration, and natural language planning, with multi-objective optimization for adaptive schedules.",
+    title: "Sift",
+    description: "An intelligent iMessage AI assistant powered by LangChain workflows for conversation analysis, smart replies, and context-aware responses with adaptive personalization.",
     image: "/assets/images/pulseplan.PNG",
-    technologies: ["LangGraph", "Python", "FastAPI", "React Native", "PostgreSQL", "Redis"],
-    landingPage: "https://pulseplan.app",
-    appStoreUrl: "https://apps.apple.com/us/app/pulseplan/id6754444444",
-    githubUrl: "https://github.com/flyonthewalldev/pulseplan"
+    technologies: ["FastAPI", "LangChain", "PostgreSQL", "Redis", "React"],
+    landingPage: "https://usesift.app",
+    githubUrl: "https://github.com/lucencelabs/Sift-Public"
   },
   {
     title: "Timbrality",
@@ -199,7 +198,7 @@ const ProjectCategory: React.FC<{
                       {project.technologies.map((tech, techIndex) => {
                         const iconName = getSkillIcon(tech);
                         return iconName ? (
-                          <div key={techIndex} className="flex items-center gap-1 tag bg-[#2563eb]/10 text-[#60a5fa] text-xs px-2.5 py-1 whitespace-nowrap">
+                          <div key={techIndex} className="flex items-center gap-1 tag bg-primary/10 text-primary text-xs px-2.5 py-1 whitespace-nowrap">
                             <img 
                               src={`/assets/icons/${iconName}.svg`} 
                               alt={tech}
@@ -208,7 +207,7 @@ const ProjectCategory: React.FC<{
                             <span>{tech}</span>
                           </div>
                         ) : (
-                          <span key={techIndex} className="tag bg-[#2563eb]/10 text-[#60a5fa] text-xs px-2.5 py-1 whitespace-nowrap">
+                          <span key={techIndex} className="tag bg-primary/10 text-primary text-xs px-2.5 py-1 whitespace-nowrap">
                             {tech}
                           </span>
                         );

@@ -2,28 +2,18 @@ import { Toaster } from "./components/ui/toaster";
 import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import PageTransition from "./components/PageTransition";
 import Index from "./pages/Index";
+import AboutPage from "./pages/AboutPage";
+import WorkPage from "./pages/WorkPage";
+import ProjectsPage from "./pages/ProjectsPage";
+import StartupPage from "./pages/StartupPage";
+import ContactPage from "./pages/ContactPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
-
-// Scroll restoration component
-const ScrollToTop = () => {
-  const { pathname, hash } = useLocation();
-  
-  useEffect(() => {
-    // Only scroll to top if there's no hash (anchor link) in the URL
-    if (!hash) {
-      // Immediate scroll to avoid any delay
-      window.scrollTo(0, 0);
-    }
-  }, [pathname, hash]);
-  
-  return null;
-};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -32,15 +22,21 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/work" element={<WorkPage />} />
+              <Route path="/projects" element={<ProjectsPage />} />
+              {/* <Route path="/startup" element={<StartupPage />} /> */}
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </PageTransition>
         </BrowserRouter>
       </TooltipProvider>
     </HelmetProvider>
   </QueryClientProvider>
 );
 
-export default App; 
+export default App;

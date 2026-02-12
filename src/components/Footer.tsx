@@ -1,5 +1,4 @@
 import React from 'react';
-import BlobShader from './BlobShader';
 
 interface FooterProps {
   className?: string;
@@ -8,16 +7,11 @@ interface FooterProps {
 
 function Footer({ className = '', style }: FooterProps) {
   return (
-    <footer 
+    <footer
       className={`mt-[15vh] relative z-10 pt-10 ${className}`}
       style={style}
       id="footer-anchor"
     >
-      {/* Blob background for footer */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ zIndex: 0 }}>
-        <BlobShader size={50} opacity={0.3} position="footer" fixed={false} />
-      </div>
-      
       <div className="relative z-10 py-10 mx-auto max-w-xl text-center">
         <p className="text-primary text-sm">
           Built with React &amp; Tailwind - <a href="https://github.com/connergroth/connergroth.com" target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80 transition-opacity">See inside!</a>

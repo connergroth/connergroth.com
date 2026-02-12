@@ -19,6 +19,16 @@ html::-webkit-scrollbar {
 @tailwind components;
 @tailwind utilities;
 
+::selection {
+  background-color: rgba(var(--primary-rgb), 0.4) !important;
+  color: white !important;
+}
+
+::-moz-selection {
+  background-color: rgba(var(--primary-rgb), 0.4) !important;
+  color: white !important;
+}
+
 @layer base {
   /* Disable smooth scrolling for all browsers */
   html, body {
@@ -47,27 +57,11 @@ html::-webkit-scrollbar {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: auto !important;
-    background-color: #000 !important; /* Ensure black background */
+    background-color: #fff !important;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
   }
 
-  body::before {
-    @apply fixed inset-0 -z-10;
-    content: "";
-    background: radial-gradient(
-      circle at center,
-      rgba(0, 0, 0, 0.7) 0%,
-      rgba(0, 0, 0, 0.95) 80%
-    );
-    pointer-events: none;
-  }
-  
-  body::after {
-    @apply fixed inset-0 -z-10 pointer-events-none opacity-[0.04];
-    content: "";
-    background-image: var(--noise-url);
-  }
   
   /* Animation performance optimizations */
   .will-change-transform {
@@ -111,7 +105,7 @@ html::-webkit-scrollbar {
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
     
-    --primary: 217.2 91.2% 59.8%;
+    --primary: 215 70% 68%;
     --primary-foreground: 210 40% 98%;
     
     --secondary: 210 38% 95%;
@@ -129,7 +123,7 @@ html::-webkit-scrollbar {
     --border: 214.3 31.8% 91.4%;
     
     --radius: 0.5rem;
-    --primary-rgb: 57, 142, 247;
+    --primary-rgb: 118, 167, 224;
   }
   
   .dark {
@@ -142,7 +136,7 @@ html::-webkit-scrollbar {
     --popover: 222 16% 22%;
     --popover-foreground: 210 40% 98%;
     
-    --primary: 217.2 91.2% 59.8%;
+    --primary: 215 70% 68%;
     --primary-foreground: 222.2 47.4% 11.2%;
     
     --secondary: 217.2 32.6% 24%;
@@ -763,9 +757,9 @@ section, footer {
   }
 }
 
-/* Custom scrollbar - showing thumb but hiding track */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
   background: transparent;
 }
 
@@ -774,19 +768,20 @@ section, footer {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(57, 142, 247, 0.4);
+  background-color: rgba(150, 150, 150, 0.4);
   border-radius: 20px;
-  border: 2px solid transparent;
+  border: 3px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(57, 142, 247, 0.7);
+  background-color: rgba(150, 150, 150, 0.6);
 }
 
 /* Firefox */
 html, body {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(57, 142, 247, 0.4) transparent;
+  scrollbar-width: auto;
+  scrollbar-color: rgba(150, 150, 150, 0.4) transparent;
 }
 
 .btn-outline {
@@ -863,11 +858,11 @@ section {
 }
 
 .meet-button {
-  @apply absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-md;
+  @apply absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-md;
 }
 
 .contact-button {
-  @apply absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-600 rounded-md;
+  @apply absolute inset-0 bg-gradient-to-r from-accent to-primary rounded-md;
 }
 
 .learn-more-btn {
