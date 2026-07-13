@@ -1,0 +1,107 @@
+# Conner Groth
+
+> Software engineer building AI systems that actually ship. Incoming Apple intern, CU Boulder CS, and undergraduate researcher working on applied AI, reliability, and the infrastructure that turns prototypes into real tools.
+
+## Current
+
+- Software Engineering Intern at **Apple** — Screen Time, Test Engineering (Summer 2026, San Diego), building autonomous AI test-generation pipelines
+- Computer Science student at the **University of Colorado Boulder**, Business minor (expected graduation May 2027)
+- Undergraduate researcher at the **Genetic Logic Lab** at CU Boulder (https://geneticlogiclab.org)
+- Founder of **Lucence Labs** (https://lucence.so), currently building Spot — an AI gym coach that lives in iMessage
+- Based in Boulder, CO
+
+## About
+
+I'm a builder focused on AI systems that cross the gap between demo and production. My work sits at the intersection of applied machine learning, software reliability, and thoughtful product design. I care about the unglamorous parts of engineering — error handling, observability, graceful degradation, security — because they're what separate prototypes from tools people actually depend on.
+
+I'm drawn to problems where design philosophy meets systems thinking: how do you build software that feels coherent from first principles? How do complex behaviors emerge from simple rules? These questions show up in both my academic writing and the products I ship.
+
+## Experience
+
+### Apple — Software Engineering Intern
+**Screen Time, Test Engineering · Summer 2026 · San Diego, CA**
+
+Building an autonomous AI pipeline (Claude Agent SDK) that converts feature specs into passing, validated tests across iOS, macOS, watchOS, and visionOS — reducing end-to-end QA time from ~4 days to ~2 hours. Parallelized test execution across 50+ devices (including multi-device family scenarios), expanded automated coverage from 0% to full validation for several Screen Time feature areas (300+ generated and reviewed tests per weekly cycle), and built a visual reporting layer with annotated screenshots and recordings so engineers can verify behavior without reading Swift test code — adopted by 8+ engineers across 3 teams.
+
+### Genetic Logic Lab, CU Boulder — Undergraduate Researcher
+**Synthetic Biology Tooling · https://geneticlogiclab.org**
+
+Research contributor working on AI-assisted tooling for synthetic biology. Primary project: SeqImprove, a tool for sequence annotation and curation in genetic construct research. Research publications in progress — will be listed here as they're published.
+
+### IM — Founding Software Engineer
+**Conversational AI for Older Adults**
+
+First engineering hire. Built conversational AI systems designed for accessibility and safety with older users, including voice interfaces, fallback patterns for ambiguous interactions, and safeguards appropriate for a sensitive user population.
+
+### Soaper — Software Engineer
+**HIPAA-compliant Voice Agent**
+
+Contributed to the engineering of a HIPAA-compliant voice agent for healthcare workflows. Focus on audit logging, data minimization, and safe handling of protected health information.
+
+### Blueprint Boulder — Engineering Lead
+**Software for Special-Needs Families · 6-person team**
+
+Led a six-person engineering team building software tools for families with special-needs children. Managed technical direction, mentoring, and delivery across a volunteer engineering organization.
+
+## Education
+
+### University of Colorado Boulder — BS Computer Science, Business Minor
+**2023–2027 (expected) · Boulder, CO**
+
+## Projects
+
+### Spot
+An AI gym coach that lives in iMessage. Spot plans your day around your goals — so the treats fit — and texts first when you're about to slip: proactive coaching instead of another app to open. Currently in active development at Lucence Labs.
+
+- Site: https://spot-black-gamma.vercel.app
+- Company: Lucence Labs (https://lucence.so)
+
+### Sift
+An AI academic assistant for students, integrating Canvas, Google Calendar, Gmail, and iMessage into a single briefing-first interface. Built at Lucence Labs in 2025; no longer in active development.
+
+Features include a morning briefing that synthesizes the day ahead, an end-of-day digest, a daily reflection prompt, and conversational command over academic workflows via a multi-turn tool-using LLM backend. Security infrastructure includes AES-256-GCM encryption, rate limiting, and HSTS. Built with Swift/SwiftUI on the client and Python/FastAPI on the backend.
+
+- Site: https://usesift.app
+- Company: Lucence Labs (https://lucence.so)
+
+### SeqImprove
+AI-assisted sequence annotation tool for synthetic biology researchers, developed at CU Boulder's Genetic Logic Lab. Improves curation workflows for researchers working with genetic constructs.
+
+- Site: https://seqimprove.synbiohub.org
+- Source: https://github.com/myersresearchgroup/seqimprove
+- Lab: https://geneticlogiclab.org
+
+## Research
+
+Undergraduate research contributor at the Genetic Logic Lab (https://geneticlogiclab.org) at CU Boulder, working on AI-assisted tooling for synthetic biology. Research papers in progress — links will be added here as they're published.
+
+## Technical Skills
+
+**Primary languages:** Swift, Python, TypeScript
+**Mobile & client:** SwiftUI, iOS development
+**Backend & API:** FastAPI, Node.js, REST and RPC design
+**Web:** React, Next.js
+**AI / ML:** LangChain, PyTorch, transformer fine-tuning, retrieval-augmented generation, multi-turn tool-using agents, local model hosting (Ollama)
+**Data & infra:** PostgreSQL, Redis, Docker, AWS, GitHub Actions
+**Other:** Scala (coursework), OAuth and identity flows, security (encryption, rate limiting, HSTS, audit logging)
+
+## Interests
+
+- Reliability and security engineering for LLM-powered products
+- Design philosophy, emergence in complex systems, first-principles product thinking
+- Photography (Sony A6000)
+- Long-form technical and design writing
+
+## Contact
+
+- Email: conner@lucence.so
+- Resume: https://connergroth.com/assets/documents/Conner-Groth-Resume.pdf
+- Website: https://connergroth.com
+- GitHub: https://github.com/connergroth
+- LinkedIn: https://linkedin.com/in/connergroth
+- X / Twitter: https://x.com/connergroth1
+
+## Company
+
+**Lucence Labs** — https://lucence.so
+A software company founded by Conner to build AI-native productivity tools. Current focus: Spot.
