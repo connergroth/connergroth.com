@@ -62,10 +62,18 @@ const Header = () => {
 
             <button
               onClick={() => setCmdOpen(true)}
-              className="flex items-center gap-2 px-2.5 py-1 text-stone-400 hover:text-stone-600 bg-white border border-stone-200 rounded-md shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_1px_3px_rgba(0,0,0,0.07)] active:translate-y-px active:shadow-none transition-all ml-2"
+              aria-label="Open command palette"
+              className="flex items-center gap-1.5 pl-2.5 pr-2.5 sm:pr-[5px] py-[5px] bg-white border border-stone-200 rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_2px_5px_rgba(0,0,0,0.07)] active:translate-y-px active:shadow-none transition-all ml-2"
             >
-              <Search size={12} />
-              <span className="hidden sm:inline font-mono text-[0.55rem] tracking-wider">⌘K</span>
+              <Search size={13} strokeWidth={2.5} className="text-stone-500" />
+              <span className="hidden sm:flex items-center gap-1">
+                <kbd className="flex h-[19px] w-[19px] items-center justify-center rounded-[6px] bg-gradient-to-b from-white to-stone-100 font-sans text-[0.72rem] leading-none text-stone-500 shadow-[0_1px_2px_rgba(28,25,23,0.16),inset_0_1px_0_#fff]">
+                  ⌘
+                </kbd>
+                <kbd className="flex h-[19px] w-[19px] items-center justify-center rounded-[6px] bg-gradient-to-b from-white to-stone-100 font-sans text-[0.68rem] leading-none text-stone-500 shadow-[0_1px_2px_rgba(28,25,23,0.16),inset_0_1px_0_#fff]">
+                  K
+                </kbd>
+              </span>
             </button>
           </div>
 
