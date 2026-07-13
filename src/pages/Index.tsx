@@ -386,8 +386,8 @@ const Index = () => {
           </div>
 
           {/* Live status + ask-ai — the machine layer, pinned at the fold */}
-          <div className="pb-8 min-h-[3rem] flex flex-wrap items-center justify-between gap-x-5 gap-y-3">
-            <p className="font-mono text-[0.7rem] text-stone-400 leading-relaxed flex flex-wrap items-baseline gap-x-5 gap-y-1.5">
+          <div className="pb-8 min-h-[3rem] flex items-center justify-between gap-5">
+            <p className="flex-1 min-w-0 font-mono text-[0.7rem] text-stone-400 leading-relaxed flex flex-wrap items-baseline gap-x-5 gap-y-1.5">
               <span className="whitespace-nowrap">boulder &rarr; san diego</span>
               {latestCommit && (
                 <span className="whitespace-nowrap">
@@ -415,7 +415,7 @@ const Index = () => {
             </p>
             <button
               onClick={() => window.dispatchEvent(new Event('cmdk:open'))}
-              className="ml-auto font-mono text-[0.7rem] text-stone-500 hover:text-stone-900 bg-white border border-stone-200 rounded-md px-2.5 py-1 shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_1px_3px_rgba(0,0,0,0.07)] hover:border-stone-300 active:translate-y-px active:shadow-none transition-all"
+              className="shrink-0 whitespace-nowrap font-mono text-[0.7rem] text-stone-500 hover:text-stone-900 bg-white border border-stone-200 rounded-md px-2.5 py-1 shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_1px_3px_rgba(0,0,0,0.07)] hover:border-stone-300 active:translate-y-px active:shadow-none transition-all"
             >
               ask ai &rarr;
             </button>
