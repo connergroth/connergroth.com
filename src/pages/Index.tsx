@@ -358,7 +358,7 @@ const Index = () => {
                   linkedin
                 </a>
                 <a
-                  href="https://x.com/connergroth1"
+                  href="https://x.com/connermgroth"
                   target="_blank"
                   rel="noreferrer"
                   className="text-[0.85rem] text-stone-400 hover:text-stone-900 active:translate-y-px transition-colors"
@@ -417,7 +417,7 @@ const Index = () => {
               onClick={() => window.dispatchEvent(new Event('cmdk:open'))}
               className="shrink-0 whitespace-nowrap font-mono text-[0.7rem] text-stone-500 hover:text-stone-900 bg-white border border-stone-200 rounded-md px-2.5 py-1 shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_1px_3px_rgba(0,0,0,0.07)] hover:border-stone-300 active:translate-y-px active:shadow-none transition-all"
             >
-              ask ai &rarr;
+              ask ai about me &rarr;
             </button>
           </div>
         </section>
