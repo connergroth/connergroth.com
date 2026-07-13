@@ -142,7 +142,7 @@ const ContactForm = () => {
           </button>
           
           <a 
-            href="mailto:conner@connergroth.com" 
+            href="mailto:conner@lucence.so" 
             className="relative h-12 px-6 flex justify-center items-center w-full md:w-auto transition-all duration-300 hover:scale-105 active:scale-[0.98] group"
           >
             <div className="absolute inset-0 bg-primary/90 group-hover:bg-primary border border-primary rounded-md transition-all duration-300"></div>
