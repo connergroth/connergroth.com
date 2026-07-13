@@ -1,42 +1,77 @@
-import { Toaster } from "./components/ui/toaster";
-import { Toaster as Sonner } from "./components/ui/sonner";
-import { TooltipProvider } from "./components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
-import PageTransition from "./components/PageTransition";
-import Index from "./pages/Index";
-import AboutPage from "./pages/AboutPage";
-import WorkPage from "./pages/WorkPage";
-import ProjectsPage from "./pages/ProjectsPage";
-import StartupPage from "./pages/StartupPage";
-import ContactPage from "./pages/ContactPage";
-import NotFound from "./pages/NotFound";
+import React, { useEffect, useState, useRef } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
+import Lenis from 'lenis';
+import Index from './pages/Index';
+import WorkPage from './pages/WorkPage';
+import ProjectPage from './pages/ProjectPage';
 
-const queryClient = new QueryClient();
+function SmoothScroll({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.1,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.5,
+    });
+
+    (window as any).__lenis = lenis;
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+      delete (window as any).__lenis;
+    };
+  }, []);
+
+  return <>{children}</>;
+}
+
+function PageTransition({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  return (
+    <div key={location.pathname}>
+      {/* The sheet — page content sits on a bordered panel over the grainy desk */}
+      <div className="relative m-2 md:m-3 min-h-[calc(100svh-1rem)] md:min-h-[calc(100svh-1.5rem)] rounded-xl md:rounded-2xl border border-stone-200/90 bg-[#FBFBFA] shadow-[0_1px_2px_rgba(0,0,0,0.03),0_12px_32px_-16px_rgba(28,25,23,0.1)] overflow-clip">
+        {children}
+      </div>
+    </div>
+  );
+}
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <HelmetProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <PageTransition>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/work" element={<WorkPage />} />
-              <Route path="/projects" element={<ProjectsPage />} />
-              {/* <Route path="/startup" element={<StartupPage />} /> */}
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </PageTransition>
-        </BrowserRouter>
-      </TooltipProvider>
-    </HelmetProvider>
-  </QueryClientProvider>
+  <HelmetProvider>
+    <BrowserRouter>
+      <SmoothScroll>
+        <PageTransition>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/work" element={<WorkPage />} />
+            <Route path="/work/:slug" element={<ProjectPage />} />
+            <Route path="*" element={<Index />} />
+          </Routes>
+        </PageTransition>
+      </SmoothScroll>
+    </BrowserRouter>
+    <Analytics
+      beforeSend={(event) =>
+        typeof window !== 'undefined' && localStorage.getItem('va-ignore')
+          ? null
+          : event
+      }
+    />
+  </HelmetProvider>
 );
 
 export default App;
