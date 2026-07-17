@@ -326,13 +326,6 @@ const Index = () => {
               for synthetic biology.
             </p>
 
-            <Link
-              to="/work"
-              className="mt-5 inline-block self-start text-[0.9rem] text-stone-500 hover:text-stone-900 transition-colors"
-            >
-              view all work &rarr;
-            </Link>
-
             <div id="contact" className="mt-14">
               <a
                 href="mailto:conner@lucence.so"
