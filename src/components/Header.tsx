@@ -35,7 +35,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="fixed top-2 left-2 right-2 md:top-3 md:left-3 md:right-3 z-50 rounded-t-xl md:rounded-t-2xl bg-[#FBFBFA]/85 backdrop-blur-md border-b border-stone-200/70" style={{ willChange: 'auto' }}>
+      <header className="absolute top-0 left-0 right-0 z-50 rounded-t-xl md:rounded-t-2xl bg-[#FBFBFA]/85 backdrop-blur-md border-b border-stone-200/70" style={{ willChange: 'auto' }}>
         <div className="max-w-[680px] mx-auto flex items-center justify-between px-6 py-3.5">
           <Link
             to="/"
