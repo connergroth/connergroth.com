@@ -227,7 +227,7 @@ export default function SkyBand({ className = '' }: { className?: string }) {
         style={{ imageRendering: 'pixelated' }}
       />
       {/* Full-width, bottom-anchored, natural height. The asset is a thin ridge
-          strip (1800x210) so its rendered height stays under the band at every
+          strip (1800x150) so its rendered height stays under the band at every
           viewport width — no cropping, so the low left-hand ridge never vanishes. */}
       <img
         src="/assets/images/flatirons-riso.png"

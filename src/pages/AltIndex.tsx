@@ -56,13 +56,13 @@ export default function AltIndex() {
         keywords="Conner Groth, software engineer, Apple, Lucence, portfolio"
       />
 
-      {/* Height = the ridge asset's own rendered height (it's 1800x210, so
-          100vw/8.571) plus a thin slab of sky above it. That way the peak
+      {/* Height = the ridge asset's own rendered height (it's 1800x150, so
+          100vw/12) plus a thin slab of sky above it. That way the peak
           always clears the top edge instead of getting cropped. */}
-      <SkyBand className="h-[clamp(112px,calc(100vw/8.571+52px),248px)]" />
+      <SkyBand className="h-[clamp(84px,calc(100vw/12+40px),190px)]" />
 
       <main className="mx-auto w-full max-w-[520px] px-6 pt-16 pb-24">
-        <h1 className="font-serif text-[1.15rem] tracking-[-0.01em] text-stone-900">
+        <h1 className="font-serif text-[1.4rem] tracking-[-0.01em] text-stone-900">
           Conner Groth
         </h1>
 
