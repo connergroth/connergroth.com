@@ -61,7 +61,7 @@ export default function AltIndex() {
           always clears the top edge instead of getting cropped. */}
       <SkyBand className="h-[clamp(84px,calc(100vw/12+40px),190px)]" />
 
-      <main className="mx-auto w-full max-w-[520px] px-6 pt-16 pb-24">
+      <main className="mx-auto w-full max-w-[520px] px-6 pt-8 sm:pt-10 pb-24">
         <h1 className="font-serif text-[1.4rem] tracking-[-0.01em] text-stone-900">
           Conner Groth
         </h1>
