@@ -144,8 +144,13 @@ export default function SkyBand({ className = '' }: { className?: string }) {
         : (hour + 24 - sunset) / Math.max(0.5, 24 - sunset + sunrise);
       const frac = isDay ? dayFrac : nightFrac;
       const cx = frac * w;
-      const cy = horizon * (1.0 - 0.82 * Math.sin(Math.PI * Math.min(1, Math.max(0, frac))));
       const rad = Math.max(3, horizon * (isDay ? 0.17 : 0.10));
+      // keep the whole disc inside the band — on a short band the noon arc would
+      // otherwise put the centre less than a radius from the top edge and clip it
+      const cy = Math.max(
+        rad * 1.15,
+        horizon * (1.0 - 0.82 * Math.sin(Math.PI * Math.min(1, Math.max(0, frac)))),
+      );
 
       const phase = reduced ? 0 : (tMs / 1000) * 0.055;
       const amp = 0.22 + (cloud / 100) * 0.85;   // overcast = more, heavier bands
@@ -222,7 +227,7 @@ export default function SkyBand({ className = '' }: { className?: string }) {
         style={{ imageRendering: 'pixelated' }}
       />
       {/* Full-width, bottom-anchored, natural height. The asset is a thin ridge
-          strip (2400x300) so its rendered height stays under the band at every
+          strip (1800x210) so its rendered height stays under the band at every
           viewport width — no cropping, so the low left-hand ridge never vanishes. */}
       <img
         src="/assets/images/flatirons-riso.png"

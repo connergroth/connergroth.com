@@ -56,10 +56,10 @@ export default function AltIndex() {
         keywords="Conner Groth, software engineer, Apple, Lucence, portfolio"
       />
 
-      {/* Height = the ridge asset's own rendered height (it's 1800x376, so
-          100vw/4.787) plus a fixed slab of sky above it. That way the peak
+      {/* Height = the ridge asset's own rendered height (it's 1800x210, so
+          100vw/8.571) plus a thin slab of sky above it. That way the peak
           always clears the top edge instead of getting cropped. */}
-      <SkyBand className="h-[clamp(180px,calc(100vw/4.787+86px),520px)]" />
+      <SkyBand className="h-[clamp(112px,calc(100vw/8.571+52px),248px)]" />
 
       <main className="mx-auto w-full max-w-[520px] px-6 pt-16 pb-24">
         <h1 className="font-serif text-[1.15rem] tracking-[-0.01em] text-stone-900">
@@ -71,15 +71,6 @@ export default function AltIndex() {
             I&rsquo;m a CS student at CU Boulder, graduating May 2027. This summer
             I&rsquo;m a software engineering intern at Apple on the Screen Time team,
             where I build agents that turn feature specs into passing tests.
-          </p>
-          <p>
-            The part I actually care about is the integration layer — where a model has
-            to touch a real system and not fall over. Less the research, more the thing
-            a lot of people end up using without thinking about it.
-          </p>
-          <p>
-            I grew up in Colorado and I&rsquo;ve never lived anywhere else, which is
-            what the mountains up there are about.
           </p>
         </div>
 
