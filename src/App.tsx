@@ -4,8 +4,12 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import Lenis from 'lenis';
 import Index from './pages/Index';
+import AltIndex from './pages/AltIndex';
 import WorkPage from './pages/WorkPage';
 import ProjectPage from './pages/ProjectPage';
+
+/* Routes that render edge-to-edge — no inset sheet, no rounded border. */
+const BARE_ROUTES = ['/alt'];
 
 function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -40,6 +44,14 @@ function PageTransition({ children }: { children: React.ReactNode }) {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  if (BARE_ROUTES.includes(location.pathname)) {
+    return (
+      <div key={location.pathname} className="relative min-h-svh bg-[#FBFBFA]">
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div key={location.pathname}>
       {/* The sheet — page content sits on a bordered panel over the grainy desk */}
@@ -57,6 +69,7 @@ const App = () => (
         <PageTransition>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/alt" element={<AltIndex />} />
             <Route path="/work" element={<WorkPage />} />
             <Route path="/work/:slug" element={<ProjectPage />} />
             <Route path="*" element={<Index />} />
