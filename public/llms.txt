@@ -1,13 +1,13 @@
 # Conner Groth
 
-> Software engineer building AI systems that actually ship. Incoming Apple intern, CU Boulder CS, and undergraduate researcher working on applied AI, reliability, and the infrastructure that turns prototypes into real tools.
+> Software engineer building AI systems that actually ship. Most recently a SWE intern at Apple, CU Boulder CS, and undergraduate researcher working on applied AI, reliability, and the infrastructure that turns prototypes into real tools.
 
 ## Current
 
-- Software Engineering Intern at **Apple** — Screen Time, Test Engineering (Summer 2026, San Diego), building autonomous AI test-generation pipelines
+- Most recently Software Engineering Intern at **Apple** — Screen Time, Test Engineering (Summer 2026, San Diego), building autonomous AI test-generation pipelines
 - Computer Science student at the **University of Colorado Boulder**, Business minor (expected graduation May 2027)
 - Undergraduate researcher at the **Genetic Logic Lab** at CU Boulder (https://geneticlogiclab.org)
-- Founder of **Lucence Labs** (https://lucence.so), currently building Spot — an AI gym coach that lives in iMessage
+- Founder of **Lucence Labs** (https://lucence.so), where Spot was built — a calorie tracker you text instead of an app
 - Based in Boulder, CO
 
 ## About
@@ -51,9 +51,9 @@ Led a six-person engineering team building software tools for families with spec
 ## Projects
 
 ### Spot
-An AI gym coach that lives in iMessage. Spot plans your day around your goals — so the treats fit — and texts first when you're about to slip: proactive coaching instead of another app to open. Currently in active development at Lucence Labs.
+A calorie tracker you text instead of an app. You text Spot what you ate and it logs the macros — no app to open, no barcode to scan. Built at Lucence Labs, live since June 2026.
 
-- Site: https://spot-black-gamma.vercel.app
+- Site: https://textspot.app
 - Company: Lucence Labs (https://lucence.so)
 
 ### Sift
@@ -104,4 +104,4 @@ Undergraduate research contributor at the Genetic Logic Lab (https://geneticlogi
 ## Company
 
 **Lucence Labs** — https://lucence.so
-A software company founded by Conner to build AI-native productivity tools. Current focus: Spot.
+A software company founded by Conner to build AI-native productivity tools. Projects: Spot, Sift.

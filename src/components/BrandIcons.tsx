@@ -1,4 +1,3 @@
-import React from 'react';
 
 // Shared brand marks. Extracted from CommandPalette so the /alt ask-AI modal
 // can use the same glyphs without duplicating the path data.
