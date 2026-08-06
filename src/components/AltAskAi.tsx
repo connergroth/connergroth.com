@@ -108,16 +108,19 @@ const AltAskAi: React.FC = () => {
        transition list on purpose: it flips discretely at the END of the
        fade-out, which keeps these links out of the tab order while closed
        without cutting the animation short. Origin is top-left so the card grows
-       out of the link rather than out of its own middle. */
+       out of the link rather than out of its own middle. The timing is
+       asymmetric: 150ms in, 90ms out — a card that dissolves slowly spends
+       that whole time as a translucent pane with the page reading through it,
+       which looks broken rather than animated. */
     <div
       ref={cardRef}
       role="menu"
       aria-hidden={!open}
       style={{ top: pos.top, left: pos.left, width: CARD_WIDTH }}
-      className={`fixed z-50 origin-top-left overflow-hidden rounded-md border border-stone-300/80 bg-white p-1 shadow-[0_6px_20px_rgba(28,25,23,0.12),0_1px_2px_rgba(28,25,23,0.06)] transition-[opacity,transform,visibility] duration-150 ease-out motion-reduce:transition-none ${
+      className={`fixed z-50 origin-top-left overflow-hidden rounded-md border border-stone-300/80 bg-white p-1 shadow-[0_6px_20px_rgba(28,25,23,0.12),0_1px_2px_rgba(28,25,23,0.06)] transition-[opacity,transform,visibility] ease-out motion-reduce:transition-none ${
         open
-          ? 'visible translate-y-0 scale-100 opacity-100'
-          : 'invisible -translate-y-1 scale-[0.97] opacity-0'
+          ? 'visible translate-y-0 scale-100 opacity-100 duration-150'
+          : 'invisible -translate-y-1 scale-[0.97] opacity-0 duration-[90ms]'
       }`}
     >
       {OPTIONS.map((o) => (
