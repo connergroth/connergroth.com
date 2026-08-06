@@ -183,7 +183,13 @@ function Ridge() {
       aria-label="The Flatirons, Boulder"
       width={1800}
       height={150}
-      className="absolute inset-x-0 bottom-0 w-full h-auto select-none pointer-events-none"
+      /* Width-locked, bottom-anchored — but with a floor on the height. The
+         asset is a 12:1 strip, so on a phone its natural height is ~33px and the
+         ridge reads as a smudge. min-h stretches it vertically only (never
+         crops), which is honest here: the strip was already squashed from the
+         photo, so un-squashing it on narrow screens moves BACK toward the real
+         proportion. Above ~770px the natural height wins and nothing stretches. */
+      className="absolute inset-x-0 bottom-0 w-full h-auto min-h-[64px] select-none pointer-events-none"
       style={{ imageRendering: 'pixelated' }}
     />
   );
