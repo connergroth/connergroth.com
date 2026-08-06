@@ -130,13 +130,13 @@ export default function AltIndex() {
 
         {/* Last.fm — album art instead of a waveform. min-h holds the space so
             the page doesn't jump when the fetch lands on a cold visit. */}
-        <div className="mt-16 min-h-[2.5rem]">
+        <div className="mt-16 min-h-[1.75rem]">
           {track && (
             <a
               href={track.url}
               target="_blank"
               rel="noreferrer"
-              className="group flex w-fit max-w-full items-center gap-3"
+              className="group flex w-fit max-w-full items-center gap-2.5"
             >
               {track.cover ? (
                 <img
@@ -147,12 +147,12 @@ export default function AltIndex() {
                      is blocked unless it's fetched in CORS mode. Last.fm's CDN
                      serves Access-Control-Allow-Origin: *, so this is enough. */
                   crossOrigin="anonymous"
-                  className="h-10 w-10 shrink-0 rounded-[2px] object-cover shadow-[0_1px_3px_rgba(0,0,0,0.14)]"
+                  className="h-7 w-7 shrink-0 rounded-[2px] object-cover opacity-90 shadow-[0_1px_2px_rgba(0,0,0,0.10)] transition-opacity group-hover:opacity-100"
                 />
               ) : (
-                <span className="h-10 w-10 shrink-0 rounded-[2px] bg-stone-200" />
+                <span className="h-7 w-7 shrink-0 rounded-[2px] bg-stone-200" />
               )}
-              <span className="min-w-0 font-mono text-[0.68rem] leading-[1.45]">
+              <span className="min-w-0 font-mono text-[0.63rem] leading-[1.4]">
                 <span className="block text-stone-400">
                   {track.nowPlaying ? 'now playing' : 'last played'}
                 </span>
