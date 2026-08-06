@@ -74,7 +74,7 @@ export default function AltIndex() {
     <>
       <SEO
         title="Conner Groth"
-        description="Software engineer — CS at CU Boulder, SWE intern at Apple on the Screen Time team."
+        description="Software engineer — CS at CU Boulder, most recently SWE at Apple on the Screen Time team."
         keywords="Conner Groth, software engineer, Apple, Lucence, portfolio"
       />
 
@@ -84,15 +84,18 @@ export default function AltIndex() {
       <SkyBand className="h-[clamp(84px,calc(100vw/12+40px),190px)]" />
 
       <main className="mx-auto w-full max-w-[520px] px-6 pt-8 sm:pt-10 pb-24">
-        <h1 className="font-serif text-[1.4rem] tracking-[-0.01em] text-stone-900">
+        <h1 className="font-serif text-[1.55rem] font-medium tracking-[-0.01em] text-stone-900">
           Conner Groth
         </h1>
 
+        {/* Tense is deliberately past-and-durable: the internship ends Aug 7,
+            2026, and "most recently" stays true until the next role instead of
+            needing an edit on a specific day. */}
         <div className="mt-7 space-y-4 text-[0.94rem] leading-[1.75] text-stone-700">
           <p>
             I&rsquo;m a software engineer and CS student at CU Boulder, graduating
-            May 2027. This summer I&rsquo;m interning at Apple on the Screen Time
-            team, where I build agents that turn feature specs into passing tests.
+            May 2027. Most recently I was at Apple on the Screen Time team, where
+            I built agents that turn feature specs into passing tests.
           </p>
         </div>
 
