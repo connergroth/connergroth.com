@@ -27,26 +27,46 @@ const PROJECTS: { name: string; href?: string; to?: string; blurb: string }[] = 
 const link =
   'text-stone-900 underline decoration-stone-300 underline-offset-[3px] hover:decoration-stone-600 transition-colors';
 
-function useLastPush() {
-  const [s, setS] = useState<string | null>(null);
+interface Track {
+  name: string;
+  artist: string;
+  album: string;
+  cover: string | null;
+  url: string;
+  nowPlaying: boolean;
+}
+
+/* Last.fm's most recent scrobble. Cached in localStorage so a repeat visit
+   paints the strip immediately instead of popping in a second later. */
+function useLastFm(): Track | null {
+  const [track, setTrack] = useState<Track | null>(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = localStorage.getItem('cache:lastfm:alt');
+      return raw ? (JSON.parse(raw) as Track) : null;
+    } catch {
+      return null;
+    }
+  });
+
   useEffect(() => {
-    fetch('/api/github')
+    fetch('/api/lastfm')
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
-        if (!j?.latestCommit) return;
-        const repo = j.latestCommit.repo.split('/').slice(1).join('/').replace(/\/main$/, '');
-        const mins = Math.floor((Date.now() - new Date(j.latestCommit.createdAt).getTime()) / 60000);
-        const ago =
-          mins < 60 ? `${mins}m` : mins < 1440 ? `${Math.floor(mins / 60)}h` : `${Math.floor(mins / 1440)}d`;
-        setS(`pushed ${ago} ago → ${repo}`);
+        if (!j?.track) return;
+        setTrack(j.track);
+        try {
+          localStorage.setItem('cache:lastfm:alt', JSON.stringify(j.track));
+        } catch {}
       })
       .catch(() => {});
   }, []);
-  return s;
+
+  return track;
 }
 
 export default function AltIndex() {
-  const push = useLastPush();
+  const track = useLastFm();
 
   return (
     <>
@@ -108,10 +128,37 @@ export default function AltIndex() {
           ))}
         </nav>
 
-        <p className="mt-16 font-mono text-[0.68rem] text-stone-400 flex flex-wrap gap-x-4 gap-y-1">
-          <span>boulder &rarr; san diego</span>
-          {push && <span>{push}</span>}
-        </p>
+        {/* Last.fm — album art instead of a waveform. min-h holds the space so
+            the page doesn't jump when the fetch lands on a cold visit. */}
+        <div className="mt-16 min-h-[2.5rem]">
+          {track && (
+            <a
+              href={track.url}
+              target="_blank"
+              rel="noreferrer"
+              className="group flex w-fit max-w-full items-center gap-3"
+            >
+              {track.cover ? (
+                <img
+                  src={track.cover}
+                  alt={track.album || track.name}
+                  loading="lazy"
+                  className="h-10 w-10 shrink-0 rounded-[2px] object-cover shadow-[0_1px_3px_rgba(0,0,0,0.14)]"
+                />
+              ) : (
+                <span className="h-10 w-10 shrink-0 rounded-[2px] bg-stone-200" />
+              )}
+              <span className="min-w-0 font-mono text-[0.68rem] leading-[1.45]">
+                <span className="block text-stone-400">
+                  {track.nowPlaying ? 'now playing' : 'last played'}
+                </span>
+                <span className="block truncate text-stone-500 transition-colors group-hover:text-stone-900">
+                  {track.name} &mdash; {track.artist}
+                </span>
+              </span>
+            </a>
+          )}
+        </div>
       </main>
     </>
   );
