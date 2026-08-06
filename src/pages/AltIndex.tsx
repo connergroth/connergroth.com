@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import AltTellMe from '@/components/AltTellMe';
+import AltAskAi from '@/components/AltAskAi';
 import SEO from '../components/SEO';
 import SkyBand from '../components/SkyBand';
 
@@ -110,9 +112,7 @@ export default function AltIndex() {
           ))}
         </ul>
 
-        <p className="mt-7 text-[0.94rem] leading-[1.75] text-stone-700">
-          Tell me something.
-        </p>
+        <AltTellMe />
 
         <nav className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-[0.94rem]">
           {LINKS.map((l) => (
@@ -127,6 +127,10 @@ export default function AltIndex() {
             </a>
           ))}
         </nav>
+
+        <p className="mt-3 text-[0.94rem] leading-[1.75]">
+          <AltAskAi />
+        </p>
 
         {/* Last.fm — album art instead of a waveform. min-h holds the space so
             the page doesn't jump when the fetch lands on a cold visit. */}
