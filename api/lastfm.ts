@@ -48,7 +48,13 @@ export default async function handler() {
       {
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 's-maxage=60, stale-while-revalidate=120',
+          // The strip is supposed to read as live, and s-maxage=60 + swr=120
+          // meant a visitor could sit on a track up to three minutes stale.
+          // Ten seconds still collapses every visitor into ~6 upstream calls a
+          // minute (Last.fm's own now-playing push isn't faster than that
+          // anyway), and max-age=0 stops the browser from holding a second copy
+          // on top of the edge's.
+          'Cache-Control': 'public, max-age=0, s-maxage=10, stale-while-revalidate=30',
         },
       }
     );

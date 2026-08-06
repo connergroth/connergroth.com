@@ -68,27 +68,37 @@ const AltAskAi: React.FC = () => {
         Or ask an AI about me.
       </button>
 
-      {open && (
-        <div
-          role="menu"
-          className="absolute left-0 z-20 mt-2 w-[230px] overflow-hidden rounded-md border border-stone-200 bg-white p-1 shadow-[0_4px_16px_rgba(0,0,0,0.08)]"
-        >
-          {OPTIONS.map((o) => (
-            <a
-              key={o.id}
-              href={o.href}
-              target="_blank"
-              rel="noreferrer"
-              role="menuitem"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 rounded-[3px] px-2.5 py-2 font-mono text-[0.7rem] text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
-            >
-              <span className="shrink-0 text-stone-500">{o.icon}</span>
-              {o.label}
-            </a>
-          ))}
-        </div>
-      )}
+      {/* Stays mounted so it can animate BOTH ways — unmounting on close makes
+          the card vanish on a frame boundary instead of fading. `visibility` is
+          in the transition list on purpose: it flips discretely at the END of
+          the fade-out, which keeps these links out of the tab order while
+          closed without cutting the animation short. Origin is top-left so the
+          card grows out of the link rather than out of its own middle. */}
+      <div
+        role="menu"
+        aria-hidden={!open}
+        className={`absolute left-0 z-20 mt-2 w-[230px] origin-top-left overflow-hidden rounded-md border border-stone-200 bg-white p-1 shadow-[0_4px_16px_rgba(0,0,0,0.08)] transition-[opacity,transform,visibility] duration-150 ease-out motion-reduce:transition-none ${
+          open
+            ? 'visible translate-y-0 scale-100 opacity-100'
+            : 'invisible -translate-y-1 scale-[0.97] opacity-0'
+        }`}
+      >
+        {OPTIONS.map((o) => (
+          <a
+            key={o.id}
+            href={o.href}
+            target="_blank"
+            rel="noreferrer"
+            role="menuitem"
+            tabIndex={open ? 0 : -1}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5 rounded-[3px] px-2.5 py-2 font-mono text-[0.7rem] text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+          >
+            <span className="shrink-0 text-stone-500">{o.icon}</span>
+            {o.label}
+          </a>
+        ))}
+      </div>
     </div>
   );
 };

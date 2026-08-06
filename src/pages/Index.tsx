@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
 import AltTellMe from '@/components/AltTellMe';
 import AltAskAi from '@/components/AltAskAi';
 import SEO from '../components/SEO';
 import SkyBand from '../components/SkyBand';
+import NowPlaying from '../components/NowPlaying';
 
 /* ── Alt layout ───────────────────────────────────────────
    Freeman-Jiang structure: full-bleed band, then one narrow left-aligned
@@ -30,48 +30,7 @@ const PROJECTS: { name: string; href: string; blurb: string }[] = [
 const link =
   'text-stone-900 underline decoration-stone-300 underline-offset-[3px] hover:decoration-stone-600 transition-colors';
 
-interface Track {
-  name: string;
-  artist: string;
-  album: string;
-  cover: string | null;
-  url: string;
-  nowPlaying: boolean;
-}
-
-/* Last.fm's most recent scrobble. Cached in localStorage so a repeat visit
-   paints the strip immediately instead of popping in a second later. */
-function useLastFm(): Track | null {
-  const [track, setTrack] = useState<Track | null>(() => {
-    if (typeof window === 'undefined') return null;
-    try {
-      const raw = localStorage.getItem('cache:lastfm:alt');
-      return raw ? (JSON.parse(raw) as Track) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  useEffect(() => {
-    fetch('/api/lastfm')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => {
-        if (!j?.track) return;
-        setTrack(j.track);
-        try {
-          localStorage.setItem('cache:lastfm:alt', JSON.stringify(j.track));
-        } catch {}
-      })
-      .catch(() => {});
-  }, []);
-
-  return track;
-}
-
 export default function AltIndex() {
-  const track = useLastFm();
-  const [tellMeOpen, setTellMeOpen] = useState(false);
-
   return (
     <>
       <SEO
@@ -130,47 +89,17 @@ export default function AltIndex() {
         {/* One row, two separate controls — the human invitation and the machine
             one. They sit on the same line so the page ends in three rows instead
             of four; the AI link stays a shade quieter so the line still has a
-            primary. While the field is open it owns the row. */}
-        <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[0.94rem] leading-[1.75]">
-          <AltTellMe onExpandedChange={setTellMeOpen} />
-          {!tellMeOpen && <AltAskAi />}
+            primary. The AI link is a CHILD of the field rather than a sibling,
+            so opening the field cross-fades the whole row as one thing instead
+            of unmounting the link out from under it. */}
+        <div className="mt-4 text-[0.94rem] leading-[1.75]">
+          <AltTellMe>
+            <AltAskAi />
+          </AltTellMe>
         </div>
 
-        {/* Last.fm — album art instead of a waveform. min-h holds the space so
-            the page doesn't jump when the fetch lands on a cold visit. */}
-        <div className="mt-16 min-h-[1.75rem]">
-          {track && (
-            <a
-              href={track.url}
-              target="_blank"
-              rel="noreferrer"
-              className="group flex w-fit max-w-full items-center gap-2.5"
-            >
-              {track.cover ? (
-                <img
-                  src={track.cover}
-                  alt={track.album || track.name}
-                  loading="lazy"
-                  /* The site sends COEP: require-corp, so a cross-origin image
-                     is blocked unless it's fetched in CORS mode. Last.fm's CDN
-                     serves Access-Control-Allow-Origin: *, so this is enough. */
-                  crossOrigin="anonymous"
-                  className="h-7 w-7 shrink-0 rounded-[2px] object-cover opacity-90 shadow-[0_1px_2px_rgba(0,0,0,0.10)] transition-opacity group-hover:opacity-100"
-                />
-              ) : (
-                <span className="h-7 w-7 shrink-0 rounded-[2px] bg-stone-200" />
-              )}
-              <span className="min-w-0 font-mono text-[0.63rem] leading-[1.4]">
-                <span className="block text-stone-400">
-                  {track.nowPlaying ? 'now playing' : 'last played'}
-                </span>
-                <span className="block truncate text-stone-500 transition-colors group-hover:text-stone-900">
-                  {track.name} &mdash; {track.artist}
-                </span>
-              </span>
-            </a>
-          )}
-        </div>
+        <NowPlaying />
+
       </main>
     </>
   );
