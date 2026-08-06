@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import AltTellMe from '@/components/AltTellMe';
 import AltAskAi from '@/components/AltAskAi';
 import SEO from '../components/SEO';
@@ -18,17 +19,29 @@ const LINKS = [
   { label: 'Resume', href: '/assets/documents/Conner-Groth-Resume.pdf' },
 ];
 
-/* Every project points at the real thing, not a case-study page on this site.
-   One page, and the links leave. */
-const PROJECTS: { name: string; href: string; blurb: string }[] = [
-  { name: 'spot', href: 'https://textspot.app', blurb: 'a calorie tracker you text instead of an app' },
-  { name: 'sift', href: 'https://usesift.app', blurb: 'an AI iMessage assistant for school' },
-  { name: 'seqimprove', href: 'https://seqimprove.synbiohub.org', blurb: 'AI-assisted sequence annotation for synthetic biology' },
-  { name: 'lucence', href: 'https://lucence.so', blurb: 'the studio everything above sits under' },
-];
-
 const link =
   'text-stone-900 underline decoration-stone-300 underline-offset-[3px] hover:decoration-stone-600 transition-colors';
+
+/* Every project points at the real thing, not a case-study page on this site.
+   One page, and the links leave. */
+const PROJECTS: { name: string; href: string; blurb: ReactNode }[] = [
+  { name: 'sift', href: 'https://usesift.app', blurb: 'an AI iMessage assistant for school' },
+  {
+    name: 'seqimprove',
+    href: 'https://seqimprove.synbiohub.org',
+    // Attribution matters here: this is lab work, not a Lucence product. The
+    // paper link replaces nothing — it gets appended once it's published.
+    blurb: (
+      <>
+        AI-assisted sequence annotation for synthetic biology, built at CU Boulder&rsquo;s{' '}
+        <a href="https://geneticlogiclab.org" target="_blank" rel="noreferrer" className={link}>
+          Genetic Logic Lab
+        </a>
+      </>
+    ),
+  },
+  { name: 'lucence', href: 'https://lucence.so', blurb: 'the studio my own products ship under' },
+];
 
 export default function AltIndex() {
   return (
