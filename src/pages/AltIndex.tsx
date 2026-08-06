@@ -143,6 +143,10 @@ export default function AltIndex() {
                   src={track.cover}
                   alt={track.album || track.name}
                   loading="lazy"
+                  /* The site sends COEP: require-corp, so a cross-origin image
+                     is blocked unless it's fetched in CORS mode. Last.fm's CDN
+                     serves Access-Control-Allow-Origin: *, so this is enough. */
+                  crossOrigin="anonymous"
                   className="h-10 w-10 shrink-0 rounded-[2px] object-cover shadow-[0_1px_3px_rgba(0,0,0,0.14)]"
                 />
               ) : (
