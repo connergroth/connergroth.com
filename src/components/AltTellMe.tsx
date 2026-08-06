@@ -15,7 +15,13 @@ const ENDPOINT = 'https://formspree.io/f/xgvarknn';
 
 type State = 'closed' | 'open' | 'sending' | 'sent';
 
-const AltTellMe: React.FC = () => {
+/**
+ * `onExpandedChange` tells the parent when this owns the whole row, so the
+ * sibling link sharing that line can step aside while the field is open.
+ */
+const AltTellMe: React.FC<{ onExpandedChange?: (expanded: boolean) => void }> = ({
+  onExpandedChange,
+}) => {
   const [state, setState] = useState<State>('closed');
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -23,6 +29,10 @@ const AltTellMe: React.FC = () => {
   useEffect(() => {
     if (state === 'open') inputRef.current?.focus();
   }, [state]);
+
+  useEffect(() => {
+    onExpandedChange?.(state !== 'closed');
+  }, [state, onExpandedChange]);
 
   // "sent" is a transient confirmation, not a dead end — it falls back to the
   // original sentence so the page doesn't keep a receipt on screen forever.
@@ -54,28 +64,22 @@ const AltTellMe: React.FC = () => {
 
   if (state === 'closed') {
     return (
-      <p className="mt-7 text-[0.94rem] leading-[1.75] text-stone-700">
-        <button
-          type="button"
-          onClick={() => setState('open')}
-          className="text-stone-700 underline decoration-stone-300 decoration-1 underline-offset-4 transition-colors hover:decoration-stone-500"
-        >
-          Tell me something.
-        </button>
-      </p>
+      <button
+        type="button"
+        onClick={() => setState('open')}
+        className="text-stone-700 underline decoration-stone-300 decoration-1 underline-offset-4 transition-colors hover:decoration-stone-500"
+      >
+        Tell me something.
+      </button>
     );
   }
 
   if (state === 'sent') {
-    return (
-      <p className="mt-7 text-[0.94rem] leading-[1.75] text-stone-500">
-        Got it. Thanks.
-      </p>
-    );
+    return <span className="text-stone-500">Got it. Thanks.</span>;
   }
 
   return (
-    <div className="mt-7">
+    <div className="w-full">
       <div className="flex items-center gap-3 border-b border-stone-300 pb-1">
         <input
           ref={inputRef}

@@ -69,6 +69,7 @@ function useLastFm(): Track | null {
 
 export default function AltIndex() {
   const track = useLastFm();
+  const [tellMeOpen, setTellMeOpen] = useState(false);
 
   return (
     <>
@@ -115,8 +116,6 @@ export default function AltIndex() {
           ))}
         </ul>
 
-        <AltTellMe />
-
         <nav className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-[0.94rem]">
           {LINKS.map((l) => (
             <a
@@ -131,9 +130,14 @@ export default function AltIndex() {
           ))}
         </nav>
 
-        <p className="mt-3 text-[0.94rem] leading-[1.75]">
-          <AltAskAi />
-        </p>
+        {/* One row, two separate controls — the human invitation and the machine
+            one. They sit on the same line so the page ends in three rows instead
+            of four; the AI link stays a shade quieter so the line still has a
+            primary. While the field is open it owns the row. */}
+        <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[0.94rem] leading-[1.75]">
+          <AltTellMe onExpandedChange={setTellMeOpen} />
+          {!tellMeOpen && <AltAskAi />}
+        </div>
 
         {/* Last.fm — album art instead of a waveform. min-h holds the space so
             the page doesn't jump when the fetch lands on a cold visit. */}

@@ -65,7 +65,7 @@ const AltAskAi: React.FC = () => {
         aria-expanded={open}
         className="text-stone-500 underline decoration-stone-300 decoration-1 underline-offset-4 transition-colors hover:text-stone-900 hover:decoration-stone-500"
       >
-        or ask an AI about me
+        Or ask an AI about me.
       </button>
 
       {open && (
