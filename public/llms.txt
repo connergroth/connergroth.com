@@ -107,7 +107,6 @@ adopted by 3 research labs.
 
 - Agentic systems and the reliability engineering around LLM-powered products
 - Design philosophy, emergence in complex systems, first-principles product thinking
-- Football and fantasy football
 - Photography (Sony A6000)
 
 ## Contact
