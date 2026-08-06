@@ -30,16 +30,40 @@ const KEYS: { h: number; p: Palette }[] = [
   { h: 24.0, p: [[12, 14, 32], [24, 31, 66], [48, 58, 103], [242, 232, 213]] },
 ];
 
-function paletteAt(hour: number): Palette {
-  let a = KEYS[0], b = KEYS[KEYS.length - 1];
-  for (let i = 0; i < KEYS.length - 1; i++) {
-    if (hour >= KEYS[i].h && hour <= KEYS[i + 1].h) { a = KEYS[i]; b = KEYS[i + 1]; break; }
+/* The ridge's four ink plates, lit by the same clock as the sky. The shipped
+   PNG is exactly four flat colours, so this is an exact plate swap, not a
+   filter — the dither edges stay hard and no fifth colour is ever invented.
+   Midday IS the shipped asset; everything else is that asset relit. */
+const RIDGE_SRC_PLATES: Palette = [
+  [36, 26, 22],     // shadow
+  [92, 107, 60],    // trees
+  [201, 138, 82],   // rock
+  [242, 232, 213],  // sunlit face
+];
+const RIDGE_KEYS: { h: number; p: Palette }[] = [
+  { h: 0.0, p: [[12, 12, 20], [20, 28, 34], [58, 52, 66], [112, 124, 156]] },      // night — moonlit, near silhouette
+  { h: 5.2, p: [[26, 22, 32], [52, 64, 54], [140, 102, 86], [214, 186, 176]] },    // dawn — cold and muted
+  { h: 7.4, p: [[34, 26, 26], [86, 102, 62], [190, 134, 88], [240, 232, 220]] },   // morning
+  { h: 12.0, p: [[36, 26, 22], [92, 107, 60], [201, 138, 82], [242, 232, 213]] },  // midday — the shipped asset
+  { h: 18.2, p: [[30, 22, 22], [74, 86, 52], [196, 120, 66], [248, 220, 168]] },   // golden
+  { h: 20.0, p: [[22, 14, 26], [38, 42, 38], [126, 70, 58], [206, 142, 102]] },    // dusk — backlit, alpenglow on the faces
+  { h: 21.6, p: [[12, 12, 20], [20, 28, 34], [58, 52, 66], [112, 124, 156]] },     // night
+  { h: 24.0, p: [[12, 12, 20], [20, 28, 34], [58, 52, 66], [112, 124, 156]] },
+];
+
+function lerpKeys(keys: { h: number; p: Palette }[], hour: number): Palette {
+  let a = keys[0], b = keys[keys.length - 1];
+  for (let i = 0; i < keys.length - 1; i++) {
+    if (hour >= keys[i].h && hour <= keys[i + 1].h) { a = keys[i]; b = keys[i + 1]; break; }
   }
   const t = b.h === a.h ? 0 : (hour - a.h) / (b.h - a.h);
   return a.p.map((c, i) =>
     c.map((v, k) => Math.round(v + (b.p[i][k] - v) * t))
   ) as Palette;
 }
+
+const paletteAt = (hour: number) => lerpKeys(KEYS, hour);
+const ridgePaletteAt = (hour: number) => lerpKeys(RIDGE_KEYS, hour);
 
 /* 4x4 Bayer, centred on zero — same matrix the build-time script uses on the
    mountains, which is what makes the two layers read as one print. */
@@ -77,6 +101,92 @@ function homeHour(): number {
   }).formatToParts(new Date());
   const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
   return (get('hour') % 24) + get('minute') / 60;
+}
+
+/**
+ * The ridge, drawn to a canvas so its four plates can be relit as the day
+ * moves. It stays the asset's own 1800x150 and is scaled by CSS exactly like
+ * the <img> it replaced, so nothing about the layout changes.
+ *
+ * The expensive part (deciding which plate every pixel belongs to) runs once on
+ * load into a Uint8Array; after that a repaint is one pass of table lookups,
+ * and it only fires when the interpolated palette actually moves.
+ */
+function Ridge() {
+  const ref = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return;
+
+    let alive = true;
+    let timer = 0;
+    const img = new Image();
+    img.src = '/assets/images/flatirons-riso.png';
+
+    img.onload = () => {
+      if (!alive) return;
+      const w = img.naturalWidth, h = img.naturalHeight;
+      canvas.width = w; canvas.height = h;
+      ctx.drawImage(img, 0, 0);
+
+      const id = ctx.getImageData(0, 0, w, h);
+      const px = id.data;
+      const n = w * h;
+
+      // 255 = transparent, otherwise the index of the plate this pixel belongs
+      // to. Nearest-colour rather than exact match so the few antialiased edge
+      // pixels land on a plate instead of keeping their daylight colour.
+      const plate = new Uint8Array(n);
+      for (let i = 0; i < n; i++) {
+        const o = i * 4;
+        if (px[o + 3] === 0) { plate[i] = 255; continue; }
+        let best = 0, bd = Infinity;
+        for (let k = 0; k < 4; k++) {
+          const s = RIDGE_SRC_PLATES[k];
+          const d = (px[o] - s[0]) ** 2 + (px[o + 1] - s[1]) ** 2 + (px[o + 2] - s[2]) ** 2;
+          if (d < bd) { bd = d; best = k; }
+        }
+        plate[i] = best;
+      }
+
+      let lastKey = '';
+      const paint = () => {
+        const pal = ridgePaletteAt(homeHour());
+        const key = pal.join('|');
+        if (key === lastKey) return;
+        lastKey = key;
+        for (let i = 0; i < n; i++) {
+          const p = plate[i];
+          if (p === 255) continue;
+          const c = pal[p], o = i * 4;
+          px[o] = c[0]; px[o + 1] = c[1]; px[o + 2] = c[2];
+        }
+        ctx.putImageData(id, 0, 0);
+      };
+
+      paint();
+      // The palette moves on the scale of minutes, so a 1s check is already far
+      // finer than the eye can catch and costs a 12-int compare when nothing moved.
+      timer = window.setInterval(paint, 1000);
+    };
+
+    return () => { alive = false; window.clearInterval(timer); };
+  }, []);
+
+  return (
+    <canvas
+      ref={ref}
+      role="img"
+      aria-label="The Flatirons, Boulder"
+      width={1800}
+      height={150}
+      className="absolute inset-x-0 bottom-0 w-full h-auto select-none pointer-events-none"
+      style={{ imageRendering: 'pixelated' }}
+    />
+  );
 }
 
 export default function SkyBand({ className = '' }: { className?: string }) {
@@ -229,13 +339,7 @@ export default function SkyBand({ className = '' }: { className?: string }) {
       {/* Full-width, bottom-anchored, natural height. The asset is a thin ridge
           strip (1800x150) so its rendered height stays under the band at every
           viewport width — no cropping, so the low left-hand ridge never vanishes. */}
-      <img
-        src="/assets/images/flatirons-riso.png"
-        alt="The Flatirons, Boulder"
-        className="absolute inset-x-0 bottom-0 w-full h-auto select-none pointer-events-none"
-        style={{ imageRendering: 'pixelated' }}
-        draggable={false}
-      />
+      <Ridge />
     </div>
   );
 }
