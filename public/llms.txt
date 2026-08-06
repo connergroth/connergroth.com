@@ -1,102 +1,120 @@
 # Conner Groth
 
-> Software engineer building AI systems that actually ship. Most recently a SWE intern at Apple, CU Boulder CS, and undergraduate researcher working on applied AI, reliability, and the infrastructure that turns prototypes into real tools.
+> Software engineer and CS student at CU Boulder, graduating May 2027. Most recently a
+> software engineering intern at Apple on the Screen Time team, where he built agents that
+> turn feature specs into passing tests. Works on the integration layer — the part where a
+> model has to touch a real system and not fall over.
 
 ## Current
 
-- Most recently Software Engineering Intern at **Apple** — Screen Time, Test Engineering (Summer 2026, San Diego), building autonomous AI test-generation pipelines
-- Computer Science student at the **University of Colorado Boulder**, Business minor (expected graduation May 2027)
-- Undergraduate researcher at the **Genetic Logic Lab** at CU Boulder (https://geneticlogiclab.org)
-- Founder of **Lucence Labs** (https://lucence.so), where Spot was built — a calorie tracker you text instead of an app
-- Based in Boulder, CO
+- Software Engineer Intern at **Apple** — Screen Time, Test Engineering (May–Aug 2026, San Diego). Built an agentic system that generates, runs, and repairs XCTests from manual test plans until they pass.
+- B.S. Computer Science, Business minor at the **University of Colorado Boulder** — expected May 2027, major GPA 3.73.
+- Undergraduate researcher at the **Genetic Logic Lab** at CU Boulder (https://geneticlogiclab.org), May 2025 – present.
+- Runs **Lucence Labs** (https://lucence.so), the studio his own products ship under — Spot, Sift.
+- Based in Boulder, CO.
+- Looking for new-grad software engineering roles starting after May 2027, ideally where AI systems meet products at real scale.
 
 ## About
 
-I'm a builder focused on AI systems that cross the gap between demo and production. My work sits at the intersection of applied machine learning, software reliability, and thoughtful product design. I care about the unglamorous parts of engineering — error handling, observability, graceful degradation, security — because they're what separate prototypes from tools people actually depend on.
+I build the integration layer: the place where a model has to touch a real system and not
+fall over. Less the research, more the thing a lot of people end up using without thinking
+about it.
 
-I'm drawn to problems where design philosophy meets systems thinking: how do you build software that feels coherent from first principles? How do complex behaviors emerge from simple rules? These questions show up in both my academic writing and the products I ship.
+Most of my work is agentic systems and the infrastructure around them — tool-using agents
+that take real actions, the execution layer underneath, and the unglamorous parts (retries,
+failure traces, observability, graceful degradation) that decide whether a demo becomes
+something people depend on. I grew up in Colorado and have never lived anywhere else.
 
 ## Experience
 
-### Apple — Software Engineering Intern
-**Screen Time, Test Engineering · Summer 2026 · San Diego, CA**
+### Apple — Software Engineer Intern
+**Screen Time, Test Engineering · May 2026 – Aug 2026 · San Diego, CA**
 
-Building an autonomous AI pipeline (Claude Agent SDK) that converts feature specs into passing, validated tests across iOS, macOS, watchOS, and visionOS — reducing end-to-end QA time from ~4 days to ~2 hours. Parallelized test execution across 50+ devices (including multi-device family scenarios), expanded automated coverage from 0% to full validation for several Screen Time feature areas (300+ generated and reviewed tests per weekly cycle), and built a visual reporting layer with annotated screenshots and recordings so engineers can verify behavior without reading Swift test code — adopted by 8+ engineers across 3 teams.
+- Built an agentic system (Claude Agent SDK) that autonomously generates, runs, and repairs XCTests from manual test plans until they pass, across iOS, macOS, and watchOS — cutting each plan from weeks to hours.
+- Designed a distributed execution layer that shards a test plan across 50+ devices and coordinates multi-device Mac–iPhone parent-and-child flows, cutting a full run from hours to minutes.
+- Shipped 200+ generated cases into Screen Time's regression suite, covering feature areas with no prior automation and cutting each manual pass from a full-time engineer to ~30 minutes of triage.
+- Implemented a persistent knowledge layer that reuses verified UI hierarchies and captures step-level failure traces; merged into the team's daily automation and adopted by 5+ engineers.
 
 ### Genetic Logic Lab, CU Boulder — Undergraduate Researcher
-**Synthetic Biology Tooling · https://geneticlogiclab.org**
+**Synthetic biology tooling · May 2025 – Present · Boulder, CO**
 
-Research contributor working on AI-assisted tooling for synthetic biology. Primary project: SeqImprove, a tool for sequence annotation and curation in genetic construct research. Research publications in progress — will be listed here as they're published.
+- Lead full-stack developer on SeqImprove, an AI-assisted synthetic-bio curation tool adopted by 3 research labs.
+- Designed and implemented a multi-algorithm sequence hashing system, reducing annotation time by 75%.
+- Engineered backend APIs and data models supporting cross-platform integration of biological sequence workflows.
+- Research publications in progress — links will be added here as they're published.
 
 ### IM — Founding Software Engineer
-**Conversational AI for Older Adults**
+**AI messaging platform · Oct 2025 – Mar 2026 · Boulder, CO**
 
-First engineering hire. Built conversational AI systems designed for accessibility and safety with older users, including voice interfaces, fallback patterns for ambiguous interactions, and safeguards appropriate for a sensitive user population.
+- First engineer on the team; built the MVP.
+- Designed and shipped a real-time conversational backend handling 5,000+ sessions with sub-second responses.
+- Shipped ETL pipelines transforming unstructured conversation data into structured analytics datasets.
+- Built the vector retrieval and Redis caching layer that let conversations resume with prior context instead of cold.
 
-### Soaper — Software Engineer
-**HIPAA-compliant Voice Agent**
+### Sorcea Labs — Software Engineer Intern
+**Remote · Sep 2025 – Dec 2025**
 
-Contributed to the engineering of a HIPAA-compliant voice agent for healthcare workflows. Focus on audit logging, data minimization, and safe handling of protected health information.
+- Built a serverless AWS pipeline processing 7M+ product reviews with Lambda, S3, SageMaker, and DynamoDB.
+- Implemented CI/CD and infrastructure-as-code for automated deployments and improved production stability.
+- Optimized AWS inference workflows, increasing throughput 35% while reducing latency and compute cost.
 
-### Blueprint Boulder — Engineering Lead
-**Software for Special-Needs Families · 6-person team**
+### Blueprint Boulder — Software Engineer Team Lead
+**Aug 2025 – May 2026 · Boulder, CO**
 
-Led a six-person engineering team building software tools for families with special-needs children. Managed technical direction, mentoring, and delivery across a volunteer engineering organization.
+- Led a 6-person team building scheduling and booking software serving 100+ special-needs families.
+- Owned client communication and sprint planning, translating client feedback into scoped specs the team shipped.
 
 ## Education
 
-### University of Colorado Boulder — BS Computer Science, Business Minor
-**2023–2027 (expected) · Boulder, CO**
+### University of Colorado Boulder — B.S. Computer Science, Business Minor
+**Expected May 2027 · Boulder, CO · Major GPA 3.73 / 4.00**
 
 ## Projects
 
 ### Spot
-A calorie tracker you text instead of an app. You text Spot what you ate and it logs the macros — no app to open, no barcode to scan. Built at Lucence Labs, live since June 2026.
+A calorie tracker you text instead of an app. You text Spot what you ate and it logs the
+macros — no app to open, no barcode to scan. Built under Lucence Labs, live since June 2026.
 
 - Site: https://textspot.app
-- Company: Lucence Labs (https://lucence.so)
 
 ### Sift
-An AI academic assistant for students, integrating Canvas, Google Calendar, Gmail, and iMessage into a single briefing-first interface. Built at Lucence Labs in 2025; no longer in active development.
-
-Features include a morning briefing that synthesizes the day ahead, an end-of-day digest, a daily reflection prompt, and conversational command over academic workflows via a multi-turn tool-using LLM backend. Security infrastructure includes AES-256-GCM encryption, rate limiting, and HSTS. Built with Swift/SwiftUI on the client and Python/FastAPI on the backend.
+A proactive AI assistant for students over iMessage — managed tasks, schedules, and email
+for 100+ students and processed 5k+ messages/month in production. A modular backend
+coordinated 10 services for scheduling, email triage, task planning, and Canvas sync, on
+Redis-backed automation infrastructure for concurrent jobs, external API calls, CI/CD, and
+Sentry monitoring. Built with Python/FastAPI, PostgreSQL, Redis, and React. Built in 2025;
+no longer in active development.
 
 - Site: https://usesift.app
-- Company: Lucence Labs (https://lucence.so)
 
 ### SeqImprove
-AI-assisted sequence annotation tool for synthetic biology researchers, developed at CU Boulder's Genetic Logic Lab. Improves curation workflows for researchers working with genetic constructs.
+AI-assisted sequence annotation for synthetic biology — improves curation workflows for
+researchers working with genetic constructs. Built at CU Boulder's Genetic Logic Lab and
+adopted by 3 research labs.
 
 - Site: https://seqimprove.synbiohub.org
 - Source: https://github.com/myersresearchgroup/seqimprove
 - Lab: https://geneticlogiclab.org
 
-## Research
-
-Undergraduate research contributor at the Genetic Logic Lab (https://geneticlogiclab.org) at CU Boulder, working on AI-assisted tooling for synthetic biology. Research papers in progress — links will be added here as they're published.
-
 ## Technical Skills
 
-**Primary languages:** Swift, Python, TypeScript
-**Mobile & client:** SwiftUI, iOS development
-**Backend & API:** FastAPI, Node.js, REST and RPC design
-**Web:** React, Next.js
-**AI / ML:** LangChain, PyTorch, transformer fine-tuning, retrieval-augmented generation, multi-turn tool-using agents, local model hosting (Ollama)
-**Data & infra:** PostgreSQL, Redis, Docker, AWS, GitHub Actions
-**Other:** Scala (coursework), OAuth and identity flows, security (encryption, rate limiting, HSTS, audit logging)
+**Languages:** Python, TypeScript, JavaScript, Swift, C++, SQL
+**AI / backend:** Claude Agent SDK, tool-using agents, PyTorch, FastAPI, PostgreSQL, Redis, pgvector, retrieval-augmented generation
+**Dev / test infra:** SwiftUI, XCTest, Xcode, Docker, AWS (Lambda, S3, DynamoDB, SageMaker), CI/CD, Git, Sentry
+**Web:** React, Node.js, REST and RPC design
 
 ## Interests
 
-- Reliability and security engineering for LLM-powered products
+- Agentic systems and the reliability engineering around LLM-powered products
 - Design philosophy, emergence in complex systems, first-principles product thinking
+- Football and fantasy football
 - Photography (Sony A6000)
-- Long-form technical and design writing
 
 ## Contact
 
 - Email: conner@lucence.so
-- Resume: https://connergroth.com/assets/documents/Conner-Groth-Resume.pdf
 - Website: https://connergroth.com
+- Resume: https://connergroth.com/assets/documents/Conner-Groth-Resume.pdf
 - GitHub: https://github.com/connergroth
 - LinkedIn: https://linkedin.com/in/connergroth
 - X / Twitter: https://x.com/connermgroth
@@ -104,4 +122,4 @@ Undergraduate research contributor at the Genetic Logic Lab (https://geneticlogi
 ## Company
 
 **Lucence Labs** — https://lucence.so
-A software company founded by Conner to build AI-native productivity tools. Projects: Spot, Sift.
+Conner's studio, the umbrella his own products ship under. Projects: Spot, Sift.
