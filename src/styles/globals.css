@@ -8,6 +8,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scrollbar-width: none;
+    /* No rubber-band above the sky band — the page shouldn't reveal a strip
+       of nothing over its own header. Also kills pull-to-refresh. */
+    overscroll-behavior-y: none;
   }
 
   html::-webkit-scrollbar {
@@ -15,6 +18,7 @@
   }
 
   body {
+    overscroll-behavior-y: none;
     @apply bg-[#FBFBFA] text-stone-700 font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
     letter-spacing: -0.01em;
