@@ -25,11 +25,21 @@ export default async function handler() {
       });
     }
 
+    // Last.fm serves a grey placeholder star when it has no art for a release.
+    // Treat that as "no cover" instead of rendering the asterisk.
+    const PLACEHOLDER = '2a96cdd108f4';
+    const images: { size?: string; '#text'?: string }[] = Array.isArray(track.image) ? track.image : [];
+    const bySize = (size: string) => images.find((i) => i.size === size)?.['#text'] || '';
+    const rawCover = bySize('extralarge') || bySize('large') || bySize('medium') || '';
+    const cover = rawCover && !rawCover.includes(PLACEHOLDER) ? rawCover : null;
+
     return new Response(
       JSON.stringify({
         track: {
           name: track.name,
           artist: track.artist?.['#text'] || '',
+          album: track.album?.['#text'] || '',
+          cover,
           url: track.url,
           nowPlaying: track['@attr']?.nowplaying === 'true',
           playedAt: track.date?.uts ? Number(track.date.uts) * 1000 : null,

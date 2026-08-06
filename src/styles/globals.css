@@ -15,7 +15,7 @@
   }
 
   body {
-    @apply bg-[#F0EFEB] text-stone-700 font-sans;
+    @apply bg-[#FBFBFA] text-stone-700 font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
     letter-spacing: -0.01em;
     -webkit-transform: translateZ(0);
@@ -37,52 +37,4 @@
     background-color: rgba(59, 130, 246, 0.22);
     color: #1c1917;
   }
-
-  section {
-    scroll-margin-top: 5rem;
-  }
-
-  h1 {
-    user-select: none;
-    -webkit-user-select: none;
-  }
-}
-
-@layer utilities {
-  @keyframes project-expand {
-    0% {
-      transform: scale(0.94);
-      opacity: 0;
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-
-  .project-expand {
-    animation: project-expand 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-    transform-origin: center top;
-  }
-
-  @keyframes page-enter {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  .page-enter {
-    animation: page-enter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  /* Dithered image overlays only make sense where hover exists */
-  @media (hover: none) {
-    .dither-canvas {
-      display: none;
-    }
-  }
-
 }

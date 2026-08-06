@@ -2,7 +2,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 interface SEOProps {
-  title: string;
+  /* Kept for call-site clarity; the rendered <title> is always the site name. */
+  title?: string;
   description?: string;
   keywords?: string;
   ogImage?: string;
@@ -12,7 +13,6 @@ interface SEOProps {
 }
 
 const SEO: React.FC<SEOProps> = ({
-  title,
   description = "Conner Groth - Software Engineer, Software Research Assistant at CU Boulder",
   keywords = "software engineer, web development, portfolio, react, frontend, CS student",
   ogImage = "/assets/images/favicon.png",
