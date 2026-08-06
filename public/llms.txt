@@ -23,7 +23,7 @@ about it.
 Most of my work is agentic systems and the infrastructure around them — tool-using agents
 that take real actions, the execution layer underneath, and the unglamorous parts (retries,
 failure traces, observability, graceful degradation) that decide whether a demo becomes
-something people depend on. I grew up in Colorado and have never lived anywhere else.
+something people depend on.
 
 ## Experience
 
