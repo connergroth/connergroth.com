@@ -88,9 +88,9 @@ export default function AltIndex() {
 
         <div className="mt-7 space-y-4 text-[0.94rem] leading-[1.75] text-stone-700">
           <p>
-            I&rsquo;m a CS student at CU Boulder, graduating May 2027. This summer
-            I&rsquo;m a software engineering intern at Apple on the Screen Time team,
-            where I build agents that turn feature specs into passing tests.
+            I&rsquo;m a software engineer and CS student at CU Boulder, graduating
+            May 2027. This summer I&rsquo;m interning at Apple on the Screen Time
+            team, where I build agents that turn feature specs into passing tests.
           </p>
         </div>
 
