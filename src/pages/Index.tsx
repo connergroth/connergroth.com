@@ -25,6 +25,9 @@ const link =
 /* Every project points at the real thing, not a case-study page on this site.
    One page, and the links leave. */
 const PROJECTS: { name: string; href: string; blurb: ReactNode }[] = [
+  // The repo link goes live when the public remote flips — the entry ships now
+  // because the one-liner is the pitch, and the link follows within days.
+  { name: 'fig', href: 'https://github.com/connergroth/fig', blurb: 'an agent you text, not an app' },
   { name: 'sift', href: 'https://usesift.app', blurb: 'an AI iMessage assistant for school' },
   {
     name: 'seqimprove',
