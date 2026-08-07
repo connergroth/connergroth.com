@@ -72,6 +72,19 @@ const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => 
 interface Sky { sunrise: number; sunset: number; cloud: number }
 const FALLBACK: Sky = { sunrise: 6.2, sunset: 19.9, cloud: 25 };
 
+/* Real lunar phase from the synodic clock — 0 = new, 0.5 = full. Anchored to
+   the Aug 12 2026 new moon (the total-eclipse one, so the instant is exactly
+   known); the mean synodic month wobbles ±7h per lunation, so a nearby anchor
+   keeps the error under a couple hours for years either side — invisible at
+   this pixel size. ?moon=0.25 forces a phase for eyeballing. */
+const SYNODIC = 29.53058867;
+function moonPhase(): number {
+  const forced = new URLSearchParams(window.location.search).get('moon');
+  if (forced !== null && !Number.isNaN(Number(forced))) return ((Number(forced) % 1) + 1) % 1;
+  const days = (Date.now() - Date.UTC(2026, 7, 12, 17, 47)) / 86400000;
+  return (((days % SYNODIC) + SYNODIC) % SYNODIC) / SYNODIC;
+}
+
 async function fetchSky(): Promise<Sky> {
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${HOME.lat}&longitude=${HOME.lon}` +
@@ -272,6 +285,15 @@ export default function SkyBand({ className = '' }: { className?: string }) {
       const amp = 0.22 + (cloud / 100) * 0.85;   // overcast = more, heavier bands
       const nightness = isDay ? 0 : 1;
 
+      // the real moon tonight: which side is lit and how much. cos(2πp) is the
+      // terminator's projected half-width — +1 new, 0 quarter, −1 full. waxing
+      // (p<.5) lights the right limb, waning the left, matching the northern sky.
+      const mp = moonPhase();
+      const term = Math.cos(2 * Math.PI * mp);
+      const illum = (1 - term) / 2;
+      // a near-new moon barely glows; without this the halo carves a dark blob
+      const halo = isDay ? 0.7 : 0.7 * (0.25 + 0.75 * illum);
+
       // the three cloud bands separate into a per-column sine and a per-row
       // gaussian, so precompute both instead of calling sin/exp per pixel
       const s1 = new Float32Array(w), s2 = new Float32Array(w), s3 = new Float32Array(w);
@@ -296,8 +318,20 @@ export default function SkyBand({ className = '' }: { className?: string }) {
 
           const dx = x - cx, dy = y - cy;
           const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < rad * 2.4) f -= 0.7;
-          if (d < rad) f = 3.9;
+          if (d < rad * 2.4) f -= halo;
+          if (d < rad) {
+            if (isDay) {
+              f = 3.9;
+            } else {
+              // phase mask: lit where the pixel sits sunward of the terminator
+              // ellipse. the dark limb just keeps the halo deduction — a
+              // barely-there disc against the night plates, like the real thing.
+              const u = dx / rad, v = dy / rad;
+              const rr = Math.sqrt(Math.max(0, 1 - v * v));
+              const lit = mp < 0.5 ? u > term * rr : u < -term * rr;
+              if (lit) f = 3.9;
+            }
+          }
 
           const i = y * w + x;
           f += BAYER[(y & 3) * 4 + (x & 3)] * 0.38 + noise[i] * 0.5;
