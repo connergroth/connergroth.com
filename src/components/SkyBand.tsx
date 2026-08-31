@@ -196,18 +196,13 @@ function Ridge() {
       aria-label="The Flatirons, Boulder"
       width={1800}
       height={150}
-      /* Desktop (md+): width-locked, bottom-anchored, natural height — the whole
-         range edge to edge.
-
-         Below md the asset is NOT squeezed to fit. A 12:1 strip crammed into a
-         390px viewport is 33px tall and reads as a smudge, and stretching it
-         vertically only distorts the ridge. Instead the canvas holds a fixed 64px
-         height and takes its natural width from that (768px), overflowing the
-         band and centre-cropping against the parent's overflow-hidden. A phone
-         gets the middle ~half of the range at full plate detail rather than all
-         of it at none. md is 768px, which is exactly where the cropped width
-         stops overflowing, so the two modes meet with no jump. */
-      className="absolute bottom-0 left-1/2 -translate-x-1/2 h-16 w-auto max-w-none md:inset-x-0 md:translate-x-0 md:w-full md:h-auto select-none pointer-events-none"
+      /* Width-locked, bottom-anchored — but with a floor on the height. The
+         asset is a 12:1 strip, so on a phone its natural height is ~33px and the
+         ridge reads as a smudge. min-h stretches it vertically only (never
+         crops), which is honest here: the strip was already squashed from the
+         photo, so un-squashing it on narrow screens moves BACK toward the real
+         proportion. Above ~770px the natural height wins and nothing stretches. */
+      className="absolute inset-x-0 bottom-0 w-full h-auto min-h-[64px] select-none pointer-events-none"
       style={{ imageRendering: 'pixelated' }}
     />
   );
@@ -381,8 +376,9 @@ export default function SkyBand({ className = '' }: { className?: string }) {
         className="absolute inset-0 w-full h-full"
         style={{ imageRendering: 'pixelated' }}
       />
-      {/* Bottom-anchored. Full width on desktop, centre-cropped on a phone — the
-          parent's overflow-hidden is what does the cropping. */}
+      {/* Full-width, bottom-anchored, natural height. The asset is a thin ridge
+          strip (1800x150) so its rendered height stays under the band at every
+          viewport width — no cropping, so the low left-hand ridge never vanishes. */}
       <Ridge />
     </div>
   );
