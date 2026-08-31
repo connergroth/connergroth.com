@@ -5,7 +5,11 @@ Same separation as riso_web.py (median flatten -> sky mask -> luminance percenti
 plates -> bayer), but emits the actual site asset: a 4-colour RGBA cutout, binary
 alpha, squashed ~12:1 with nearest-neighbour so the plate edges stay hard.
 
-  python3 make_strip.py <photo.jpg> <out.png> [top_frac]
+  python3 make_strip.py <photo.jpg> <out.png> [top] [thresh] [p1,p2,p3] [x0,y0,x1,y1]
+
+The last argument is an optional fractional crop applied BEFORE anything else, which
+is how you pick the framing: a wide shot of the whole range vs. a zoomed, angled read
+on the slabs. Everything downstream (top, sky mask, plates) works on the crop.
 """
 import sys
 import numpy as np
@@ -16,6 +20,7 @@ OUT = sys.argv[2]
 TOP = float(sys.argv[3]) if len(sys.argv) > 3 else 0.06
 THRESH = float(sys.argv[4]) if len(sys.argv) > 4 else 46.0
 PCT = [float(x) for x in sys.argv[5].split(",")] if len(sys.argv) > 5 else [30, 58, 82]
+CROP = [float(x) for x in sys.argv[6].split(",")] if len(sys.argv) > 6 else None
 
 W, H = 2400, 780
 BAND = 200                      # 2400x200 -> 1800x150, the shipped 12:1
@@ -26,8 +31,11 @@ PALETTE = [(36, 26, 22), (92, 107, 60), (201, 138, 82), (242, 232, 213)]
 BLACK, GREEN, RUST, CREAM = (np.array(c, dtype=np.uint8) for c in PALETTE)
 BAYER = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]) / 16.0 - 0.5
 
-# ---- 1. crop to a banner that keeps the ridgeline ----
+# ---- 1. frame the shot, then crop to a banner that keeps the ridgeline ----
 im = Image.open(SRC).convert("RGB")
+if CROP:
+    fw, fh = im.size
+    im = im.crop((int(fw * CROP[0]), int(fh * CROP[1]), int(fw * CROP[2]), int(fh * CROP[3])))
 iw, ih = im.size
 crop_h = int(iw * H / W)
 top = int(ih * TOP)
