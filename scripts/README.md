@@ -37,8 +37,8 @@
 ## Header photo credit
 
 `public/assets/images/flatirons-riso.png` is a four-colour derivative of
-["blue skies at the flat irons"](https://www.flickr.com/photos/26917921@N00/3622261403)
-by emerson12, licensed **CC BY 2.0** — attribution only, no share-alike, so the
-derivative carries no license obligation of its own. Built with
-`make_strip.py <photo> … 0.04 46 40,70,92 0.20,0.06,1.0,0.58`.
-Source photo kept at `~/Archives/site-sources/connergroth.com/`.
+[The Flatirons in autumn](https://commons.wikimedia.org/wiki/File:The_Flatirons_in_autumn..JPG)
+by Eddyl via Wikimedia Commons, licensed **CC BY-SA 3.0**. Built with
+`make_strip.py <photo> … 0.10 75 12,42,72 0.14,0.05,0.90,0.55` — the whole range,
+cropped in about 1.3× so it reads as mountains rather than a distant horizon line.
+Source photos kept at `~/Archives/site-sources/connergroth.com/`.
