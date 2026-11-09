@@ -43,7 +43,7 @@ const PROJECTS: { name: string; href: string; blurb: ReactNode }[] = [
       </>
     ),
   },
-  { name: 'lucence', href: 'https://lucence.so', blurb: 'the studio my own products ship under' },
+  { name: 'lucence', href: 'https://lucence.so', blurb: 'my studio building custom AI software for small businesses' },
 ];
 
 export default function AltIndex() {

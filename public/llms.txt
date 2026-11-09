@@ -10,7 +10,7 @@
 - Software Engineer Intern at **Apple** — Screen Time, Test Engineering (May–Aug 2026, San Diego). Built an agentic system that generates, runs, and repairs XCTests from manual test plans until they pass.
 - B.S. Computer Science, Business minor at the **University of Colorado Boulder** — expected May 2027, major GPA 3.73.
 - Undergraduate researcher at the **Genetic Logic Lab** at CU Boulder (https://geneticlogiclab.org), May 2025 – present.
-- Runs **Lucence Labs** (https://lucence.so), the studio his own products ship under — Spot, Sift.
+- Runs **Lucence Labs** (https://lucence.so), his studio building custom AI software for small businesses: voice agents, automations and small apps.
 - Based in Boulder, CO.
 - Looking for new-grad software engineering roles starting after May 2027, ideally where AI systems meet products at real scale.
 
@@ -71,12 +71,6 @@ something people depend on.
 
 ## Projects
 
-### Spot
-A calorie tracker you text instead of an app. You text Spot what you ate and it logs the
-macros — no app to open, no barcode to scan. Built under Lucence Labs, live since June 2026.
-
-- Site: https://textspot.app
-
 ### Sift
 A proactive AI assistant for students over iMessage — managed tasks, schedules, and email
 for 100+ students and processed 5k+ messages/month in production. A modular backend
@@ -121,4 +115,4 @@ adopted by 3 research labs.
 ## Company
 
 **Lucence Labs** — https://lucence.so
-Conner's studio, the umbrella his own products ship under. Projects: Spot, Sift.
+Conner's studio, building custom AI software for small businesses: voice agents, automations and small apps. Projects: Sift.
