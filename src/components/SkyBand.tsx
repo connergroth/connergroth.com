@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from 'react';
  */
 
 /* Where "here" is. Swap when he moves; the sky follows. */
-const HOME = { lat: 32.7157, lon: -117.1611, label: 'san diego' };
+const HOME = { lat: 32.7157, lon: -117.1611, tz: 'America/Los_Angeles', label: 'san diego' };
 
 /* Palette keyframes, ordered top-of-sky → horizon. Interpolated by hour. */
 type Palette = [number, number, number][];
@@ -70,7 +70,40 @@ const ridgePaletteAt = (hour: number) => lerpKeys(RIDGE_KEYS, hour);
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => v / 16 - 0.5);
 
 interface Sky { sunrise: number; sunset: number; cloud: number }
-const FALLBACK: Sky = { sunrise: 6.2, sunset: 19.9, cloud: 25 };
+
+/* Today's sunrise/sunset at HOME, in HOME's local hours, from the NOAA solar
+   equations. Computed on the spot so the sun is in its real place on the very
+   first frame; waiting on the weather fetch for these made it start wherever a
+   hardcoded guess put it and then jump. Good to a couple of minutes. */
+function sunTimes(): { sunrise: number; sunset: number } {
+  const now = new Date();
+  const start = Date.UTC(now.getUTCFullYear(), 0, 1);
+  const n = Math.floor((now.getTime() - start) / 86400000);   // day of year, 0-based
+  const g = (2 * Math.PI / 365) * n;
+  const eq = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g)
+    - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+  const decl = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g)
+    - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g)
+    - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+  const lat = HOME.lat * Math.PI / 180;
+  const cosHa = Math.cos(90.833 * Math.PI / 180) / (Math.cos(lat) * Math.cos(decl)) - Math.tan(lat) * Math.tan(decl);
+  const ha = Math.acos(Math.min(1, Math.max(-1, cosHa))) * 180 / Math.PI;
+  // HOME's UTC offset right now, DST included, read off the same zone homeHour uses
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: HOME.tz, hour: 'numeric', minute: 'numeric', hour12: false,
+  }).formatToParts(now);
+  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
+  const local = (get('hour') % 24) + get('minute') / 60;
+  const utc = now.getUTCHours() + now.getUTCMinutes() / 60;
+  const off = ((local - utc + 36) % 24) - 12;
+  const toLocal = (utcMin: number) => (((utcMin / 60 + off) % 24) + 24) % 24;
+  return {
+    sunrise: toLocal(720 - 4 * (HOME.lon + ha) - eq),
+    sunset: toLocal(720 - 4 * (HOME.lon - ha) - eq),
+  };
+}
+
+const FALLBACK_CLOUD = 25;
 
 /* Real lunar phase from the synodic clock — 0 = new, 0.5 = full. Anchored to
    the Aug 12 2026 new moon (the total-eclipse one, so the instant is exactly
@@ -85,22 +118,15 @@ function moonPhase(): number {
   return (((days % SYNODIC) + SYNODIC) % SYNODIC) / SYNODIC;
 }
 
-async function fetchSky(): Promise<Sky> {
+/* Only the clouds come off the network — the sun's place never waits on it. */
+async function fetchCloud(): Promise<number> {
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${HOME.lat}&longitude=${HOME.lon}` +
-    `&current=cloud_cover&daily=sunrise,sunset&timezone=auto&forecast_days=1`;
+    `&current=cloud_cover&timezone=auto&forecast_days=1`;
   const r = await fetch(url);
   if (!r.ok) throw new Error('sky fetch failed');
   const j = await r.json();
-  const hrs = (iso: string) => {
-    const d = new Date(iso);
-    return d.getHours() + d.getMinutes() / 60;
-  };
-  return {
-    sunrise: hrs(j.daily.sunrise[0]),
-    sunset: hrs(j.daily.sunset[0]),
-    cloud: j.current.cloud_cover ?? FALLBACK.cloud,
-  };
+  return j.current.cloud_cover ?? FALLBACK_CLOUD;
 }
 
 /* Local hour where HOME is, regardless of where the visitor is sitting.
@@ -109,7 +135,7 @@ function homeHour(): number {
   const forced = new URLSearchParams(window.location.search).get('sky');
   if (forced !== null && !Number.isNaN(Number(forced))) return Number(forced) % 24;
   const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Los_Angeles',
+    timeZone: HOME.tz,
     hour: 'numeric', minute: 'numeric', hour12: false,
   }).formatToParts(new Date());
   const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
@@ -210,13 +236,13 @@ function Ridge() {
 
 export default function SkyBand({ className = '' }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const skyRef = useRef<Sky>(FALLBACK);
-  const [weather, setWeather] = useState<Sky | null>(null);
+  const skyRef = useRef<Sky>({ ...sunTimes(), cloud: FALLBACK_CLOUD });
+  const [weather, setWeather] = useState<number | null>(null);
 
   useEffect(() => {
     let alive = true;
-    fetchSky()
-      .then((s) => { if (alive) { skyRef.current = s; setWeather(s); } })
+    fetchCloud()
+      .then((cloud) => { if (alive) { skyRef.current = { ...skyRef.current, cloud }; setWeather(cloud); } })
       .catch(() => {});
     return () => { alive = false; };
   }, []);
