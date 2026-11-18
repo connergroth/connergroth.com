@@ -42,3 +42,30 @@
     color: #1c1917;
   }
 }
+
+/* Load-in: each block surfaces in reading order — a short rise out of a soft
+   blur, staggered by --i (set inline). Opacity/transform/filter only, so it
+   never moves layout. Reduced motion gets the page as-is, no animation. */
+@layer components {
+  .reveal {
+    animation: reveal 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 80ms + 120ms);
+  }
+  .reveal-sky {
+    animation: reveal-sky 900ms ease-out both;
+  }
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(6px); filter: blur(3px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes reveal-sky {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-sky { animation: none; }
+}

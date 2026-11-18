@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import AltTellMe from '@/components/AltTellMe';
 import AltAskAi from '@/components/AltAskAi';
 import SEO from '../components/SEO';
@@ -46,6 +46,9 @@ const PROJECTS: { name: string; href: string; blurb: ReactNode }[] = [
   { name: 'lucence', href: 'https://lucence.so', blurb: 'my studio building custom AI software for small businesses' },
 ];
 
+/* Stagger slot for the .reveal load-in (globals.css). */
+const at = (i: number) => ({ '--i': i }) as CSSProperties;
+
 export default function AltIndex() {
   return (
     <>
@@ -58,17 +61,17 @@ export default function AltIndex() {
       {/* Height = the ridge asset's own rendered height (it's 1800x150, so
           100vw/12) plus a thin slab of sky above it. That way the peak
           always clears the top edge instead of getting cropped. */}
-      <SkyBand className="h-[clamp(104px,calc(100vw/12+40px),190px)]" />
+      <SkyBand className="reveal-sky h-[clamp(104px,calc(100vw/12+40px),190px)]" />
 
       <main className="mx-auto w-full max-w-[520px] px-6 pt-8 sm:pt-10 pb-24">
-        <h1 className="font-serif text-[1.55rem] font-medium tracking-[-0.01em] text-stone-900">
+        <h1 style={at(0)} className="reveal font-serif text-[1.55rem] font-medium tracking-[-0.01em] text-stone-900">
           Conner Groth
         </h1>
 
         {/* Tense is deliberately past-and-durable: the internship ends Aug 7,
             2026, and "most recently" stays true until the next role instead of
             needing an edit on a specific day. */}
-        <div className="mt-7 space-y-4 text-[0.94rem] leading-[1.75] text-stone-700">
+        <div style={at(1)} className="reveal mt-7 space-y-4 text-[0.94rem] leading-[1.75] text-stone-700">
           <p>
             I&rsquo;m a software engineer and CS student at CU Boulder, graduating
             May 2027. Most recently I was at Apple on the Screen Time team, where
@@ -76,19 +79,19 @@ export default function AltIndex() {
           </p>
         </div>
 
-        <p className="mt-7 text-[0.94rem] leading-[1.75] text-stone-700">
+        <p style={at(2)} className="reveal mt-7 text-[0.94rem] leading-[1.75] text-stone-700">
           A few things I&rsquo;ve built:
         </p>
         <ul className="mt-2 space-y-1.5 pl-5 list-disc marker:text-stone-400 text-[0.94rem] leading-[1.75] text-stone-700">
-          {PROJECTS.map((p) => (
-            <li key={p.name}>
+          {PROJECTS.map((p, i) => (
+            <li key={p.name} style={at(3 + i)} className="reveal">
               <a href={p.href} target="_blank" rel="noreferrer" className={link}>{p.name}</a>
               {' '}&mdash; {p.blurb}
             </li>
           ))}
         </ul>
 
-        <nav className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-[0.94rem]">
+        <nav style={at(3 + PROJECTS.length)} className="reveal mt-7 flex flex-wrap gap-x-5 gap-y-2 text-[0.94rem]">
           {LINKS.map((l) => (
             <a
               key={l.label}
@@ -108,13 +111,15 @@ export default function AltIndex() {
             primary. The AI link is a CHILD of the field rather than a sibling,
             so opening the field cross-fades the whole row as one thing instead
             of unmounting the link out from under it. */}
-        <div className="mt-4 text-[0.94rem] leading-[1.75]">
+        <div style={at(4 + PROJECTS.length)} className="reveal mt-4 text-[0.94rem] leading-[1.75]">
           <AltTellMe>
             <AltAskAi />
           </AltTellMe>
         </div>
 
-        <NowPlaying />
+        <div style={at(5 + PROJECTS.length)} className="reveal">
+          <NowPlaying />
+        </div>
 
       </main>
     </>
