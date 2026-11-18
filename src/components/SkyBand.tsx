@@ -628,10 +628,24 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
             // taller than a pixel or over the mountains, which is what keeps a
             // still night frame from reading as a star field
             const depth = fall[p + 2];
-            const fallen = (8 + depth * 10) * t;
+            // falling has to dominate: a flake drifts at most ~1 px across per
+            // 3 px down, and gusts reach it as a wave (delayed by its x) at a
+            // fraction of the rain's shove, so the field never slides in unison.
+            // each flake flutters at its own rate on top.
+            const ph = fall[p + 3];
+            const fallen = (10 + depth * 14) * t;
             const y = Math.floor((fall[p + 1] * h + fallen) % h);
-            const sx = fall[p] * w + lean * (0.08 + across * 0.5) * fallen
-              + push * (0.7 + 0.6 * fall[p + 3]) + Math.sin(t * 0.8 + fall[p + 3] * 6.28) * 1.5;
+            const lag = fall[p] * 1.2;
+            const tl = Math.max(0, t - lag);
+            let gust = 0;
+            if (wind > 0 && tl > 0) {
+              const every = 5 - 2 * wind, amount = 2 + 4 * wind;
+              const k = Math.floor(tl / every), x = Math.min(1, (tl - k * every) / 1.4);
+              gust = lean * amount * (k + x * x * (3 - 2 * x)) * (0.5 + 0.5 * depth);
+            }
+            const sx = fall[p] * w + lean * (0.04 + across * 0.25) * fallen + gust
+              + Math.sin(t * (0.6 + ph * 0.9) + ph * 6.28) * (1 + depth * 1.5)
+              + Math.sin(t * (1.7 + ph) + ph * 3.1) * 0.6;
             const x = ((Math.floor(sx) % w) + w) % w;
             if (depth < 0.4) {
               flake(x, y, true);
