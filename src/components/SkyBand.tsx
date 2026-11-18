@@ -82,8 +82,36 @@ const RIDGE_SNOW_KEYS = RIDGE_KEYS.map((k, i) => ({
   p: [k.p[0], k.p[1], RIDGE_SNOW[i][0], RIDGE_SNOW[i][1]] as Palette,
 }));
 
-const paletteAt = (hour: number) => lerpKeys(KEYS, hour);
-const ridgePaletteAt = (hour: number, snow: boolean) => lerpKeys(snow ? RIDGE_SNOW_KEYS : RIDGE_KEYS, hour);
+/* The keyframe hours above are a midsummer day (sunrise ~6:10, sunset ~7:55).
+   Each one is really tied to the sun — dawn an hour before sunrise, dusk on
+   the sunset — so the real clock is mapped onto that timeline piecewise,
+   anchor to anchor, using today's sunrise/sunset. Palette, ridge and the
+   sun's arc then agree in any season instead of dusk landing at 8pm in
+   November. */
+const KEY_REF = [0, 5.2, 7.4, 12.0, 18.2, 19.9, 21.6, 24];
+const anchors = ({ sunrise, sunset }: Sky) =>
+  [0, sunrise - 1.0, sunrise + 1.2, (sunrise + sunset) / 2, sunset - 1.7, sunset, sunset + 1.7, 24];
+function keyHour(hour: number, sky: Sky): number {
+  const a = anchors(sky);
+  for (let i = 0; i < a.length - 1; i++) {
+    if (hour >= a[i] && hour <= a[i + 1]) {
+      const t = a[i + 1] === a[i] ? 0 : (hour - a[i]) / (a[i + 1] - a[i]);
+      return KEY_REF[i] + (KEY_REF[i + 1] - KEY_REF[i]) * t;
+    }
+  }
+  return hour;
+}
+
+const paletteAt = (hour: number, sky: Sky) => lerpKeys(KEYS, keyHour(hour, sky));
+const ridgePaletteAt = (hour: number, sky: Sky, snow: boolean) =>
+  lerpKeys(snow ? RIDGE_SNOW_KEYS : RIDGE_KEYS, keyHour(hour, sky));
+
+/* Cheap repeatable 0-1 hash, so anything "random" per gust is a pure function
+   of which gust it is and needs no state between frames. */
+const hash = (a: number, b: number) => {
+  const v = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;
+  return v - Math.floor(v);
+};
 
 /* 4x4 Bayer, centred on zero — same matrix the build-time script uses on the
    mountains, which is what makes the two layers read as one print. */
@@ -100,6 +128,7 @@ interface Weather {
   fog: boolean;
   ground: boolean;                    // snow lying on the ground
   slant: number;                      // -1..1, wind across the view, + blows left to right
+  wind: number;                       // 0-1 gustiness: 0 under ~20 mph gusts, 1 at ~45+
   live: boolean;                      // real (or forced) data, not the pre-fetch default
 }
 
@@ -138,7 +167,7 @@ function sunTimes(): { sunrise: number; sunset: number } {
 /* Until the fetch lands, and for good if it fails: the sky as it was before it
    knew about weather. A few clouds, nothing falling, bare rock. */
 const FALLBACK: Weather = {
-  cloud: 25, tempF: null, falling: 'none', rate: 0, fog: false, ground: false, slant: 0.3, live: false,
+  cloud: 25, tempF: null, falling: 'none', rate: 0, fog: false, ground: false, slant: 0.3, wind: 0, live: false,
 };
 
 /* Real lunar phase from the synodic clock — 0 = new, 0.5 = full. Anchored to
@@ -172,7 +201,7 @@ async function fetchWeather(): Promise<Weather> {
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${HOME.lat}&longitude=${HOME.lon}` +
     `&current=cloud_cover,temperature_2m,precipitation,rain,snowfall,weather_code,snow_depth,` +
-    `wind_speed_10m,wind_direction_10m&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`;
+    `wind_speed_10m,wind_direction_10m,wind_gusts_10m&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`;
   const r = await fetch(url);
   if (!r.ok) throw new Error('sky fetch failed');
   const c = (await r.json()).current;
@@ -188,6 +217,9 @@ async function fetchWeather(): Promise<Weather> {
   // The band looks west at the Flatirons, so north is to the right: a south
   // wind (direction = where it comes FROM) pushes things left to right.
   const across = -Math.cos(num(c.wind_direction_10m) * Math.PI / 180) * num(c.wind_speed_10m);
+  // gusts are what you notice; fall back to the sustained speed if they're missing.
+  // km/h → mph, then ~20 mph is where it starts and ~45 mph is the cap
+  const gustMph = Math.max(num(c.wind_gusts_10m), num(c.wind_speed_10m)) / 1.609;
 
   return {
     cloud: typeof c.cloud_cover === 'number' ? c.cloud_cover : FALLBACK.cloud,
@@ -197,6 +229,7 @@ async function fetchWeather(): Promise<Weather> {
     fog: WMO_FOG.includes(code),
     ground: num(c.snow_depth) > 0,
     slant: Math.min(1, Math.max(-1, across / 30)),
+    wind: Math.min(1, Math.max(0, (gustMph - 20) / 25)),
     live: true,
   };
 }
@@ -206,6 +239,7 @@ async function fetchWeather(): Promise<Weather> {
      ?rate=0..1                                how hard the rain/snow falls
      ?snow=1|0                                 snow on the ridge or not
      ?temp=34                                  the caption's temperature, in F
+     ?wind=0..1                                how gusty (0 calm, 1 ~45 mph gusts)
    Anything not forced stays real. */
 const FORCED_WX: Record<string, Partial<Weather>> = {
   clear: { cloud: 5, falling: 'none', rate: 0, fog: false },
@@ -221,10 +255,11 @@ function withForced(w: Weather): Weather {
   const wx = FORCED_WX[q.get('wx') ?? ''];
   if (wx) Object.assign(out, wx, { live: true });
   const n = (k: string) => (q.get(k) !== null && q.get(k) !== '' && !Number.isNaN(Number(q.get(k))) ? Number(q.get(k)) : null);
-  const rate = n('rate'), snow = n('snow'), temp = n('temp');
+  const rate = n('rate'), snow = n('snow'), temp = n('temp'), wind = n('wind');
   if (rate !== null && out.falling !== 'none') out.rate = Math.min(1, Math.max(0, rate));
   if (snow !== null) out.ground = snow > 0;
   if (temp !== null) { out.tempF = temp; out.live = true; }
+  if (wind !== null) { out.wind = Math.min(1, Math.max(0, wind)); out.live = true; }
   return out;
 }
 
@@ -234,9 +269,12 @@ const snowy = (w: Weather) => w.ground || w.falling === 'snow';
 /* The line under the band. Just the place until there's something real to say. */
 function captionFor(w: Weather): string {
   if (!w.live) return HOME.label;
+  // wind takes over from the cloud word, but rides along with rain or snow
+  const windy = w.wind > 0;
   const cond =
-    w.falling === 'snow' ? 'snowing'
-    : w.falling === 'rain' ? 'raining'
+    w.falling === 'snow' ? (windy ? 'snowing and windy' : 'snowing')
+    : w.falling === 'rain' ? (windy ? 'raining and windy' : 'raining')
+    : windy ? 'windy'
     : w.fog ? 'foggy'
     : w.cloud >= 85 ? 'overcast'
     : w.cloud >= 25 ? 'partly cloudy'
@@ -245,10 +283,19 @@ function captionFor(w: Weather): string {
 }
 
 /* Local hour where HOME is, regardless of where the visitor is sitting.
-   ?sky=21.5 forces an hour — handy for eyeballing dusk at 2pm. */
+   ?sky=16.75 forces a clock hour on today's date, so in November that's the
+   real sunset. ?sky=dawn|sunrise|morning|noon|golden|sunset|dusk|night jumps
+   to that point of today's sun, whatever the season. */
 function homeHour(): number {
   const forced = new URLSearchParams(window.location.search).get('sky');
-  if (forced !== null && !Number.isNaN(Number(forced))) return Number(forced) % 24;
+  if (forced !== null && forced !== '' && !Number.isNaN(Number(forced))) return Number(forced) % 24;
+  if (forced) {
+    const [, dawn, morning, noon, golden, sunset] = anchors(sunTimes());
+    const named: Record<string, number> = {
+      dawn, sunrise: dawn + 1, morning, noon, golden, sunset, dusk: sunset + 0.4, night: sunset + 3.5,
+    };
+    if (forced in named) return named[forced];
+  }
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: HOME.tz,
     hour: 'numeric', minute: 'numeric', hour12: false,
@@ -266,7 +313,7 @@ function homeHour(): number {
  * load into a Uint8Array; after that a repaint is one pass of table lookups,
  * and it only fires when the interpolated palette actually moves.
  */
-function Ridge({ snow }: { snow: boolean }) {
+function Ridge({ snow, sky }: { snow: boolean; sky: Sky }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
   const snowRef = useRef(snow);
   const paintRef = useRef<(() => void) | null>(null);
@@ -313,7 +360,7 @@ function Ridge({ snow }: { snow: boolean }) {
 
       let lastKey = '';
       const paint = () => {
-        const pal = ridgePaletteAt(homeHour(), snowRef.current);
+        const pal = ridgePaletteAt(homeHour(), sky, snowRef.current);
         const key = pal.join('|');
         if (key === lastKey) return;
         lastKey = key;
@@ -334,7 +381,7 @@ function Ridge({ snow }: { snow: boolean }) {
     };
 
     return () => { alive = false; paintRef.current = null; window.clearInterval(timer); };
-  }, []);
+  }, [sky]);
 
   return (
     <canvas
@@ -357,6 +404,7 @@ function Ridge({ snow }: { snow: boolean }) {
 
 export default function SkyBand({ className = '', captionClassName = '' }: { className?: string; captionClassName?: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const frontRef = useRef<HTMLCanvasElement | null>(null);
   const skyRef = useRef<Sky>(sunTimes());
   const [weather, setWeather] = useState<Weather>(() => withForced(FALLBACK));
 
@@ -379,6 +427,12 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
     let w = 0, h = 0, img: ImageData | null = null, noise: Float32Array | null = null;
     let starAt: Set<number> = new Set();
     let plateAt: Uint8Array | null = null, fall: Float32Array | null = null;
+    // the nearest snowflakes fall in front of the ridge — stars never do, which
+    // is the surest tell between the two. their own transparent layer over the
+    // ridge, same resolution as the sky, only ever touched while it snows
+    const front = frontRef.current;
+    const fctx = front?.getContext('2d') ?? null;
+    let frontImg: ImageData | null = null;
 
     // Sized off the band, never pinned in px: CSS (inset-0, w-full h-full) owns the
     // canvas's displayed size. Pinning it to the first measurement froze the sky at
@@ -405,6 +459,10 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
       }
       // which plate each sky pixel landed on, so rain can step off it
       plateAt = new Uint8Array(w * h);
+      if (front && fctx) {
+        front.width = w; front.height = h;
+        frontImg = fctx.createImageData(w, h);
+      }
       // rain/snow: one pool per size, seeded at the densest it's ever allowed
       // to get. the live rate only decides how many of them get drawn, so a
       // downpour is capped here and can't turn the print into static.
@@ -420,9 +478,9 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
       // the gaps beside it or the sky flattens into one slab of horizon colour.
       const horizon = h;
       const { sunrise, sunset } = skyRef.current;
-      const { cloud, falling, rate, slant } = weather;
+      const { cloud, falling, rate, slant, wind } = weather;
       const hour = homeHour();
-      const pal = paletteAt(hour);
+      const pal = paletteAt(hour, skyRef.current);
       const data = img.data;
 
       // sun/moon: 0→1 across the band between sunrise and sunset, arc for height
@@ -446,6 +504,10 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
       const amp = 0.22 + (cloud / 100) * 0.85;   // overcast = more, heavier bands
       // stars only once the sun is actually down, and not through weather
       const stars = !isDay && falling === 'none';
+      // a night with something falling is cloud-lit, not black: lift the ramp
+      // so flakes fall through murk instead of sitting on a clear starry sky
+      // (weighted to the top, so the horizon doesn't wash up into the light plate)
+      const murk = !isDay && falling !== 'none' ? 0.6 * (cloud / 100) : 0;
 
       // the real moon tonight: which side is lit and how much. cos(2πp) is the
       // terminator's projected half-width — +1 new, 0 quarter, −1 full. waxing
@@ -453,8 +515,11 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
       const mp = moonPhase();
       const term = Math.cos(2 * Math.PI * mp);
       const illum = (1 - term) / 2;
-      // a near-new moon barely glows; without this the halo carves a dark blob
-      const halo = isDay ? 0.7 : 0.7 * (0.25 + 0.75 * illum);
+      // a soft glow that brightens toward the body and fades to nothing at
+      // `reach`, so the dither breaks it up with no edge to find. a near-new
+      // moon barely glows.
+      const glow = isDay ? 0.9 : 0.9 * (0.25 + 0.75 * illum);
+      const reach = rad * 3.2;
 
       // the three cloud bands separate into a per-column sine and a per-row
       // gaussian, so precompute both instead of calling sin/exp per pixel
@@ -468,7 +533,7 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
       const g1 = new Float32Array(h), g2 = new Float32Array(h), g3 = new Float32Array(h), base = new Float32Array(h);
       for (let y = 0; y < h; y++) {
         const v = y / horizon;                 // 0 at the top edge, 1 at the skyline
-        base[y] = Math.min(4.2, v * 2.7);
+        base[y] = Math.min(4.2, v * 2.7 + murk * (1 - v));
         g1[y] = Math.exp(-((v - 0.26) ** 2) / 0.022);
         g2[y] = Math.exp(-((v - 0.48) ** 2) / 0.026);
         g3[y] = Math.exp(-((v - 0.70) ** 2) / 0.024);
@@ -480,18 +545,19 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
 
           const dx = x - cx, dy = y - cy;
           const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < rad * 2.4) f -= halo;
+          let lift = 0;
+          if (d < reach) { const q = 1 - d / reach; lift = glow * q * q; f += lift; }
           if (d < rad) {
             if (isDay) {
               f = 3.9;
             } else {
               // phase mask: lit where the pixel sits sunward of the terminator
-              // ellipse. the dark limb just keeps the halo deduction — a
-              // barely-there disc against the night plates, like the real thing.
+              // ellipse. the dark limb drops the glow back out — a barely-there
+              // disc against its own glow, like the real thing.
               const u = dx / rad, v = dy / rad;
               const rr = Math.sqrt(Math.max(0, 1 - v * v));
               const lit = mp < 0.5 ? u > term * rr : u < -term * rr;
-              if (lit) f = 3.9;
+              f = lit ? 3.9 : f - lift;
             }
           }
 
@@ -514,33 +580,75 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
         }
       }
 
+      const t = reduced ? 0 : tMs / 1000;
+      const lean = slant < 0 ? -1 : 1, across = Math.abs(slant);
+
+      // Gusts shove whatever's falling sideways: every few seconds a ~0.9s
+      // burst of extra travel. It's the running total of those bursts, so it's
+      // still a pure function of the clock. push = px travelled so far,
+      // surge = 0-1, how hard this instant is being shoved.
+      let push = 0, surge = 0;
+      if (wind > 0 && t > 0) {
+        const every = 5 - 2 * wind, amount = 5 + 14 * wind;
+        const k = Math.floor(t / every), x = Math.min(1, (t - k * every) / 0.9);
+        push = lean * amount * (k + x * x * (3 - 2 * x));
+        surge = 4 * x * (1 - x);
+      }
+
       // Rain and snow, into the same buffer so they're the same print. Every
       // particle's place is a pure function of the clock (no state to step), so
       // reduced motion is just the clock held at zero: a still, sparser field.
       if (falling !== 'none') {
-        const t = reduced ? 0 : tMs / 1000;
         const count = Math.round((fall.length / 4) * rate * (reduced ? 0.5 : 1));
-        const lean = slant < 0 ? -1 : 1, wind = Math.abs(slant);
+        // a flake pixel: the lightest plate, or a dim one on the third plate
+        // (the second where the sky already is the third) — on the dark night
+        // plates a one-step shift would vanish
+        const plates = plateAt;
+        const flake = (x: number, y: number, dim: boolean) => {
+          if (y < 0 || y >= h) return;
+          const i = y * w + (x % w), o = i * 4;
+          const c = dim ? pal[plates[i] === 2 ? 3 : 2] : pal[3];
+          data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
+        };
+        const fd = falling === 'snow' && frontImg ? frontImg.data : null;
+        if (fd) fd.fill(0);
+        const near = (x: number, y: number, c: Palette[number]) => {
+          if (!fd || y < 0 || y >= h) return;
+          const o = (y * w + (x % w)) * 4;
+          fd[o] = c[0]; fd[o + 1] = c[1]; fd[o + 2] = c[2]; fd[o + 3] = 255;
+        };
         for (let k = 0; k < count; k++) {
           const p = k * 4;
           if (falling === 'snow') {
-            // single flakes on the lightest plate: slow, a little sway, and
-            // leaning with whatever wind there is
-            const fallen = (5 + fall[p + 2] * 6) * t;
+            // three depths, keyed off speed so nearer is faster: far flakes are a
+            // dim single pixel, mid ones a bright 1x2 drop, near ones a bright
+            // 2x2 under a dim row, out in front of the ridge. no star is dim,
+            // taller than a pixel or over the mountains, which is what keeps a
+            // still night frame from reading as a star field
+            const depth = fall[p + 2];
+            const fallen = (8 + depth * 10) * t;
             const y = Math.floor((fall[p + 1] * h + fallen) % h);
-            const sx = fall[p] * w + lean * (0.08 + wind * 0.5) * fallen + Math.sin(t * 0.8 + fall[p + 3] * 6.28) * 1.5;
+            const sx = fall[p] * w + lean * (0.08 + across * 0.5) * fallen
+              + push * (0.7 + 0.6 * fall[p + 3]) + Math.sin(t * 0.8 + fall[p + 3] * 6.28) * 1.5;
             const x = ((Math.floor(sx) % w) + w) % w;
-            const o = (y * w + x) * 4;
-            data[o] = pal[3][0]; data[o + 1] = pal[3][1]; data[o + 2] = pal[3][2];
+            if (depth < 0.4) {
+              flake(x, y, true);
+            } else if (depth < 0.75) {
+              flake(x, y, false); flake(x, y + 1, false);
+            } else {
+              near(x, y - 1, pal[2]); near(x + 1, y - 1, pal[2]);
+              near(x, y, pal[3]); near(x + 1, y, pal[3]); near(x, y + 1, pal[3]); near(x + 1, y + 1, pal[3]);
+            }
           } else {
             // short streaks: each pixel steps one plate lighter than the sky
             // behind it (one darker where the sky is already the lightest), so
-            // rain shows as a hard-edged shift in the same four inks
+            // rain shows as a hard-edged shift in the same four inks. a gust
+            // tips them further over while it lasts
             const len = 4 + Math.round(fall[p + 3]);
             const fallen = (70 + fall[p + 2] * 40) * t;
-            const dxdy = lean * (0.5 + wind * 0.3);
+            const dxdy = lean * (0.5 + across * 0.3 + surge * 0.5);
             const hy = (fall[p + 1] * (h + len) + fallen) % (h + len);
-            const hx = fall[p] * w + dxdy * fallen;
+            const hx = fall[p] * w + lean * (0.5 + across * 0.3) * fallen + push;
             for (let s = 0; s < len; s++) {
               const y = Math.floor(hy) - s;
               if (y < 0 || y >= h) continue;
@@ -552,7 +660,62 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
         }
       }
 
+      // Gust trails: now and then a short streak sweeps across with the wind and
+      // curls into a little eddy before it goes. A few slots, each on its own
+      // cycle; most cycles stay empty, so it's occasional rather than a texture.
+      // Stronger wind = more of them, longer and quicker. Same lighter-plate
+      // shift as the rain. Not drawn at all under reduced motion.
+      if (wind > 0 && !reduced) {
+        const slots = Math.max(2, Math.round(w / 180));
+        const every = 7 - 3 * wind, life = 2.0;
+        const tail = 9 + 12 * wind;                         // trail length, px
+        for (let sl = 0; sl < slots; sl++) {
+          const tt = t + hash(sl, 0.5) * every;
+          const cyc = Math.floor(tt / every);
+          const age = (tt - cyc * every) / life;            // 0-1 while alive
+          if (age > 1 || hash(sl, cyc) > 0.3 + 0.55 * wind) continue;
+          const dir = across > 0.1 ? lean : hash(sl, cyc + 0.3) < 0.5 ? -1 : 1;
+          const y0 = h * (0.12 + 0.5 * hash(sl, cyc + 0.6));
+          const x0 = w * hash(sl, cyc + 0.9);
+          const run = 16 + 30 * wind + 10 * hash(sl, cyc + 0.15);   // straight sweep
+          const r0 = 3 + 2 * wind;                                   // eddy radius
+          const turn = 2 * Math.PI * 1.15, curl = turn * r0 * 0.8;
+          const total = run + curl;
+          // the head runs the path, easing off as it winds into the eddy, then
+          // the tail catches up and it's gone
+          const run01 = Math.min(1, age / 0.75);
+          const head = (1 - (1 - run01) * (1 - run01)) * total;
+          const from = age < 0.75 ? head - tail : total - tail * (1 - (age - 0.75) / 0.25);
+          for (let a = Math.max(0, from); a <= head; a += 0.5) {
+            let px: number, py: number;
+            if (a < run) {
+              px = x0 + dir * a;
+              py = y0 - a * 0.06 + Math.sin(a * 0.3) * 0.8;
+            } else {
+              // tangent to the sweep, curling up and over, tightening as it goes
+              const phi = (a - run) / (r0 * 0.8);
+              const r = r0 * (1 - 0.4 * phi / turn);
+              px = x0 + dir * (run + r * Math.sin(phi));
+              py = y0 - run * 0.06 + Math.sin(run * 0.3) * 0.8 - r + r * Math.cos(phi);
+            }
+            const x = Math.floor(px), y = Math.floor(py);
+            // dither out the back of the trail so it tapers instead of ending flat
+            const k = (a - from) / tail;
+            if (k * 1.8 < BAYER[(y & 3) * 4 + (x & 3)] + 0.5) continue;
+            // two px thick where it's fresh, one at the tapering back
+            for (let dy = 0; dy < (k > 0.45 ? 2 : 1); dy++) {
+              const yy = y + dy;
+              if (x < 0 || x >= w || yy < 0 || yy >= h) continue;
+              if ((x - cx) ** 2 + (yy - cy) ** 2 < rad * rad) continue;   // passes behind the sun/moon
+              const i = yy * w + x, c = pal[plateAt[i] < 3 ? plateAt[i] + 1 : 2], o = i * 4;
+              data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
+            }
+          }
+        }
+      }
+
       ctx.putImageData(img, 0, 0);
+      if (falling === 'snow' && fctx && frontImg) fctx.putImageData(frontImg, 0, 0);
     };
 
     let raf = 0, last = 0;
@@ -582,7 +745,13 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
         {/* Full-width, bottom-anchored, natural height. The asset is a thin ridge
             strip (1800x150) so its rendered height stays under the band at every
             viewport width — no cropping, so the low left-hand ridge never vanishes. */}
-        <Ridge snow={snowy(weather)} />
+        <Ridge snow={snowy(weather)} sky={skyRef.current} />
+        <canvas
+          ref={frontRef}
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          style={{ imageRendering: 'pixelated' }}
+        />
       </div>
       {/* Always one line tall, so the weather landing changes the words and
           nothing else on the page. */}
