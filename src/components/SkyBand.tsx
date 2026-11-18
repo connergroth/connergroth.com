@@ -11,11 +11,11 @@ import { useEffect, useRef, useState } from 'react';
  * so the pixels stay chunky and the whole thing costs ~nothing.
  *
  * It's driven by the real time and real weather where Conner is, not the
- * visitor's — so it's the same signal as the "boulder → san diego" status line.
+ * visitor's.
  */
 
 /* Where "here" is. Swap when he moves; the sky follows. */
-const HOME = { lat: 32.7157, lon: -117.1611, tz: 'America/Los_Angeles', label: 'san diego' };
+const HOME = { lat: 40.015, lon: -105.2705, tz: 'America/Denver', label: 'boulder' };
 
 /* Palette keyframes, ordered top-of-sky → horizon. Interpolated by hour. */
 type Palette = [number, number, number][];
@@ -258,13 +258,17 @@ export default function SkyBand({ className = '' }: { className?: string }) {
     let w = 0, h = 0, img: ImageData | null = null, noise: Float32Array | null = null;
     let starAt: Set<number> = new Set();
 
+    // Sized off the band, never pinned in px: CSS (inset-0, w-full h-full) owns the
+    // canvas's displayed size. Pinning it to the first measurement froze the sky at
+    // whatever width the page had mid-load, so it covered part of the band forever.
+    const band = canvas.parentElement ?? canvas;
     const resize = () => {
-      const r = canvas.getBoundingClientRect();
-      w = Math.max(1, Math.round(r.width / SCALE));
-      h = Math.max(1, Math.round(r.height / SCALE));
+      const r = band.getBoundingClientRect();
+      const nw = Math.max(1, Math.round(r.width / SCALE));
+      const nh = Math.max(1, Math.round(r.height / SCALE));
+      if (nw === w && nh === h && img) return;
+      w = nw; h = nh;
       canvas.width = w; canvas.height = h;
-      canvas.style.width = `${r.width}px`;
-      canvas.style.height = `${r.height}px`;
       img = ctx.createImageData(w, h);
       // static grain field — regenerating it per frame makes the print sizzle
       noise = new Float32Array(w * h);
@@ -390,7 +394,7 @@ export default function SkyBand({ className = '' }: { className?: string }) {
     if (!reduced) raf = requestAnimationFrame(loop);
 
     const ro = new ResizeObserver(() => { resize(); draw(performance.now()); });
-    ro.observe(canvas);
+    ro.observe(band);
     return () => { cancelAnimationFrame(raf); ro.disconnect(); };
   }, [weather]);
 
