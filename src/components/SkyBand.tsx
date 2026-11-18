@@ -279,7 +279,9 @@ function captionFor(w: Weather): string {
     : w.cloud >= 85 ? 'overcast'
     : w.cloud >= 25 ? 'partly cloudy'
     : 'clear';
-  return w.tempF === null ? `${HOME.label}, ${cond}` : `${HOME.label}, ${Math.round(w.tempF)}° and ${cond}`;
+  return w.tempF === null ? `${HOME.label}, ${cond}` : cond.includes(' and ')
+      ? `${HOME.label}, ${Math.round(w.tempF)}°, ${cond}`
+      : `${HOME.label}, ${Math.round(w.tempF)}° and ${cond}`;
 }
 
 /* Local hour where HOME is, regardless of where the visitor is sitting.
