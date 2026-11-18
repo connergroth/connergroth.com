@@ -62,14 +62,46 @@ function lerpKeys(keys: { h: number; p: Palette }[], hour: number): Palette {
   ) as Palette;
 }
 
+/* Snow on the ridge: the same plate swap with two plates changed. The sunlit
+   face goes to snow and the rock goes partway to a cold pale (dusted, not
+   buried); trees and shadow keep their ink. One [rock, face] pair per
+   RIDGE_KEYS entry, so the snow is lit by the same clock as everything else —
+   at night it's moonlit blue-grey, never white. */
+const RIDGE_SNOW: [Palette[number], Palette[number]][] = [
+  [[76, 84, 112], [148, 162, 198]],    // night
+  [[164, 146, 152], [226, 216, 224]],  // dawn
+  [[204, 190, 184], [240, 242, 244]],  // morning
+  [[204, 194, 192], [236, 241, 248]],  // midday — a shade under the page's paper, so the band keeps its bottom edge
+  [[218, 182, 156], [255, 242, 218]],  // golden
+  [[150, 110, 120], [228, 180, 166]],  // dusk — alpenglow on the snow
+  [[76, 84, 112], [148, 162, 198]],    // night
+  [[76, 84, 112], [148, 162, 198]],
+];
+const RIDGE_SNOW_KEYS = RIDGE_KEYS.map((k, i) => ({
+  h: k.h,
+  p: [k.p[0], k.p[1], RIDGE_SNOW[i][0], RIDGE_SNOW[i][1]] as Palette,
+}));
+
 const paletteAt = (hour: number) => lerpKeys(KEYS, hour);
-const ridgePaletteAt = (hour: number) => lerpKeys(RIDGE_KEYS, hour);
+const ridgePaletteAt = (hour: number, snow: boolean) => lerpKeys(snow ? RIDGE_SNOW_KEYS : RIDGE_KEYS, hour);
 
 /* 4x4 Bayer, centred on zero — same matrix the build-time script uses on the
    mountains, which is what makes the two layers read as one print. */
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => v / 16 - 0.5);
 
-interface Sky { sunrise: number; sunset: number; cloud: number }
+interface Sky { sunrise: number; sunset: number }
+
+/* What it's doing outside at HOME right now. */
+interface Weather {
+  cloud: number;                      // 0-100
+  tempF: number | null;
+  falling: 'none' | 'rain' | 'snow';
+  rate: number;                       // 0-1, how hard it's coming down
+  fog: boolean;
+  ground: boolean;                    // snow lying on the ground
+  slant: number;                      // -1..1, wind across the view, + blows left to right
+  live: boolean;                      // real (or forced) data, not the pre-fetch default
+}
 
 /* Today's sunrise/sunset at HOME, in HOME's local hours, from the NOAA solar
    equations. Computed on the spot so the sun is in its real place on the very
@@ -103,7 +135,11 @@ function sunTimes(): { sunrise: number; sunset: number } {
   };
 }
 
-const FALLBACK_CLOUD = 25;
+/* Until the fetch lands, and for good if it fails: the sky as it was before it
+   knew about weather. A few clouds, nothing falling, bare rock. */
+const FALLBACK: Weather = {
+  cloud: 25, tempF: null, falling: 'none', rate: 0, fog: false, ground: false, slant: 0.3, live: false,
+};
 
 /* Real lunar phase from the synodic clock — 0 = new, 0.5 = full. Anchored to
    the Aug 12 2026 new moon (the total-eclipse one, so the instant is exactly
@@ -118,15 +154,94 @@ function moonPhase(): number {
   return (((days % SYNODIC) + SYNODIC) % SYNODIC) / SYNODIC;
 }
 
-/* Only the clouds come off the network — the sun's place never waits on it. */
-async function fetchCloud(): Promise<number> {
+/* WMO codes that mean something is falling, and roughly how hard (0-1). The
+   measured amounts usually say more, but drizzle and flurries often report 0mm
+   while the code still knows — so the code sets a floor. */
+const WMO_RATE: Record<number, number> = {
+  51: 0.2, 53: 0.4, 55: 0.6, 56: 0.2, 57: 0.6,            // drizzle
+  61: 0.3, 63: 0.55, 65: 0.9, 66: 0.3, 67: 0.9,           // rain
+  71: 0.3, 73: 0.55, 75: 0.9, 77: 0.3,                    // snow
+  80: 0.35, 81: 0.6, 82: 1, 85: 0.4, 86: 0.9,             // showers
+  95: 0.7, 96: 0.9, 99: 1,                                // thunderstorm
+};
+const WMO_SNOW = [71, 73, 75, 77, 85, 86];
+const WMO_FOG = [45, 48];
+
+/* Only the weather comes off the network — the sun's place never waits on it. */
+async function fetchWeather(): Promise<Weather> {
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${HOME.lat}&longitude=${HOME.lon}` +
-    `&current=cloud_cover&timezone=auto&forecast_days=1`;
+    `&current=cloud_cover,temperature_2m,precipitation,rain,snowfall,weather_code,snow_depth,` +
+    `wind_speed_10m,wind_direction_10m&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`;
   const r = await fetch(url);
   if (!r.ok) throw new Error('sky fetch failed');
-  const j = await r.json();
-  return j.current.cloud_cover ?? FALLBACK_CLOUD;
+  const c = (await r.json()).current;
+  const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
+
+  // amounts are totals over the reporting interval (15 min); put them per hour
+  const perHour = 3600 / (num(c.interval) || 900);
+  const code = num(c.weather_code);
+  const snowing = num(c.snowfall) > 0 || WMO_SNOW.includes(code);
+  const raining = !snowing && (num(c.rain) > 0 || num(c.precipitation) > 0 || code in WMO_RATE);
+  // heavy is ~4cm/h of snow or ~10mm/h of rain; past that it's just "a lot"
+  const measured = snowing ? (num(c.snowfall) * perHour) / 4 : (num(c.precipitation) * perHour) / 10;
+  // The band looks west at the Flatirons, so north is to the right: a south
+  // wind (direction = where it comes FROM) pushes things left to right.
+  const across = -Math.cos(num(c.wind_direction_10m) * Math.PI / 180) * num(c.wind_speed_10m);
+
+  return {
+    cloud: typeof c.cloud_cover === 'number' ? c.cloud_cover : FALLBACK.cloud,
+    tempF: typeof c.temperature_2m === 'number' ? c.temperature_2m : null,
+    falling: snowing ? 'snow' : raining ? 'rain' : 'none',
+    rate: snowing || raining ? Math.min(1, Math.max(0.15, measured, WMO_RATE[code] ?? 0)) : 0,
+    fog: WMO_FOG.includes(code),
+    ground: num(c.snow_depth) > 0,
+    slant: Math.min(1, Math.max(-1, across / 30)),
+    live: true,
+  };
+}
+
+/* Force a state for eyeballing, next to ?sky= and ?moon=:
+     ?wx=clear|partly|overcast|fog|rain|snow   what the sky is doing
+     ?rate=0..1                                how hard the rain/snow falls
+     ?snow=1|0                                 snow on the ridge or not
+     ?temp=34                                  the caption's temperature, in F
+   Anything not forced stays real. */
+const FORCED_WX: Record<string, Partial<Weather>> = {
+  clear: { cloud: 5, falling: 'none', rate: 0, fog: false },
+  partly: { cloud: 50, falling: 'none', rate: 0, fog: false },
+  overcast: { cloud: 95, falling: 'none', rate: 0, fog: false },
+  fog: { cloud: 95, falling: 'none', rate: 0, fog: true },
+  rain: { cloud: 95, falling: 'rain', rate: 0.5, fog: false },
+  snow: { cloud: 95, falling: 'snow', rate: 0.5, fog: false },
+};
+function withForced(w: Weather): Weather {
+  const q = new URLSearchParams(window.location.search);
+  const out = { ...w };
+  const wx = FORCED_WX[q.get('wx') ?? ''];
+  if (wx) Object.assign(out, wx, { live: true });
+  const n = (k: string) => (q.get(k) !== null && q.get(k) !== '' && !Number.isNaN(Number(q.get(k))) ? Number(q.get(k)) : null);
+  const rate = n('rate'), snow = n('snow'), temp = n('temp');
+  if (rate !== null && out.falling !== 'none') out.rate = Math.min(1, Math.max(0, rate));
+  if (snow !== null) out.ground = snow > 0;
+  if (temp !== null) { out.tempF = temp; out.live = true; }
+  return out;
+}
+
+/* Snow shows on the ridge when it's lying there or actively coming down. */
+const snowy = (w: Weather) => w.ground || w.falling === 'snow';
+
+/* The line under the band. Just the place until there's something real to say. */
+function captionFor(w: Weather): string {
+  if (!w.live) return HOME.label;
+  const cond =
+    w.falling === 'snow' ? 'snowing'
+    : w.falling === 'rain' ? 'raining'
+    : w.fog ? 'foggy'
+    : w.cloud >= 85 ? 'overcast'
+    : w.cloud >= 25 ? 'partly cloudy'
+    : 'clear';
+  return w.tempF === null ? `${HOME.label}, ${cond}` : `${HOME.label}, ${Math.round(w.tempF)}° and ${cond}`;
 }
 
 /* Local hour where HOME is, regardless of where the visitor is sitting.
@@ -151,8 +266,13 @@ function homeHour(): number {
  * load into a Uint8Array; after that a repaint is one pass of table lookups,
  * and it only fires when the interpolated palette actually moves.
  */
-function Ridge() {
+function Ridge({ snow }: { snow: boolean }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
+  const snowRef = useRef(snow);
+  const paintRef = useRef<(() => void) | null>(null);
+
+  // snow arriving (or melting) repaints now instead of on the next 1s tick
+  useEffect(() => { snowRef.current = snow; paintRef.current?.(); }, [snow]);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -193,7 +313,7 @@ function Ridge() {
 
       let lastKey = '';
       const paint = () => {
-        const pal = ridgePaletteAt(homeHour());
+        const pal = ridgePaletteAt(homeHour(), snowRef.current);
         const key = pal.join('|');
         if (key === lastKey) return;
         lastKey = key;
@@ -206,13 +326,14 @@ function Ridge() {
         ctx.putImageData(id, 0, 0);
       };
 
+      paintRef.current = paint;
       paint();
       // The palette moves on the scale of minutes, so a 1s check is already far
       // finer than the eye can catch and costs a 12-int compare when nothing moved.
       timer = window.setInterval(paint, 1000);
     };
 
-    return () => { alive = false; window.clearInterval(timer); };
+    return () => { alive = false; paintRef.current = null; window.clearInterval(timer); };
   }, []);
 
   return (
@@ -234,15 +355,15 @@ function Ridge() {
   );
 }
 
-export default function SkyBand({ className = '' }: { className?: string }) {
+export default function SkyBand({ className = '', captionClassName = '' }: { className?: string; captionClassName?: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const skyRef = useRef<Sky>({ ...sunTimes(), cloud: FALLBACK_CLOUD });
-  const [weather, setWeather] = useState<number | null>(null);
+  const skyRef = useRef<Sky>(sunTimes());
+  const [weather, setWeather] = useState<Weather>(() => withForced(FALLBACK));
 
   useEffect(() => {
     let alive = true;
-    fetchCloud()
-      .then((cloud) => { if (alive) { skyRef.current = { ...skyRef.current, cloud }; setWeather(cloud); } })
+    fetchWeather()
+      .then((w) => { if (alive) setWeather(withForced(w)); })
       .catch(() => {});
     return () => { alive = false; };
   }, []);
@@ -257,6 +378,7 @@ export default function SkyBand({ className = '' }: { className?: string }) {
     const SCALE = 2;                       // draw at half res, upscale hard
     let w = 0, h = 0, img: ImageData | null = null, noise: Float32Array | null = null;
     let starAt: Set<number> = new Set();
+    let plateAt: Uint8Array | null = null, fall: Float32Array | null = null;
 
     // Sized off the band, never pinned in px: CSS (inset-0, w-full h-full) owns the
     // canvas's displayed size. Pinning it to the first measurement froze the sky at
@@ -281,15 +403,24 @@ export default function SkyBand({ className = '' }: { className?: string }) {
         const sy = Math.floor(Math.random() * h * 0.82);
         starAt.add(sy * w + sx);
       }
+      // which plate each sky pixel landed on, so rain can step off it
+      plateAt = new Uint8Array(w * h);
+      // rain/snow: one pool per size, seeded at the densest it's ever allowed
+      // to get. the live rate only decides how many of them get drawn, so a
+      // downpour is capped here and can't turn the print into static.
+      // per particle: x, y, speed, sway phase, all 0-1
+      fall = new Float32Array(Math.round(w * h * 0.006) * 4);
+      for (let i = 0; i < fall.length; i++) fall[i] = Math.random();
     };
 
     const draw = (tMs: number) => {
-      if (!img || !noise) return;
+      if (!img || !noise || !plateAt || !fall) return;
       // The horizon is the BOTTOM of the band, not the ridgeline — the ridge only
       // reaches the top edge at the peak, and the palette has to keep ramping in
       // the gaps beside it or the sky flattens into one slab of horizon colour.
       const horizon = h;
-      const { sunrise, sunset, cloud } = skyRef.current;
+      const { sunrise, sunset } = skyRef.current;
+      const { cloud, falling, rate, slant } = weather;
       const hour = homeHour();
       const pal = paletteAt(hour);
       const data = img.data;
@@ -313,7 +444,8 @@ export default function SkyBand({ className = '' }: { className?: string }) {
 
       const phase = reduced ? 0 : (tMs / 1000) * 0.055;
       const amp = 0.22 + (cloud / 100) * 0.85;   // overcast = more, heavier bands
-      const nightness = isDay ? 0 : 1;
+      // stars only once the sun is actually down, and not through weather
+      const stars = !isDay && falling === 'none';
 
       // the real moon tonight: which side is lit and how much. cos(2πp) is the
       // terminator's projected half-width — +1 new, 0 quarter, −1 full. waxing
@@ -370,13 +502,53 @@ export default function SkyBand({ className = '' }: { className?: string }) {
           idx = idx < 0 ? 0 : idx > 3 ? 3 : idx;
           let [r, g, b] = pal[idx];
 
-          // flat star dots, only once the sun is actually down
-          if (nightness > 0 && idx <= 1 && starAt.has(i)) {
+          plateAt[i] = idx;
+
+          // flat star dots
+          if (stars && idx <= 1 && starAt.has(i)) {
             r = pal[3][0]; g = pal[3][1]; b = pal[3][2];
           }
 
           const o = i * 4;
           data[o] = r; data[o + 1] = g; data[o + 2] = b; data[o + 3] = 255;
+        }
+      }
+
+      // Rain and snow, into the same buffer so they're the same print. Every
+      // particle's place is a pure function of the clock (no state to step), so
+      // reduced motion is just the clock held at zero: a still, sparser field.
+      if (falling !== 'none') {
+        const t = reduced ? 0 : tMs / 1000;
+        const count = Math.round((fall.length / 4) * rate * (reduced ? 0.5 : 1));
+        const lean = slant < 0 ? -1 : 1, wind = Math.abs(slant);
+        for (let k = 0; k < count; k++) {
+          const p = k * 4;
+          if (falling === 'snow') {
+            // single flakes on the lightest plate: slow, a little sway, and
+            // leaning with whatever wind there is
+            const fallen = (5 + fall[p + 2] * 6) * t;
+            const y = Math.floor((fall[p + 1] * h + fallen) % h);
+            const sx = fall[p] * w + lean * (0.08 + wind * 0.5) * fallen + Math.sin(t * 0.8 + fall[p + 3] * 6.28) * 1.5;
+            const x = ((Math.floor(sx) % w) + w) % w;
+            const o = (y * w + x) * 4;
+            data[o] = pal[3][0]; data[o + 1] = pal[3][1]; data[o + 2] = pal[3][2];
+          } else {
+            // short streaks: each pixel steps one plate lighter than the sky
+            // behind it (one darker where the sky is already the lightest), so
+            // rain shows as a hard-edged shift in the same four inks
+            const len = 4 + Math.round(fall[p + 3]);
+            const fallen = (70 + fall[p + 2] * 40) * t;
+            const dxdy = lean * (0.5 + wind * 0.3);
+            const hy = (fall[p + 1] * (h + len) + fallen) % (h + len);
+            const hx = fall[p] * w + dxdy * fallen;
+            for (let s = 0; s < len; s++) {
+              const y = Math.floor(hy) - s;
+              if (y < 0 || y >= h) continue;
+              const x = ((Math.floor(hx - dxdy * s) % w) + w) % w;
+              const i = y * w + x, c = pal[plateAt[i] < 3 ? plateAt[i] + 1 : 2], o = i * 4;
+              data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
+            }
+          }
         }
       }
 
@@ -399,17 +571,24 @@ export default function SkyBand({ className = '' }: { className?: string }) {
   }, [weather]);
 
   return (
-    <div className={`relative w-full overflow-hidden ${className}`}>
-      <canvas
-        ref={canvasRef}
-        aria-hidden="true"
-        className="absolute inset-0 w-full h-full"
-        style={{ imageRendering: 'pixelated' }}
-      />
-      {/* Full-width, bottom-anchored, natural height. The asset is a thin ridge
-          strip (1800x150) so its rendered height stays under the band at every
-          viewport width — no cropping, so the low left-hand ridge never vanishes. */}
-      <Ridge />
-    </div>
+    <>
+      <div className={`relative w-full overflow-hidden ${className}`}>
+        <canvas
+          ref={canvasRef}
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full"
+          style={{ imageRendering: 'pixelated' }}
+        />
+        {/* Full-width, bottom-anchored, natural height. The asset is a thin ridge
+            strip (1800x150) so its rendered height stays under the band at every
+            viewport width — no cropping, so the low left-hand ridge never vanishes. */}
+        <Ridge snow={snowy(weather)} />
+      </div>
+      {/* Always one line tall, so the weather landing changes the words and
+          nothing else on the page. */}
+      <p className={`font-mono text-[0.63rem] leading-[1.4] text-stone-400 ${captionClassName}`}>
+        {captionFor(weather)}
+      </p>
+    </>
   );
 }
