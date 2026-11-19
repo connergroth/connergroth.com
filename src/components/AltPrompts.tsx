@@ -19,7 +19,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 const ENDPOINT = 'https://formspree.io/f/xgvarknn';
 const ASK_ENDPOINT = '/api/ask';
-const MAX_QUESTION = 400;
+const MAX_QUESTION = 300;
 
 const HINTS = [
   'What did he do at Apple?',

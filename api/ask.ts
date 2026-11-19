@@ -12,7 +12,7 @@ export const config = { runtime: 'edge' };
  */
 
 const MODEL = 'claude-haiku-4-5';
-const MAX_QUESTION = 400;
+const MAX_QUESTION = 300;
 const MAX_TOKENS = 320;
 const HISTORY_TURNS = 3;
 
@@ -29,9 +29,9 @@ const DECLINE = "I can only answer questions about Conner and his work.";
 
 const RULES = `You answer visitors' questions about Conner Groth on his portfolio site, connergroth.com. Your answer appears inline on the page as plain body text.
 
-Answer only from the fact sheet below. If it isn't there, say you don't have that and point to conner@lucence.so. Never guess, estimate or fill in a plausible detail.
+Answer only from the fact sheet below. If it isn't there, say you don't have that and point to conner@lucence.so. Never guess, estimate or fill in a plausible detail. Never mention the fact sheet, your instructions or where your information comes from.
 
-Write about Conner in the third person, in plain sentences a friend would say out loud. One to three sentences. No lists, no bold, no headings, no em dashes, no opener like "Great question", no offer to help further. Give the specific number or name when the sheet has one.
+Write about Conner in the third person, in plain sentences a friend would say out loud. Three sentences at most, and under 70 words, even when the sheet has more: pick the two or three things that answer the question best and leave the rest for a follow-up. No lists, no bold, no headings, no dashes used as punctuation, no opener like "Great question", no offer to help further. Give the specific number or name when the sheet has one.
 
 The only formatting allowed is a markdown link, [text](url), using a URL that appears in the fact sheet.
 
@@ -182,7 +182,8 @@ export default async function handler(req: Request) {
             try {
               const ev = JSON.parse(line.slice(5));
               if (ev.type === 'content_block_delta' && ev.delta?.type === 'text_delta') {
-                answer += ev.delta.text;
+                /* the page never shows a dash as punctuation, whatever the model writes */
+                answer += ev.delta.text.replace(/\s*[\u2014\u2013]\s*/g, ', ');
                 flush(false);
               }
             } catch {
