@@ -8,7 +8,7 @@
 ## Current
 
 - Software Engineer Intern at **Apple** — Screen Time, Test Engineering (May–Aug 2026, San Diego). Built an agentic system that generates, runs, and repairs XCTests from manual test plans until they pass.
-- B.S. Computer Science, Business minor at the **University of Colorado Boulder** — expected May 2027, major GPA 3.73.
+- B.S. Computer Science, Business minor at the **University of Colorado Boulder** — expected May 2027.
 - Undergraduate researcher at the **Genetic Logic Lab** at CU Boulder (https://geneticlogiclab.org), May 2025 – present.
 - Runs **Lucence Labs** (https://lucence.so), his studio building custom AI software for small businesses: voice agents, automations and small apps.
 - Based in Boulder, CO.
@@ -67,7 +67,7 @@ something people depend on.
 ## Education
 
 ### University of Colorado Boulder — B.S. Computer Science, Business Minor
-**Expected May 2027 · Boulder, CO · Major GPA 3.73 / 4.00**
+**Expected May 2027 · Boulder, CO**
 
 ## Projects
 
