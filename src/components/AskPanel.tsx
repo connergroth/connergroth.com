@@ -79,9 +79,6 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
   const [answer, setAnswer] = useState('');
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
-  // A starter question was tapped: it lands in the field as if it had been
-  // typed and the list fades, then it sends down the same path as a typed one.
-  const [leaving, setLeaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const history = useRef<Turn[]>([]);
   const abort = useRef<AbortController | null>(null);
@@ -118,12 +115,10 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
 
   async function ask(preset?: string) {
     const q = (preset ?? question).trim();
-    if (!q || busy || leaving) return;
+    if (!q || busy) return;
     abort.current?.abort();
     const ctl = new AbortController();
     abort.current = ctl;
-    // The request leaves on the tap itself; the short beat where a starter
-    // question sits in the field is only visual and costs the answer nothing.
     const pending = fetch(ASK_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -131,13 +126,6 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
       signal: ctl.signal,
     });
     pending.catch(() => {});
-    if (preset && !asked) {
-      setLeaving(true);
-      setQuestion(q);
-      await new Promise((r) => setTimeout(r, 110));
-      setLeaving(false);
-      if (ctl.signal.aborted) return;
-    }
     setBusy(true);
     setAsked(q);
     setAnswer('');
@@ -189,7 +177,6 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
           value={question}
           maxLength={MAX_QUESTION}
           tabIndex={open ? 0 : -1}
-          readOnly={leaving}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
@@ -250,11 +237,7 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
       ) : (
         /* An empty page with one field is a hard place to start, so it opens
            with a few things worth asking. They go once a question is asked. */
-        <ul
-          className={`pt-4 space-y-1 text-[0.8rem] leading-[1.6] text-stone-400 transition-opacity duration-100 ease-out motion-reduce:transition-none ${
-            leaving ? 'opacity-0' : 'opacity-100'
-          }`}
-        >
+        <ul className="pt-4 space-y-1 text-[0.8rem] leading-[1.6] text-stone-400">
           {HINTS.map((h) => (
             <li key={h}>
               <button
