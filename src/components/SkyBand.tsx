@@ -135,6 +135,41 @@ function paletteAt(hour: number, sky: Sky, closed = 0, wet = 0): Palette {
 const ridgePaletteAt = (hour: number, sky: Sky, snow: boolean) =>
   lerpKeys(snow ? RIDGE_SNOW_KEYS : RIDGE_KEYS, keyHour(hour, sky));
 
+/* The year's real meteor showers: the morning their peak falls on, how strong
+   (1 = the big two) and where along the band their radiant sits. A night
+   counts toward the morning it ends on, and a shower tails off over a couple
+   of nights either side of its peak. ?shower=geminids forces one at its peak. */
+const SHOWERS: { name: string; m: number; d: number; rate: number; radiant: number }[] = [
+  { name: 'quadrantids', m: 1, d: 4, rate: 0.8, radiant: 0.7 },
+  { name: 'lyrids', m: 4, d: 22, rate: 0.45, radiant: 0.3 },
+  { name: 'eta-aquariids', m: 5, d: 6, rate: 0.5, radiant: 0.15 },
+  { name: 'perseids', m: 8, d: 13, rate: 1, radiant: 0.75 },
+  { name: 'orionids', m: 10, d: 21, rate: 0.45, radiant: 0.25 },
+  { name: 'leonids', m: 11, d: 17, rate: 0.4, radiant: 0.2 },
+  { name: 'geminids', m: 12, d: 14, rate: 1, radiant: 0.6 },
+  { name: 'ursids', m: 12, d: 22, rate: 0.35, radiant: 0.85 },
+];
+function showerTonight(hour: number): { name: string; strength: number; radiant: number } | null {
+  const forced = new URLSearchParams(window.location.search).get('shower');
+  if (forced) {
+    const f = SHOWERS.find((x) => x.name === forced);
+    return f ? { name: f.name, strength: f.rate, radiant: f.radiant } : null;
+  }
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: HOME.tz, year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date());
+  const get = (t: string) => Number(parts.find((x) => x.type === t)?.value ?? 0);
+  // the morning this night ends on
+  const night = Date.UTC(get('year'), get('month') - 1, get('day') + (hour >= 12 ? 1 : 0));
+  let best: { name: string; strength: number; radiant: number } | null = null;
+  for (const sh of SHOWERS) {
+    for (const yr of [get('year') - 1, get('year'), get('year') + 1]) {
+      const off = Math.abs(night - Date.UTC(yr, sh.m - 1, sh.d)) / 86400000;
+      const strength = sh.rate * Math.max(0, 1 - off / 2.5);
+      if (strength > 0 && (!best || strength > best.strength)) best = { name: sh.name, strength, radiant: sh.radiant };
+    }
+  }
+  return best;
+}
+
 /* Cheap repeatable 0-1 hash, so anything "random" per gust is a pure function
    of which gust it is and needs no state between frames. */
 const hash = (a: number, b: number) => {
@@ -423,7 +458,7 @@ function homeHour(): number {
   if (forced) {
     const [, dawn, morning, noon, golden, sunset] = anchors(sunTimes());
     const named: Record<string, number> = {
-      dawn, sunrise: dawn + 1, morning, noon, golden, sunset, dusk: sunset + 0.4, night: sunset + 3.5,
+      dawn, sunrise: dawn + 1, alpenglow: dawn + 1.12, morning, noon, golden, sunset, dusk: sunset + 0.4, night: sunset + 3.5,
     };
     if (forced in named) return named[forced];
   }
@@ -479,6 +514,32 @@ function ridgeLook(hour: number, sky: Sky, [snow, closed, wet, fog]: Look): Pale
     }) as Palette;
   }
   return pal.map((c) => c.map((v) => Math.max(0, Math.min(255, Math.round(v))))) as Palette;
+}
+
+/* First light. The Flatirons face east, so at sunrise the slabs catch the sun
+   before anything around them does: the summit goes pink-orange first and the
+   lit line comes down the ridge over about a quarter of an hour, while the
+   ground below is still in the cold of dawn. For the half hour before that
+   the whole ridge carries a faint rose from the sky. The colour cools into
+   the ordinary morning light over the next hour. Needs sun, so a closed sky
+   gets none of it. Returns the lit plates and how far down the light has come
+   (0 summit … 1 the foot), or null outside the window.
+   ?sky=alpenglow jumps to it. */
+const GLOW: Palette = [[60, 30, 46], [112, 72, 54], [234, 114, 78], [255, 178, 128]];
+const GLOW_SNOW: Palette = [[48, 36, 72], [104, 88, 124], [238, 150, 150], [255, 200, 180]];
+const ROSE: Palette = [[40, 28, 50], [78, 66, 86], [170, 114, 114], [228, 180, 178]];
+const ROSE_SNOW: Palette = [[34, 30, 58], [72, 70, 104], [160, 132, 164], [232, 196, 204]];
+const ease = (t: number) => { const c = Math.min(1, Math.max(0, t)); return c * c * (3 - 2 * c); };
+const mixPal = (a: Palette, b: Palette, t: number) =>
+  a.map((c, i) => c.map((v, k) => Math.round(v + (b[i][k] - v) * t))) as Palette;
+function firstLight(hour: number, sky: Sky, look: Look, base: Palette): { unlit: Palette; lit: Palette; down: number } | null {
+  const d = hour - sky.sunrise, open = 1 - look[1];
+  if (d < -0.5 || d > 1 || open < 0.03) return null;
+  const snow = look[0];
+  const rose = mixPal(ROSE, ROSE_SNOW, snow), glow = mixPal(GLOW, GLOW_SNOW, snow);
+  const pre = (d < 0 ? ease((d + 0.5) / 0.5) : 1 - ease(d / 0.35)) * 0.45 * open;
+  const hot = d < 0 ? 0 : (1 - ease(d / 0.95)) * 0.9 * open;
+  return { unlit: mixPal(base, rose, pre), lit: mixPal(base, glow, hot), down: d < 0 ? -1 : d / 0.27 };
 }
 
 function Ridge({ look, sky }: { look: Look; sky: Sky }) {
@@ -553,16 +614,27 @@ function Ridge({ look, sky }: { look: Look; sky: Sky }) {
         window.dispatchEvent(new Event('ridge-line'));
       }
 
+      // the summit: the highest the ridge reaches, as a fraction of the image
+      let top = 1;
+      for (let x = 0; x < w; x++) { let y = 0; while (y < h && plate[y * w + x] === 255) y++; if (y / h < top) top = y / h; }
+
       let lastKey = '';
       const paint = () => {
-        const pal = ridgeLook(homeHour(), sky, lookRef.current);
-        const key = pal.join('|');
+        const hr = homeHour();
+        const base = ridgeLook(hr, sky, lookRef.current);
+        const fl = firstLight(hr, sky, lookRef.current, base);
+        const pal = fl ? fl.unlit : base, lit = fl ? fl.lit : base;
+        // the row the light has come down to, summit first; dithered so the
+        // edge of the light is a few rows of the same print, not a ruled line
+        const edge = fl && fl.down >= 0 ? (top + fl.down * (1 - top) * 1.05) * h : -1e6;
+        const key = pal.join('|') + (fl ? '/' + lit.join('|') + '/' + Math.round(edge) : '');
         if (key === lastKey) return;
         lastKey = key;
         for (let i = 0; i < n; i++) {
           const p = plate[i];
           if (p === 255) continue;
-          const c = pal[p], o = i * 4;
+          const y = (i / w) | 0, x = i - y * w;
+          const c = (y + BAYER[(y & 3) * 4 + (x & 3)] * 10 < edge ? lit : pal)[p], o = i * 4;
           px[o] = c[0]; px[o + 1] = c[1]; px[o + 2] = c[2];
         }
         ctx.putImageData(id, 0, 0);
@@ -760,18 +832,36 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       const dayFrac = (hour - sunrise) / Math.max(0.5, sunset - sunrise);
       const isDay = dayFrac >= 0 && dayFrac <= 1;
       // at night, run the moon across on the same arc using the night's span
-      const nightFrac = hour > sunset
-        ? (hour - sunset) / Math.max(0.5, 24 - sunset + sunrise)
-        : (hour + 24 - sunset) / Math.max(0.5, 24 - sunset + sunrise);
-      const frac = isDay ? dayFrac : nightFrac;
-      const cx = frac * w;
-      const rad = Math.max(3, horizon * (isDay ? 0.17 : 0.10));
+      // the real moon tonight: which side is lit and how much. cos(2πp) is the
+      // terminator's projected half-width — +1 new, 0 quarter, −1 full. waxing
+      // (p<.5) lights the right limb, waning the left, matching the northern sky.
+      const mp = moonPhase();
+      const term = Math.cos(2 * Math.PI * mp);
+      const illum = (1 - term) / 2;
+      // ...and when it's actually up, which the phase decides: a new moon rises
+      // and sets with the sun, a first quarter is up from midday to midnight, a
+      // full moon rises at sunset and sets at sunrise. So some nights have no
+      // moon at all, a waxing moon hangs pale in the afternoon sky, and the
+      // full moon comes up over the ridge as the sun goes down. Good to within
+      // an hour or so, which is a few pixels here.
+      const dayLen = sunset - sunrise, full = 1 - Math.abs(2 * mp - 1);
+      const moonrise = mp < 0.5 ? sunrise + dayLen * (mp / 0.5) : sunset + (24 - dayLen) * ((mp - 0.5) / 0.5);
+      const moonUpFor = dayLen + (24 - 2 * dayLen) * full;
+      const moonFrac = ((((hour - moonrise) % 24) + 24) % 24) / Math.max(0.5, moonUpFor);
+      const moonUp = moonFrac <= 1 && illum > 0.03;
+      const arcY = (f: number) => horizon * (1.0 - 0.82 * Math.sin(Math.PI * Math.min(1, Math.max(0, f))));
+      // a full moon near the skyline reads bigger, the way it does
+      const moonRad = Math.max(3, horizon * 0.10) * (1 + 0.3 * illum ** 4 * (1 - Math.sin(Math.PI * Math.min(1, moonFrac))));
+      const frac = isDay ? dayFrac : moonFrac;
+      // no moon up tonight: park the body off the canvas so nothing dodges it
+      const cx = isDay || moonUp ? frac * w : -1e6;
+      const rad = isDay ? Math.max(3, horizon * 0.17) : moonRad;
+      // the day moon: up while the sun is, a pale disc a plate off the sky
+      const dayMoon = isDay && moonUp && illum > 0.12;
+      const dmx = moonFrac * w, dmy = Math.max(moonRad * 1.15, arcY(moonFrac)), dmr2 = moonRad * moonRad;
       // keep the whole disc inside the band — on a short band the noon arc would
       // otherwise put the centre less than a radius from the top edge and clip it
-      const cy = Math.max(
-        rad * 1.15,
-        horizon * (1.0 - 0.82 * Math.sin(Math.PI * Math.min(1, Math.max(0, frac)))),
-      );
+      const cy = Math.max(rad * 1.15, arcY(frac));
 
       const phase = reduced ? 0 : (tMs / 1000) * 0.055;
       const amp = 0.22 + (cloud / 100) * 0.85;   // overcast = more, heavier bands
@@ -780,7 +870,9 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // ...and at dusk they come out one at a time: each star's seeded order
       // against how far past sunset it is, all of them out by 1.5h after
       const sinceSet = (((hour - sunset) % 24) + 24) % 24;
-      const starsOut = Math.min(1, sinceSet / 1.5);
+      // ...and go the same way before dawn, the last ones just ahead of the sun
+      const toRise = (((sunrise - hour) % 24) + 24) % 24;
+      const starsOut = Math.min(1, sinceSet / 1.5, Math.max(0, (toRise - 0.15) / 1.1));
 
       const { loud, quiet } = reduced
         ? { loud: '' as Loud, quiet: '' as Quiet }
@@ -804,12 +896,6 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // (weighted to the top, so the horizon doesn't wash up into the light plate)
       const murk = ez.murk;
 
-      // the real moon tonight: which side is lit and how much. cos(2πp) is the
-      // terminator's projected half-width — +1 new, 0 quarter, −1 full. waxing
-      // (p<.5) lights the right limb, waning the left, matching the northern sky.
-      const mp = moonPhase();
-      const term = Math.cos(2 * Math.PI * mp);
-      const illum = (1 - term) / 2;
       // a soft glow that brightens toward the body and fades to nothing at
       // `reach`, so the dither breaks it up with no edge to find. a near-new
       // moon barely glows.
@@ -892,6 +978,13 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
 
           let idx = Math.floor((f / 3.9) * 4);
           idx = idx < 0 ? 0 : idx > 3 ? 3 : idx;
+          if (dayMoon) {
+            const mdx = x - dmx, mdy = y - dmy;
+            if (mdx * mdx + mdy * mdy < dmr2) {
+              const u = mdx / moonRad, v = mdy / moonRad, rr = Math.sqrt(Math.max(0, 1 - v * v));
+              if (mp < 0.5 ? u > term * rr : u < -term * rr) idx = idx < 2 ? 2 : 3;
+            }
+          }
           let [r, g, b] = pal[idx];
 
           plateAt[i] = idx;
@@ -1376,14 +1469,24 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // with a dithered tail crossing a small patch of sky in under a second,
       // dithering out as it burns up. Passes behind the moon.
       // (never under a closed deck: a shooting star can't cross in front of cloud)
+      // On the real nights of a meteor shower there are more of them, up to one
+      // every 7s at the peak of the Geminids or Perseids, and most streak away
+      // from the same point above the band, the way a shower fans out from its
+      // radiant.
       if (loud === 'meteor' && (weather.opaque < 85 || forcedAmb === 'meteor')) {
-        const every = forcedAmb === 'meteor' ? 3 : 30;
+        const sh = showerTonight(hour);
+        const every = forcedAmb === 'meteor' ? 3 : 30 / (1 + 3.3 * (sh ? sh.strength : 0));
         const k = Math.floor(at / every);
         const dur = 0.45 + 0.3 * hash(k, 2.3);
-        const age = (at - k * every - (forcedAmb === 'meteor' ? 0 : hash(k, 1.7) * 10)) / dur;
+        const age = (at - k * every - (forcedAmb === 'meteor' ? 0 : hash(k, 1.7) * every / 3)) / dur;
         if (age >= 0 && age <= 1) {
           const x0 = w * (0.1 + 0.8 * hash(k, 3.1)), y0 = h * (0.04 + 0.3 * hash(k, 4.2));
-          const ang = 0.35 + 0.45 * hash(k, 6.4), dir = hash(k, 5.3) < 0.5 ? -1 : 1;
+          let ang = 0.35 + 0.45 * hash(k, 6.4), dir = hash(k, 5.3) < 0.5 ? -1 : 1;
+          if (sh && hash(k, 8.6) < 0.35 + 0.6 * sh.strength) {
+            const rx = w * sh.radiant - x0, ry = -h * 0.9 - y0;
+            dir = rx > 0 ? -1 : 1;
+            ang = Math.atan2(-ry, Math.abs(rx));
+          }
           const ux = dir * Math.cos(ang), uy = Math.sin(ang);
           const head = Math.min(w * 0.18, 26 + 16 * hash(k, 7.5)) * age;
           const tail = Math.min(13, head), fade = age > 0.7 ? (age - 0.7) / 0.3 : 0;
