@@ -394,6 +394,11 @@ function homeHour(): number {
  * load into a Uint8Array; after that a repaint is one pass of table lookups,
  * and it only fires when the interpolated palette actually moves.
  */
+/* The ridge's skyline, per source column: how far down its strip (0-1) the rock
+   starts. The sky reads it so weather can fall in front of the mountain, mist
+   can drape over its shape, and lightning can land on it. */
+let ridgeLine: Float32Array | null = null;
+
 function Ridge({ snow, sky }: { snow: boolean; sky: Sky }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
   const snowRef = useRef(snow);
@@ -437,6 +442,16 @@ function Ridge({ snow, sky }: { snow: boolean; sky: Sky }) {
           if (d < bd) { bd = d; best = k; }
         }
         plate[i] = best;
+      }
+      if (!ridgeLine) {
+        const line = new Float32Array(w);
+        for (let x = 0; x < w; x++) {
+          let y = 0;
+          while (y < h && plate[y * w + x] === 255) y++;
+          line[x] = y / h;
+        }
+        ridgeLine = line;
+        window.dispatchEvent(new Event('ridge-line'));
       }
 
       let lastKey = '';
@@ -523,6 +538,23 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
     const front = frontRef.current;
     const fctx = front?.getContext('2d') ?? null;
     let frontImg: ImageData | null = null;
+    // where the ridge's skyline sits in this canvas, per column (h = no rock),
+    // and the same line smoothed, for mist to follow
+    let skyl = new Float32Array(0), skys = new Float32Array(0);
+    const measure = () => {
+      skyl = new Float32Array(w).fill(h); skys = new Float32Array(w).fill(h);
+      const el = canvas.parentElement?.querySelector('canvas[role="img"]');
+      if (!el || !ridgeLine) return;
+      const br = (canvas.parentElement ?? canvas).getBoundingClientRect(), rr = el.getBoundingClientRect();
+      const top = (rr.top - br.top) / SCALE, rh = rr.height / SCALE, n = ridgeLine.length;
+      for (let x = 0; x < w; x++) skyl[x] = top + ridgeLine[Math.min(n - 1, Math.floor(((x + 0.5) / w) * n))] * rh;
+      const k = Math.max(2, Math.round(h * 0.14));
+      for (let x = 0; x < w; x++) {
+        let sum = 0, c = 0;
+        for (let j = Math.max(0, x - k); j <= Math.min(w - 1, x + k); j++) { sum += skyl[j]; c++; }
+        skys[x] = sum / c;
+      }
+    };
 
     // Sized off the band, never pinned in px: CSS (inset-0, w-full h-full) owns the
     // canvas's displayed size. Pinning it to the first measurement froze the sky at
@@ -580,6 +612,14 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       const hour = homeHour();
       const pal = paletteAt(hour, skyRef.current);
       const data = img.data;
+      // the layer in front of the ridge, wiped every frame
+      const fd = frontImg ? frontImg.data : null;
+      if (fd) fd.fill(0);
+      const front = (x: number, y: number, c: Palette[number]) => {
+        if (!fd || x < 0 || x >= w || y < 0 || y >= h) return;
+        const o = (y * w + x) * 4;
+        fd[o] = c[0]; fd[o + 1] = c[1]; fd[o + 2] = c[2]; fd[o + 3] = 255;
+      };
 
       // sun/moon: 0→1 across the band between sunrise and sunset, arc for height
       const dayFrac = (hour - sunrise) / Math.max(0.5, sunset - sunrise);
@@ -823,6 +863,39 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
               }
             }
           }
+          // Low cloud hanging on the mountain: under a closed sky, scarves of
+          // mist sit IN FRONT of the ridge, each one bent to the smoothed shape
+          // of the skyline it's lying on, some up at the crest and some lower
+          // down the face, sliding along it with the wind. More of it in rain
+          // and snow, most in fog. Dithered at the edges so it thins to nothing.
+          if (fd) {
+            const amount = weather.fog ? 1 : falling !== 'none' ? 0.7 : 0.45;
+            const nm = Math.max(2, Math.round((w / 60) * amount));
+            const mm = h * 1.5, spanM = w + 2 * mm;
+            const driftM = lean * (1.5 + 5 * across) * 0.4 * (h / 60) * atc;
+            for (let j = 0; j < nm; j++) {
+              const L = h * (0.32 + 0.45 * hash(j, 21.1)), T = Math.max(2.5, h * (0.07 + 0.06 * hash(j, 22.2)) * (0.8 + 0.4 * amount));
+              const raw = ((j + (hash(j, 23.3) - 0.5) * 0.6) / nm) * spanM + driftM * (0.7 + 0.6 * hash(j, 24.4));
+              const mx = ((raw % spanM) + spanM) % spanM - mm;
+              const down = h * (0.02 + 0.22 * hash(j, 25.5));       // how far below the crest it lies
+              const xa = Math.max(0, Math.ceil(mx - L)), xb = Math.min(w - 1, Math.floor(mx + L));
+              for (let x = xa; x <= xb; x++) {
+                if (skys[x] >= h) continue;
+                const a = (x - mx) / L, body = 1 - a * a;
+                // follows the mountain's shape, eased toward level so it reads as cloud, not paint
+                const yc = skys[x] * 0.75 + skys[Math.max(0, Math.min(w - 1, Math.round(mx)))] * 0.25 + down
+                  + Math.sin(a * 5 + j * 1.7) * T * 0.25;
+                // billowed along the top like the deck above it, flatter underneath
+                const up = T * body * (0.55 + 0.6 * Math.abs(Math.sin(a * 6.5 + j * 2.3))), dn = T * 0.45 * body;
+                for (let y = Math.max(0, Math.floor(yc - up)); y <= Math.min(h - 1, Math.ceil(yc + dn)); y++) {
+                  const v = y < yc ? (y - yc) / (up + 0.001) : (y - yc) / (dn + 0.001), bay = BAYER[(y & 3) * 4 + (x & 3)];
+                  if (body * (1 - v * v) * 2.6 < bay + 0.62) continue;
+                  if (fadeIn < 1 && fadeIn < bay + 0.5) continue;
+                  front(x, y, v > 0.1 + bay * 0.5 ? shade : lit);
+                }
+              }
+            }
+          }
         } else
         for (let j = 0; j < n; j++) {
           // two lanes, a high one and a low one, each cloud in its own slot
@@ -899,14 +972,28 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
             for (let y = y0; y < y1; y++) {
               const dir = hash(k + seed, Math.floor(y / 4) + 10.5) < 0.5 ? -1 : 1;
               if (hash(k + seed, y + 50.5) < 0.75) x += dir;
+              // the main bolt lands on the mountain: it stops where it meets
+              // the rock, with a hot pixel or two on the strike point
+              if (seed === 0 && x >= 0 && x < w && y >= skyl[x]) {
+                for (let dx = -1; dx <= 1; dx++) front(x + dx, y, [255, 255, 255]);
+                front(x, y + 1, [255, 255, 255]);
+                break;
+              }
               put(x, y); if (thick) put(x + 1, y);
               if (y === forkY && seed === 0) forkX = x;
             }
           };
           const y0 = Math.round(h * 0.12), forkY = Math.round(h * (0.42 + 0.2 * hash(k, 6.6)));
-          let forkX = 0;
-          walk(Math.round(w * (0.1 + 0.8 * hash(k, 3.3))), y0, h, 0, h > 70);
-          walk(forkX, forkY, Math.min(h, forkY + Math.round(h * 0.28)), 17, false);
+          let forkX = -1;
+          // lightning finds high ground: of three places it could come down,
+          // it takes the one where the ridge stands tallest
+          let sx = 0, best = 1e9;
+          for (let c = 0; c < 3; c++) {
+            const x = Math.min(w - 1, Math.round(w * (0.08 + 0.84 * hash(k, 3.3 + c))));
+            if (skyl[x] < best) { best = skyl[x]; sx = x; }
+          }
+          walk(sx + Math.round((hash(k, 2.7) - 0.5) * h * 0.3), y0, h, 0, h > 70);
+          if (forkX >= 0) walk(forkX, forkY, Math.min(h, forkY + Math.round(h * 0.28)), 17, false);
         }
       }
 
@@ -938,9 +1025,9 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
           const i = y * w + (x % w), o = i * 4;
           const c = dim ? pal[plates[i] === 2 ? 3 : 2] : pal[3];
           data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
+          // the mountain is the far thing: snow falls between it and you
+          if (y >= skyl[x % w]) front(x % w, y, dim ? pal[2] : pal[3]);
         };
-        const fd = falling === 'snow' && frontImg ? frontImg.data : null;
-        if (fd) fd.fill(0);
         const near = (x: number, y: number, c: Palette[number]) => {
           if (!fd || y < 0 || y >= h) return;
           const o = (y * w + (x % w)) * 4;
@@ -998,6 +1085,9 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
               const x = ((Math.floor(hx - dxdy * s) % w) + w) % w;
               const i = y * w + x, c = pal[plateAt[i] < 3 ? plateAt[i] + 1 : 2], o = i * 4;
               data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
+              // rain falls in front of the mountain too: every other streak
+              // carries on down across the rock, a touch dimmer
+              if (y >= skyl[x] && (k & 1) === 0) front(x, y, pal[2]);
             }
           }
         }
@@ -1052,6 +1142,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
               if ((x - cx) ** 2 + (yy - cy) ** 2 < rad * rad) continue;   // passes behind the sun/moon
               const i = yy * w + x, c = pal[plateAt[i] < 3 ? plateAt[i] + 1 : 2], o = i * 4;
               data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
+              if (yy >= skyl[x]) front(x, yy, pal[2]);
             }
           }
         }
@@ -1178,7 +1269,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       }
 
       ctx.putImageData(img, 0, 0);
-      if (falling === 'snow' && fctx && frontImg) fctx.putImageData(frontImg, 0, 0);
+      if (fctx && frontImg) fctx.putImageData(frontImg, 0, 0);
     };
 
     let raf = 0, last = 0;
@@ -1188,12 +1279,15 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
     };
 
     resize();
+    measure();
     draw(0);
     if (!reduced) raf = requestAnimationFrame(loop);
 
-    const ro = new ResizeObserver(() => { resize(); draw(performance.now()); });
+    const ro = new ResizeObserver(() => { resize(); measure(); draw(performance.now()); });
     ro.observe(band);
-    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
+    const onLine = () => { measure(); draw(performance.now()); };
+    window.addEventListener('ridge-line', onLine);
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); window.removeEventListener('ridge-line', onLine); };
   }, [weather]);
 
   return (
