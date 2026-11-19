@@ -175,6 +175,7 @@ interface Weather {
   slant: number;                      // -1..1, wind across the view, + blows left to right
   wind: number;                       // 0-1 gustiness: 0 under ~20 mph gusts, 1 at ~45+
   live: boolean;                      // real (or forced) data, not the pre-fetch default
+  thunder: boolean;                   // lightning in the area
   windKnown: boolean;                 // slant is off the network, so a cirrus can ride it without jumping when it lands
 }
 
@@ -213,7 +214,7 @@ function sunTimes(): { sunrise: number; sunset: number } {
 /* Until the fetch lands, and for good if it fails: the sky as it was before it
    knew about weather. A few clouds, nothing falling, bare rock. */
 const FALLBACK: Weather = {
-  cloud: 25, tempF: null, falling: 'none', rate: 0, fog: false, ground: false, slant: 0.3, wind: 0, live: false, windKnown: false,
+  cloud: 25, tempF: null, falling: 'none', rate: 0, fog: false, ground: false, slant: 0.3, wind: 0, live: false, windKnown: false, thunder: false,
 };
 
 /* Real lunar phase from the synodic clock — 0 = new, 0.5 = full. Anchored to
@@ -278,23 +279,25 @@ async function fetchWeather(): Promise<Weather> {
     wind: Math.min(1, Math.max(0, (gustMph - 20) / 25)),
     live: true,
     windKnown: true,
+    thunder: [95, 96, 99].includes(code),
   };
 }
 
 /* Force a state for eyeballing, next to ?sky= and ?moon=:
-     ?wx=clear|partly|overcast|fog|rain|snow   what the sky is doing
+     ?wx=clear|partly|overcast|fog|rain|snow|storm   what the sky is doing
      ?rate=0..1                                how hard the rain/snow falls
      ?snow=1|0                                 snow on the ridge or not
      ?temp=34                                  the caption's temperature, in F
      ?wind=0..1                                how gusty (0 calm, 1 ~45 mph gusts)
    Anything not forced stays real. */
 const FORCED_WX: Record<string, Partial<Weather>> = {
-  clear: { cloud: 5, falling: 'none', rate: 0, fog: false },
-  partly: { cloud: 50, falling: 'none', rate: 0, fog: false },
-  overcast: { cloud: 95, falling: 'none', rate: 0, fog: false },
-  fog: { cloud: 95, falling: 'none', rate: 0, fog: true },
-  rain: { cloud: 95, falling: 'rain', rate: 0.5, fog: false },
-  snow: { cloud: 95, falling: 'snow', rate: 0.5, fog: false },
+  clear: { thunder: false, cloud: 5, falling: 'none', rate: 0, fog: false },
+  partly: { thunder: false, cloud: 50, falling: 'none', rate: 0, fog: false },
+  overcast: { thunder: false, cloud: 95, falling: 'none', rate: 0, fog: false },
+  fog: { thunder: false, cloud: 95, falling: 'none', rate: 0, fog: true },
+  rain: { thunder: false, cloud: 95, falling: 'rain', rate: 0.5, fog: false },
+  snow: { thunder: false, cloud: 95, falling: 'snow', rate: 0.5, fog: false },
+  storm: { thunder: true, cloud: 100, falling: 'rain', rate: 0.9, fog: false },
 };
 function withForced(w: Weather): Weather {
   const q = new URLSearchParams(window.location.search);
@@ -348,6 +351,7 @@ function captionFor(w: Weather): string {
   const windy = w.wind > 0;
   const cond =
     w.falling === 'snow' ? (windy ? 'snowing and windy' : 'snowing')
+    : w.falling === 'rain' && w.thunder ? 'storming'
     : w.falling === 'rain' ? (windy ? 'raining and windy' : 'raining')
     : windy ? 'windy'
     : w.fog ? 'foggy'
@@ -739,7 +743,8 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // ones faster. Waits for the live weather and dithers in, so nothing
       // jumps when the fetch lands.
       if (weather.windKnown && forcedAmb !== 'off') {
-        const over = cloud >= 85;
+        // rain and snow fall out of a closed deck, whatever the cover figure says
+        const over = cloud >= 85 || falling !== 'none';
         const perBand = cloud < 25 ? 3 : cloud < 60 ? 5 : 7;
         // an even count, split over two lanes
         const n = 2 * Math.max(1, Math.round(perBand * Math.max(1, w / 240) / 2));
@@ -824,10 +829,13 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
           // along its lane and every cloud in a lane moving at the lane's
           // speed: no two clouds ever touch or overlap
           const lane = j % 2, slot = span / (n / 2);
-          const sz = 0.65 + 0.65 * hash(j, 1.1);
+          // the high lane is the near one, almost overhead: bigger clouds
+          // crossing faster. the low lane is far off toward the horizon:
+          // smaller and slower, the way distance looks
+          const sz = (lane ? 0.6 : 0.85) + 0.45 * hash(j, 1.1);
           const R = Math.min(Math.max(3, h * 0.085 * sz), slot / 8);
           const np = 3 + Math.floor(hash(j, 2.2) * 3);
-          const speed = (1.5 + 5 * across) * (lane ? 1 : 0.7) * (h / 60);
+          const speed = (1.5 + 5 * across) * (lane ? 0.6 : 1) * (h / 60);
           // spread evenly along the band, then jittered, so they never all bunch up
           const raw = (((j >> 1) + 0.5 * lane + 0.5) * slot) + (hash(j, 5.5) - 0.5) * Math.max(0, slot - 7.4 * R) + lean * speed * atc;
           const ccx = ((raw % span) + span) % span - m;
@@ -862,6 +870,43 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
               plateAt[i2] = dark ? litIdx - 1 : litIdx;
             }
           }
+        }
+      }
+
+      // Lightning: in a thunderstorm, a strike most cycles of a few seconds.
+      // The whole sky jumps a plate lighter for two quick flickers while a
+      // jagged bolt drops out of the deck and behind the ridge, forking once
+      // on the way; the bolt outlasts the flash by a beat, the way it burns
+      // into your eye. Off the wall clock like the rest; none under reduced motion.
+      if (weather.thunder && falling === 'rain' && !reduced) {
+        const every = 6.5, k = Math.floor(at / every);
+        const u = at - k * every - hash(k, 9.1) * (every - 1);
+        if (hash(k, 8.2) < 0.8 && u >= 0 && u < 0.42) {
+          if (u < 0.08 || (u > 0.15 && u < 0.24)) {
+            for (let i = 0, o = 0; i < plateAt.length; i++, o += 4) {
+              const pl = plateAt[i] < 3 ? plateAt[i] + 1 : 3, c = pal[pl];
+              data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
+              plateAt[i] = pl;
+            }
+          }
+          const put = (x: number, y: number) => {
+            if (x < 0 || x >= w || y < 0 || y >= h) return;
+            const o = (y * w + x) * 4;
+            data[o] = 255; data[o + 1] = 255; data[o + 2] = 255;
+          };
+          // short straight runs that kink every few rows, always working down
+          const walk = (x: number, y0: number, y1: number, seed: number, thick: boolean) => {
+            for (let y = y0; y < y1; y++) {
+              const dir = hash(k + seed, Math.floor(y / 4) + 10.5) < 0.5 ? -1 : 1;
+              if (hash(k + seed, y + 50.5) < 0.75) x += dir;
+              put(x, y); if (thick) put(x + 1, y);
+              if (y === forkY && seed === 0) forkX = x;
+            }
+          };
+          const y0 = Math.round(h * 0.12), forkY = Math.round(h * (0.42 + 0.2 * hash(k, 6.6)));
+          let forkX = 0;
+          walk(Math.round(w * (0.1 + 0.8 * hash(k, 3.3))), y0, h, 0, h > 70);
+          walk(forkX, forkY, Math.min(h, forkY + Math.round(h * 0.28)), 17, false);
         }
       }
 
@@ -1094,7 +1139,8 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
           const u = (tt - k * SLOTS[sl][0]) / SPD;
           if (u > 1) continue;
           const i = glints[Math.floor(hash(sl + 0.5, k) * glints.length) % glints.length];
-          if ((starAt.get(i) ?? 1) >= starsOut || plateAt[i] > 1) continue;
+          // only a star that's showing: a cloud passing in front hides it
+          if ((starAt.get(i) ?? 1) >= starsOut || data[i * 4] !== pal[3][0] || data[i * 4 + 1] !== pal[3][1] || data[i * 4 + 2] !== pal[3][2]) continue;
           const f = Math.sin(Math.PI * u);
           if (f < 0.12) continue;
           const x = i % w, y = (i / w) | 0;
@@ -1108,7 +1154,8 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // Shooting star: one every 20-40s (every 3s when forced), a bright head
       // with a dithered tail crossing a small patch of sky in under a second,
       // dithering out as it burns up. Passes behind the moon.
-      if (loud === 'meteor') {
+      // (never under a closed deck: a shooting star can't cross in front of cloud)
+      if (loud === 'meteor' && (cloud < 85 || forcedAmb === 'meteor')) {
         const every = forcedAmb === 'meteor' ? 3 : 30;
         const k = Math.floor(at / every);
         const dur = 0.45 + 0.3 * hash(k, 2.3);
