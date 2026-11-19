@@ -359,6 +359,14 @@ function withForced(w: Weather): Weather {
 
 /* Snow shows on the ridge when it's lying there or actively coming down. */
 const snowy = (w: Weather) => w.ground || w.falling === 'snow';
+/* The mountain's weather, off the same figures the sky closes on. Rain and
+   snow wait for the real wind like they do in the sky, so the rock doesn't go
+   wet before anything is falling. */
+function ridgeLookFor(w: Weather): Look {
+  const falling = w.windKnown && w.falling !== 'none';
+  const cu = falling || w.fog ? 1 : Math.min(1, Math.max(0, (w.opaque - 55) / 35));
+  return [snowy(w) ? 1 : 0, cu * cu * (3 - 2 * cu), falling ? (w.thunder ? 1.4 : 1) : 0, w.fog ? 1 : 0];
+}
 
 /* The ambient layer, so a calm clear sky still has something alive in it. Per
    time of day, one thing you'd notice moving plus at most one quiet one:
@@ -443,29 +451,62 @@ function homeHour(): number {
    can drape over its shape, and lightning can land on it. */
 let ridgeLine: Float32Array | null = null;
 
-function Ridge({ snow, sky }: { snow: boolean; sky: Sky }) {
+/* How the weather lights the mountain, on top of the clock. Each 0-1:
+     snow    snow lying on it (the plate swap above)
+     closed  no direct sun: colour drains, the sunlit faces go dull and the
+             shadows fill in, so the whole ridge flattens
+     wet     rain or snow falling: wet rock and trees go darker
+     fog     the ridge sinks toward the colour of the air in front of it
+   Same four plates, only relit, so the dither edges stay hard. */
+type Look = [snow: number, closed: number, wet: number, fog: number];
+function ridgeLook(hour: number, sky: Sky, [snow, closed, wet, fog]: Look): Palette {
+  const bare = ridgePaletteAt(hour, sky, false);
+  let pal = snow <= 0 ? bare : ridgePaletteAt(hour, sky, true).map((c, i) =>
+    c.map((v, k) => v + (bare[i][k] - v) * (1 - snow))) as Palette;
+  if (closed > 0 || wet > 0 || fog > 0) {
+    const mean = [0, 1, 2].map((k) => (pal[0][k] + pal[1][k] + pal[2][k] + pal[3][k]) / 4);
+    const air = paletteAt(hour, sky, 1, Math.min(1, wet))[2];
+    // the lit faces lose the most without sun; the shadow plate barely moves
+    const dull = [0.96, 0.9, 0.86, 0.8], soak = [0.9, 0.8, 0.8, 0.84], haze = [0.22, 0.3, 0.36, 0.4];
+    pal = pal.map((c, i) => {
+      const lum = 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2];
+      return c.map((v, k) => {
+        let o = v + (lum - v) * 0.4 * closed;                 // drained
+        o += (mean[k] - o) * 0.14 * closed;                   // flattened
+        o *= 1 - (1 - dull[i]) * closed;                      // no sun on it
+        o *= k === 0 ? 1 - 0.03 * closed : k === 2 ? 1 + 0.04 * closed : 1;   // skylight is cool
+        o *= 1 - (1 - soak[i]) * wet;                         // wet
+        return o + (air[k] - o) * haze[i] * fog;              // fogged
+      });
+    }) as Palette;
+  }
+  return pal.map((c) => c.map((v) => Math.max(0, Math.min(255, Math.round(v))))) as Palette;
+}
+
+function Ridge({ look, sky }: { look: Look; sky: Sky }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
-  // 0 bare rock … 1 snowed over. Right from the first frame if it's already
-  // known; when the weather lands with snow (or it melts) the plates cross
-  // over about a second instead of swapping in one frame.
-  const mixRef = useRef(snow ? 1 : 0);
+  // What's on the mountain now. Right from the first frame if it's already
+  // known; when the weather lands (or changes) it crosses over about a second
+  // instead of swapping in one frame.
+  const lookRef = useRef<Look>(look);
   const paintRef = useRef<(() => void) | null>(null);
+  const [l0, l1, l2, l3] = look;
 
   useEffect(() => {
-    const to = snow ? 1 : 0, from = mixRef.current;
-    if (from === to) return;
+    const to: Look = [l0, l1, l2, l3], from = lookRef.current;
+    if (from.every((v, i) => v === to[i])) return;
     const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const t0 = performance.now();
     let raf = 0;
     const step = () => {
       const k = still ? 1 : Math.min(1, (performance.now() - t0) / 1200);
-      mixRef.current = from + (to - from) * k;
+      lookRef.current = from.map((v, i) => v + (to[i] - v) * k) as Look;
       paintRef.current?.();
       if (k < 1) raf = requestAnimationFrame(step);
     };
     step();
     return () => cancelAnimationFrame(raf);
-  }, [snow]);
+  }, [l0, l1, l2, l3]);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -516,10 +557,7 @@ function Ridge({ snow, sky }: { snow: boolean; sky: Sky }) {
 
       let lastKey = '';
       const paint = () => {
-        const hr = homeHour(), m = mixRef.current;
-        const bare = ridgePaletteAt(hr, sky, false), white = ridgePaletteAt(hr, sky, true);
-        const pal = m <= 0 ? bare : m >= 1 ? white
-          : bare.map((c, i) => c.map((v, k) => Math.round(v + (white[i][k] - v) * m))) as Palette;
+        const pal = ridgeLook(homeHour(), sky, lookRef.current);
         const key = pal.join('|');
         if (key === lastKey) return;
         lastKey = key;
@@ -1396,7 +1434,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
         {/* Full-width, bottom-anchored, natural height. The asset is a thin ridge
             strip (1800x150) so its rendered height stays under the band at every
             viewport width — no cropping, so the low left-hand ridge never vanishes. */}
-        <Ridge snow={snowy(weather)} sky={skyRef.current} />
+        <Ridge look={ridgeLookFor(weather)} sky={skyRef.current} />
         <canvas
           ref={frontRef}
           aria-hidden="true"
