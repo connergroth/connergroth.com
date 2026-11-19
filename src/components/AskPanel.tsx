@@ -16,7 +16,7 @@ const MAX_QUESTION = 300;
 const HINTS = [
   'What did he do at Apple?',
   'What is he looking for?',
-  'What is fig?',
+  'What is Fig?',
   'What has he built with voice agents?',
 ];
 
