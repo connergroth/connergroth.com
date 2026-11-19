@@ -69,11 +69,25 @@
   to   { opacity: 1; filter: none; }
 }
 
+/* A starter question that was picked: it slides up from its row to the top one
+   and cools from the hover color, and the rest of the list fades out in place. */
+.ask-pick { animation: ask-pick 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes ask-pick {
+  from { transform: translateY(var(--from, 0px)); color: #44403c; }
+  to   { transform: none; }
+}
+.ask-fade { animation: ask-fade 180ms ease-out both; }
+@keyframes ask-fade {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
 @keyframes reveal-sky {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal, .reveal-sky, .ask-word { animation: none; }
+  .reveal, .reveal-sky, .ask-word, .ask-pick { animation: none; }
+  .ask-fade { animation: none; opacity: 0; }
 }

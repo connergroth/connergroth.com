@@ -79,6 +79,9 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
   const [answer, setAnswer] = useState('');
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
+  // Set when the question was picked from the starter list: how far down the
+  // list it sat, so it can slide up from there instead of fading in again.
+  const [pick, setPick] = useState<{ q: string; from: number } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const history = useRef<Turn[]>([]);
   const abort = useRef<AbortController | null>(null);
@@ -99,6 +102,7 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
       setAsked('');
       setAnswer('');
       setNote('');
+      setPick(null);
     }, 260);
   }
 
@@ -113,9 +117,10 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  async function ask(preset?: string) {
+  async function ask(preset?: string, from = 0) {
     const q = (preset ?? question).trim();
     if (!q || busy) return;
+    setPick(preset ? { q, from } : null);
     abort.current?.abort();
     const ctl = new AbortController();
     abort.current = ctl;
@@ -206,8 +211,26 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
       </div>
 
       {asked ? (
-        <div>
-          <p key={`q-${asked}`} className="ask-word pt-4 text-[0.8rem] leading-[1.6] text-stone-400">
+        <div className="relative">
+          {/* A picked starter never leaves the screen: it slides up to the top
+              row while the ones around it fade out where they were. */}
+          {pick?.q === asked && (
+            <ul
+              aria-hidden
+              className="ask-fade pointer-events-none absolute inset-x-0 top-0 pt-4 space-y-1 text-[0.8rem] leading-[1.6] text-stone-400"
+            >
+              {HINTS.map((h) => (
+                <li key={h} className={h === asked ? 'invisible' : undefined}>
+                  {h}
+                </li>
+              ))}
+            </ul>
+          )}
+          <p
+            key={`q-${asked}`}
+            style={pick?.q === asked ? ({ '--from': `${pick.from}px` } as React.CSSProperties) : undefined}
+            className={`${pick?.q === asked ? 'ask-pick' : 'ask-word'} pt-4 text-[0.8rem] leading-[1.6] text-stone-400`}
+          >
             {asked}
           </p>
           <p aria-live="polite" className={`pt-1 ${note ? 'text-stone-500' : 'text-stone-700'}`}>
@@ -243,7 +266,14 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
               <button
                 type="button"
                 tabIndex={open ? 0 : -1}
-                onClick={() => void ask(h)}
+                // Keeps the cursor (and a phone's keyboard) in the field.
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  const li = e.currentTarget.parentElement as HTMLElement;
+                  const first = li.parentElement?.firstElementChild as HTMLElement;
+                  void ask(h, li.offsetTop - first.offsetTop);
+                  inputRef.current?.focus({ preventScroll: true });
+                }}
                 className="text-left transition-colors hover:text-stone-700"
               >
                 {h}
