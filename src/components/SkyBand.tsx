@@ -677,6 +677,11 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
   // what the sky is showing right now of the things that would otherwise snap
   // when the weather lands; each frame walks them toward the real figures
   const easeRef = useRef<{ closed: number; wet: number; murk: number; cloud: number; t: number } | null>(null);
+  // how far the clouds have travelled, in band-widths. Kept here and stepped
+  // each frame so a resize rescales the sky instead of re-dealing it: a
+  // distance worked out fresh from the wall clock times the band's size lands
+  // every cloud somewhere new whenever the band changes by a pixel.
+  const travelRef = useRef<{ d: number; t: number } | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -1014,7 +1019,10 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       if (weather.windKnown && forcedAmb !== 'off') {
         // rain and snow fall out of a closed deck, whatever the cover figure says
         const over = weather.opaque >= 85 || shut;
-        const perBand = cloud < 25 ? 3 : cloud < 60 ? 5 : 7;
+        // counted off the real cover, never the eased figure: the eased one is
+        // still walking in from the fallback while the clouds dither in, and a
+        // count that changes mid-walk re-deals every cloud to a new slot
+        const perBand = weather.cloud < 25 ? 3 : weather.cloud < 60 ? 5 : 7;
         // an even count, split over two lanes
         const n = 2 * Math.max(1, Math.round(perBand * Math.max(1, w / 240) / 2));
         // bright by day and through the afterglow, dim at night, and a storm
@@ -1024,7 +1032,14 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
         const shade = pal[bright ? 2 : 1];
         const litIdx = lit === pal[3] ? 3 : 2;
         const fadeIn = Math.min(1, (performance.now() - ranAt) / 1500);
-        const atc = reduced ? 0 : at;
+        let tr = travelRef.current;
+        if (!tr) tr = travelRef.current = { d: reduced ? 0 : (at * 0.002) % 7, t: nowMs };
+        else if (!reduced) {
+          // a tab that was asleep picks up where it left off
+          tr.d += lean * (1.5 + 5 * across) * (h / 60) / w * Math.min(0.25, Math.max(0, (nowMs - tr.t) / 1000));
+          tr.t = nowMs;
+        }
+        const gone = tr.d * w;   // px travelled at full speed
         const m = h * 1.2, span = w + 2 * m;
         // Overcast is one merged deck, not a crowd of separate clouds: three
         // banks of billows stacked from overhead down to the horizon, bigger
@@ -1044,7 +1059,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
             const R = Math.max(3, h * row.R);
             const m2 = R * 2.5, span2 = w + 2 * m2;
             const nr = Math.max(4, Math.round(span2 / (R * 0.85)));
-            const drift = lean * (1.5 + 5 * across) * row.sp * (h / 60) * atc;
+            const drift = gone * row.sp;
             for (let k = 0; k < nr; k++) {
               // big billows and small ones side by side, crests at uneven heights
               const pr = R * (0.5 + 0.95 * hash(k, r + 1.1) ** 1.5);
@@ -1101,7 +1116,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
             const amount = weather.fog ? 1 : falling !== 'none' ? 0.7 : 0.45;
             const nm = Math.max(2, Math.round((w / 60) * amount));
             const mm = h * 1.5, spanM = w + 2 * mm;
-            const driftM = lean * (1.5 + 5 * across) * 0.4 * (h / 60) * atc;
+            const driftM = gone * 0.4;
             for (let j = 0; j < nm; j++) {
               const L = h * (0.32 + 0.45 * hash(j, 21.1)), T = Math.max(2.5, h * (0.07 + 0.06 * hash(j, 22.2)) * (0.8 + 0.4 * amount));
               const raw = ((j + (hash(j, 23.3) - 0.5) * 0.6) / nm) * spanM + driftM * (0.7 + 0.6 * hash(j, 24.4));
@@ -1137,9 +1152,8 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
           const sz = (lane ? 0.6 : 0.85) + 0.45 * hash(j, 1.1);
           const R = Math.min(Math.max(3, h * 0.085 * sz), slot / 8);
           const np = 3 + Math.floor(hash(j, 2.2) * 3);
-          const speed = (1.5 + 5 * across) * (lane ? 0.6 : 1) * (h / 60);
           // spread evenly along the band, then jittered, so they never all bunch up
-          const raw = (((j >> 1) + 0.5 * lane + 0.5) * slot) + (hash(j, 5.5) - 0.5) * Math.max(0, slot - 7.4 * R) + lean * speed * atc;
+          const raw = (((j >> 1) + 0.5 * lane + 0.5) * slot) + (hash(j, 5.5) - 0.5) * Math.max(0, slot - 7.4 * R) + gone * (lane ? 0.6 : 1);
           const ccx = ((raw % span) + span) % span - m;
           const by = Math.round(h * ((lane ? 0.56 : 0.27) + 0.04 * (hash(j, 6.6) - 0.5)));
           const pxs: number[] = [], pys: number[] = [], prs: number[] = [];
