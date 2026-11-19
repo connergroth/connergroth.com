@@ -740,59 +740,73 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // jumps when the fetch lands.
       if (weather.windKnown && forcedAmb !== 'off') {
         const over = cloud >= 85;
-        const perBand = cloud < 25 ? 2 : cloud < 60 ? 4 : 8;
-        const n = Math.round(perBand * Math.max(1, w / 240));
-        const lit = pal[isDay || sinceSet < 1.2 || sinceSet > 23 ? 3 : 2];
-        const shade = pal[isDay || sinceSet < 1.2 || sinceSet > 23 ? 2 : 1];
+        const perBand = cloud < 25 ? 3 : cloud < 60 ? 5 : 7;
+        // an even count, split over two lanes
+        const n = 2 * Math.max(1, Math.round(perBand * Math.max(1, w / 240) / 2));
+        // bright by day and through the afterglow, dim at night, and a storm
+        // deck is grey: a plate down whenever something is falling out of it
+        const bright = (isDay || sinceSet < 1.2 || sinceSet > 23) && falling === 'none';
+        const lit = pal[bright ? 3 : 2];
+        const shade = pal[bright ? 2 : 1];
         const litIdx = lit === pal[3] ? 3 : 2;
         const fadeIn = Math.min(1, (performance.now() - ranAt) / 1500);
         const atc = reduced ? 0 : at;
         const m = h * 1.2, span = w + 2 * m;
         // Overcast is one merged deck, not a crowd of separate clouds: three
-        // continuous banks stacked back to front, each a run of overlapping
-        // puffs sharing a single base and a single belly shadow, so the tops
-        // of the nearer bank billow up over the shadow of the one behind. The
-        // back bank runs off the top of the band and breaks now and then to
-        // let a little blue through.
+        // banks of billows stacked from overhead down to the horizon, bigger
+        // up top and smaller with distance. Each bank is an uneven run of
+        // puff tops, lit all the way down, with its shadow gathering only
+        // where it tucks in behind the billows of the bank in front. No flat
+        // bases and no cut-off shapes; blue only shows between the highest tops.
         if (over) {
-          const top = new Float32Array(w), bot = new Float32Array(w);
           const ROWS = [
-            { base: 0.33, R: 0.36, gap: 0.08, sp: 0.55 },
-            { base: 0.63, R: 0.21, gap: 0, sp: 0.75 },
-            { base: 0.90, R: 0.19, gap: 0, sp: 1 },
+            { cy: 0.20, R: 0.25, sp: 1 },
+            { cy: 0.52, R: 0.21, sp: 0.78 },
+            { cy: 0.82, R: 0.17, sp: 0.6 },
           ];
+          const tops = ROWS.map(() => new Float32Array(w).fill(1e9));
           for (let r = 0; r < ROWS.length; r++) {
-            const row = ROWS[r];
-            const R = Math.max(3, h * row.R), baseY = h * row.base;
-            const m2 = R * 2, span2 = w + 2 * m2;
-            const nr = Math.max(4, Math.round(span2 / (R * 0.8)));
+            const row = ROWS[r], top = tops[r];
+            const R = Math.max(3, h * row.R);
+            const m2 = R * 2.5, span2 = w + 2 * m2;
+            const nr = Math.max(4, Math.round(span2 / (R * 0.85)));
             const drift = lean * (1.5 + 5 * across) * row.sp * (h / 60) * atc;
-            top.fill(1e9); bot.fill(-1);
             for (let k = 0; k < nr; k++) {
-              // a break in the bank: a couple of neighbours sit out together
-              if (row.gap > 0 && hash(Math.floor(k / 2), r + 7.7) < row.gap) continue;
-              const pr = R * (0.6 + 0.75 * hash(k, r + 1.1));
+              // big billows and small ones side by side, crests at uneven heights
+              const pr = R * (0.5 + 0.95 * hash(k, r + 1.1) ** 1.5);
               const raw = ((k + (hash(k, r + 2.2) - 0.5) * 0.5) / nr) * span2 + drift;
               const pcx = ((raw % span2) + span2) % span2 - m2;
-              // the shared base rolls a little along the bank
-              const by = baseY + R * (0.28 * Math.sin((k / nr) * 6.283 * 2 + r * 2.1) + 0.14 * Math.sin((k / nr) * 6.283 * 5 + r * 4.3));
-              const pcy = by - pr * 0.15;
+              const pcy = h * row.cy + R * 0.55 * (hash(k, r + 3.3) - 0.5);
               const xa = Math.max(0, Math.ceil(pcx - pr)), xb = Math.min(w - 1, Math.floor(pcx + pr));
               for (let x = xa; x <= xb; x++) {
-                const dxp = x - pcx, rise = Math.sqrt(pr * pr - dxp * dxp);
-                if (pcy - rise < top[x]) top[x] = pcy - rise;
-                const low = Math.min(by, pcy + rise);
-                if (low > bot[x]) bot[x] = low;
+                const dxp = x - pcx, t2 = pcy - Math.sqrt(pr * pr - dxp * dxp);
+                if (t2 < top[x]) top[x] = t2;
               }
             }
-            for (let x = 0; x < w; x++) {
-              if (bot[x] < 0) continue;
-              const yb = Math.min(h - 1, Math.round(bot[x]));
-              for (let y = Math.max(0, Math.round(top[x])); y <= yb; y++) {
+          }
+          // each bank's crest line smoothed out: where the shadow of the bank
+          // behind it settles, so it pools in the dips between billows and
+          // thins to a sliver over the crests
+          const soft = tops.map((top, r) => {
+            const out = new Float32Array(w), k = Math.max(2, Math.round(h * ROWS[r].R * 1.1));
+            let sum = 0, cnt = 0;
+            for (let x = -k; x < w + k; x++) {
+              if (x + k < w) { sum += Math.min(h, top[Math.max(0, x + k)]); cnt++; }
+              if (x - k - 1 >= 0) { sum -= Math.min(h, top[x - k - 1]); cnt--; }
+              if (x >= 0 && x < w) out[x] = sum / cnt;
+            }
+            return out;
+          });
+          for (let x = 0; x < w; x++) {
+            for (let r = 0; r < ROWS.length; r++) {
+              // this bank shows from its own crest down to the nearest crest in front
+              let next = h + h * 0.12, nR = h * 0.17, pool = h * 0.92;
+              for (let q = ROWS.length - 1; q > r; q--) if (tops[q][x] < next) { next = tops[q][x]; nR = h * ROWS[q].R; pool = soft[q][x] - nR * 0.28; }
+              const y1 = Math.min(h, Math.round(next));
+              for (let y = Math.max(0, Math.round(tops[r][x])); y < y1; y++) {
                 const bay = BAYER[(y & 3) * 4 + (x & 3)];
                 if (fadeIn < 1 && fadeIn < bay + 0.5) continue;
-                const up = (bot[x] - y) / (R * 0.95);
-                const dark = up < 0.5 + bay * 0.6;
+                const dark = (next - y) / nR < 0.16 + bay * 0.2 || (y - pool) / nR > bay * 0.5;
                 const c = dark ? shade : lit, i2 = y * w + x, o = i2 * 4;
                 data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
                 plateAt[i2] = dark ? litIdx - 1 : litIdx;
@@ -801,14 +815,18 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
           }
         } else
         for (let j = 0; j < n; j++) {
-          const sz = 0.65 + 0.75 * hash(j, 1.1);
-          const R = Math.max(3, h * 0.085 * sz);
+          // two lanes, a high one and a low one, each cloud in its own slot
+          // along its lane and every cloud in a lane moving at the lane's
+          // speed: no two clouds ever touch or overlap
+          const lane = j % 2, slot = span / (n / 2);
+          const sz = 0.65 + 0.65 * hash(j, 1.1);
+          const R = Math.min(Math.max(3, h * 0.085 * sz), slot / 8);
           const np = 3 + Math.floor(hash(j, 2.2) * 3);
-          const speed = (1.5 + 5 * across) * (0.5 + 0.5 * sz) * (h / 60);
+          const speed = (1.5 + 5 * across) * (lane ? 1 : 0.7) * (h / 60);
           // spread evenly along the band, then jittered, so they never all bunch up
-          const raw = ((j * 0.618034) % 1 + (hash(j, 5.5) - 0.5) * 0.12) * span + lean * speed * atc;
+          const raw = (((j >> 1) + 0.5 * lane + 0.5) * slot) + (hash(j, 5.5) - 0.5) * Math.max(0, slot - 7.4 * R) + lean * speed * atc;
           const ccx = ((raw % span) + span) % span - m;
-          const by = Math.round(h * (0.2 + 0.34 * hash(j, 6.6)));
+          const by = Math.round(h * ((lane ? 0.56 : 0.27) + 0.04 * (hash(j, 6.6) - 0.5)));
           const pxs: number[] = [], pys: number[] = [], prs: number[] = [];
           let half = 0, top = by;
           for (let i = 0; i < np; i++) {
