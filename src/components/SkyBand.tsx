@@ -102,7 +102,38 @@ function keyHour(hour: number, sky: Sky): number {
   return hour;
 }
 
-const paletteAt = (hour: number, sky: Sky) => lerpKeys(KEYS, keyHour(hour, sky));
+/* The same clock under a closed sky: no blue, the three sky plates go to
+   cloud-white and grey, and the light plate cools from cream to an off-white
+   a shade under the page's paper (at night it stays put, so the moon and
+   stars keep their ink). CLOSED_WET is the same
+   sky with something falling out of it, a heavier grey. */
+const CLOSED_KEYS: { h: number; p: Palette }[] = [
+  { h: 0.0, p: [[20, 22, 34], [34, 38, 56], [58, 64, 86], [242, 232, 213]] },
+  { h: 5.2, p: [[92, 92, 108], [134, 130, 142], [182, 172, 172], [218, 200, 192]] },
+  { h: 7.4, p: [[156, 163, 176], [190, 195, 204], [210, 214, 220], [236, 235, 232]] },
+  { h: 12.0, p: [[170, 178, 191], [200, 206, 215], [208, 213, 220], [236, 237, 237]] },
+  { h: 18.2, p: [[152, 156, 170], [186, 186, 196], [206, 200, 200], [236, 228, 218]] },
+  { h: 20.0, p: [[72, 66, 90], [116, 100, 114], [150, 126, 126], [198, 170, 160]] },
+  { h: 21.6, p: [[20, 22, 34], [34, 38, 56], [58, 64, 86], [242, 232, 213]] },
+  { h: 24.0, p: [[20, 22, 34], [34, 38, 56], [58, 64, 86], [242, 232, 213]] },
+];
+const WET = [0.62, 0.72, 0.8, 1];
+const CLOSED_WET_KEYS = CLOSED_KEYS.map((k) => ({
+  h: k.h,
+  p: k.p.map((c, i) => c.map((v) => Math.round(v * WET[i]))) as Palette,
+}));
+
+/* closed: 0 open sky … 1 fully closed; wet: 0 dry … 1 raining or snowing */
+function paletteAt(hour: number, sky: Sky, closed = 0, wet = 0): Palette {
+  const kh = keyHour(hour, sky);
+  const open = lerpKeys(KEYS, kh);
+  if (closed <= 0) return open;
+  const dry = lerpKeys(CLOSED_KEYS, kh), rainy = lerpKeys(CLOSED_WET_KEYS, kh);
+  return open.map((c, i) => c.map((v, k) => {
+    const to = dry[i][k] + (rainy[i][k] - dry[i][k]) * wet;
+    return Math.round(v + (to - v) * closed);
+  })) as Palette;
+}
 const ridgePaletteAt = (hour: number, sky: Sky, snow: boolean) =>
   lerpKeys(snow ? RIDGE_SNOW_KEYS : RIDGE_KEYS, keyHour(hour, sky));
 
@@ -166,7 +197,8 @@ interface Sky { sunrise: number; sunset: number }
 
 /* What it's doing outside at HOME right now. */
 interface Weather {
-  cloud: number;                      // 0-100
+  cloud: number;                      // 0-100, total cover, thin high cloud included
+  opaque: number;                     // 0-100, the cover that actually hides the blue
   tempF: number | null;
   falling: 'none' | 'rain' | 'snow';
   rate: number;                       // 0-1, how hard it's coming down
@@ -214,7 +246,7 @@ function sunTimes(): { sunrise: number; sunset: number } {
 /* Until the fetch lands, and for good if it fails: the sky as it was before it
    knew about weather. A few clouds, nothing falling, bare rock. */
 const FALLBACK: Weather = {
-  cloud: 25, tempF: null, falling: 'none', rate: 0, fog: false, ground: false, slant: 0.3, wind: 0, live: false, windKnown: false, thunder: false,
+  cloud: 25, opaque: 15, tempF: null, falling: 'none', rate: 0, fog: false, ground: false, slant: 0.3, wind: 0, live: false, windKnown: false, thunder: false,
 };
 
 /* Real lunar phase from the synodic clock — 0 = new, 0.5 = full. Anchored to
@@ -247,7 +279,7 @@ const WMO_FOG = [45, 48];
 async function fetchWeather(): Promise<Weather> {
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${HOME.lat}&longitude=${HOME.lon}` +
-    `&current=cloud_cover,temperature_2m,precipitation,rain,snowfall,weather_code,snow_depth,` +
+    `&current=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,temperature_2m,precipitation,rain,snowfall,weather_code,snow_depth,` +
     `wind_speed_10m,wind_direction_10m,wind_gusts_10m&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`;
   const r = await fetch(url);
   if (!r.ok) throw new Error('sky fetch failed');
@@ -268,8 +300,20 @@ async function fetchWeather(): Promise<Weather> {
   // km/h → mph, then ~20 mph is where it starts and ~45 mph is the cap
   const gustMph = Math.max(num(c.wind_gusts_10m), num(c.wind_speed_10m)) / 1.609;
 
+  // Total cover counts a veil of cirrus as 100% while the sky is still blue
+  // and the sun still casts shadows. What whites the sky out is low and mid
+  // cloud, so weigh the layers: low and mid in full, high at well under half.
+  // If the layers are missing, fall back on the total with the WMO code
+  // (3 = overcast) as the tiebreak.
+  const total = typeof c.cloud_cover === 'number' ? c.cloud_cover : FALLBACK.cloud;
+  const layered = typeof c.cloud_cover_low === 'number' && typeof c.cloud_cover_mid === 'number';
+  const opaque = layered
+    ? 100 * (1 - (1 - num(c.cloud_cover_low) / 100) * (1 - num(c.cloud_cover_mid) / 100) * (1 - 0.4 * num(c.cloud_cover_high) / 100))
+    : code === 3 ? Math.max(total, 90) : total * 0.8;
+
   return {
-    cloud: typeof c.cloud_cover === 'number' ? c.cloud_cover : FALLBACK.cloud,
+    cloud: total,
+    opaque: WMO_FOG.includes(code) ? 100 : opaque,
     tempF: typeof c.temperature_2m === 'number' ? c.temperature_2m : null,
     falling: snowing ? 'snow' : raining ? 'rain' : 'none',
     rate: snowing || raining ? Math.min(1, Math.max(0.15, measured, WMO_RATE[code] ?? 0)) : 0,
@@ -291,13 +335,13 @@ async function fetchWeather(): Promise<Weather> {
      ?wind=0..1                                how gusty (0 calm, 1 ~45 mph gusts)
    Anything not forced stays real. */
 const FORCED_WX: Record<string, Partial<Weather>> = {
-  clear: { thunder: false, cloud: 5, falling: 'none', rate: 0, fog: false },
-  partly: { thunder: false, cloud: 50, falling: 'none', rate: 0, fog: false },
-  overcast: { thunder: false, cloud: 95, falling: 'none', rate: 0, fog: false },
-  fog: { thunder: false, cloud: 95, falling: 'none', rate: 0, fog: true },
-  rain: { thunder: false, cloud: 95, falling: 'rain', rate: 0.5, fog: false },
-  snow: { thunder: false, cloud: 95, falling: 'snow', rate: 0.5, fog: false },
-  storm: { thunder: true, cloud: 100, falling: 'rain', rate: 0.9, fog: false },
+  clear: { thunder: false, cloud: 5, opaque: 5, falling: 'none', rate: 0, fog: false },
+  partly: { thunder: false, cloud: 50, opaque: 35, falling: 'none', rate: 0, fog: false },
+  overcast: { thunder: false, cloud: 95, opaque: 95, falling: 'none', rate: 0, fog: false },
+  fog: { thunder: false, cloud: 95, opaque: 100, falling: 'none', rate: 0, fog: true },
+  rain: { thunder: false, cloud: 95, opaque: 95, falling: 'rain', rate: 0.5, fog: false },
+  snow: { thunder: false, cloud: 95, opaque: 95, falling: 'snow', rate: 0.5, fog: false },
+  storm: { thunder: true, cloud: 100, opaque: 100, falling: 'rain', rate: 0.9, fog: false },
 };
 function withForced(w: Weather): Weather {
   const q = new URLSearchParams(window.location.search);
@@ -610,7 +654,13 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       const { sunrise, sunset } = skyRef.current;
       const { cloud, falling, rate, slant, wind } = weather;
       const hour = homeHour();
-      const pal = paletteAt(hour, skyRef.current);
+      // how closed the sky is: blue up to broken cloud, paling through
+      // mostly-cloudy, white-grey once it's overcast. Anything falling or fog
+      // closes it outright.
+      const shut = falling !== 'none' || weather.fog;
+      const cu = shut ? 1 : Math.min(1, Math.max(0, (weather.opaque - 55) / 35));
+      const closed = cu * cu * (3 - 2 * cu);
+      const pal = paletteAt(hour, skyRef.current, closed, falling !== 'none' ? 1 : 0);
       const data = img.data;
       // the layer in front of the ridge, wiped every frame
       const fd = frontImg ? frontImg.data : null;
@@ -678,7 +728,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // a soft glow that brightens toward the body and fades to nothing at
       // `reach`, so the dither breaks it up with no edge to find. a near-new
       // moon barely glows.
-      const glow = isDay ? 0.9 : 0.9 * (0.25 + 0.75 * illum);
+      const glow = (isDay ? 0.9 : 0.9 * (0.25 + 0.75 * illum)) * (1 - 0.85 * closed);
       const reach = rad * 3.2;
 
       // the three cloud bands separate into a per-column sine and a per-row
@@ -784,7 +834,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // jumps when the fetch lands.
       if (weather.windKnown && forcedAmb !== 'off') {
         // rain and snow fall out of a closed deck, whatever the cover figure says
-        const over = cloud >= 85 || falling !== 'none';
+        const over = weather.opaque >= 85 || shut;
         const perBand = cloud < 25 ? 3 : cloud < 60 ? 5 : 7;
         // an even count, split over two lanes
         const n = 2 * Math.max(1, Math.round(perBand * Math.max(1, w / 240) / 2));
@@ -1239,7 +1289,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // with a dithered tail crossing a small patch of sky in under a second,
       // dithering out as it burns up. Passes behind the moon.
       // (never under a closed deck: a shooting star can't cross in front of cloud)
-      if (loud === 'meteor' && (cloud < 85 || forcedAmb === 'meteor')) {
+      if (loud === 'meteor' && (weather.opaque < 85 || forcedAmb === 'meteor')) {
         const every = forcedAmb === 'meteor' ? 3 : 30;
         const k = Math.floor(at / every);
         const dur = 0.45 + 0.3 * hash(k, 2.3);
