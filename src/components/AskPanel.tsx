@@ -119,15 +119,25 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
   async function ask(preset?: string) {
     const q = (preset ?? question).trim();
     if (!q || busy || leaving) return;
-    if (preset && !asked) {
-      setLeaving(true);
-      setQuestion(q);
-      await new Promise((r) => setTimeout(r, 240));
-      setLeaving(false);
-    }
     abort.current?.abort();
     const ctl = new AbortController();
     abort.current = ctl;
+    // The request leaves on the tap itself; the short beat where a starter
+    // question sits in the field is only visual and costs the answer nothing.
+    const pending = fetch(ASK_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ q, history: history.current }),
+      signal: ctl.signal,
+    });
+    pending.catch(() => {});
+    if (preset && !asked) {
+      setLeaving(true);
+      setQuestion(q);
+      await new Promise((r) => setTimeout(r, 110));
+      setLeaving(false);
+      if (ctl.signal.aborted) return;
+    }
     setBusy(true);
     setAsked(q);
     setAnswer('');
@@ -135,12 +145,7 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
     setQuestion('');
     let text = '';
     try {
-      const res = await fetch(ASK_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ q, history: history.current }),
-        signal: ctl.signal,
-      });
+      const res = await pending;
       if (!res.ok || !res.body) {
         const code = await res.json().then((j) => j.code as string).catch(() => '');
         setNote(NOTES[code] || NOTES.fail);
@@ -246,7 +251,7 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
         /* An empty page with one field is a hard place to start, so it opens
            with a few things worth asking. They go once a question is asked. */
         <ul
-          className={`pt-4 space-y-1 text-[0.8rem] leading-[1.6] text-stone-400 transition-opacity duration-150 ease-out motion-reduce:transition-none ${
+          className={`pt-4 space-y-1 text-[0.8rem] leading-[1.6] text-stone-400 transition-opacity duration-100 ease-out motion-reduce:transition-none ${
             leaving ? 'opacity-0' : 'opacity-100'
           }`}
         >
