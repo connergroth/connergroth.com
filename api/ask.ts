@@ -16,11 +16,15 @@ const MAX_QUESTION = 300;
 const MAX_TOKENS = 320;
 const HISTORY_TURNS = 3;
 
-/* A real visitor never gets near these. The model's own block marker is what
-   stops abuse; these only bound the worst case. */
+/* A real visitor never gets near the per-visitor numbers. The site-wide ones
+   are the money bound: they hold even if every per-visitor limit is dodged
+   (rotating addresses, a script instead of the page). At the largest request
+   this endpoint can send (about 0.6 cents on Haiku), 3,000 a month is under
+   $20, whatever anyone does. */
 const PER_MINUTE = 8;
 const PER_DAY = 100;
-const SITE_PER_DAY = 1000;
+const SITE_PER_DAY = 300;
+const SITE_PER_MONTH = 3000;
 const STRIKES_TO_BLOCK = 2;
 const BLOCK_SECONDS = 24 * 60 * 60;
 
@@ -100,16 +104,21 @@ export default async function handler(req: Request) {
 
   /* The visitor is a salted hash of the address: enough to count and block,
      nothing that says who it was. */
-  const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown';
+  /* x-real-ip is set by Vercel and can't be supplied by the caller. */
+  const ip =
+    (req.headers.get('x-real-ip') || '').trim() ||
+    (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() ||
+    'unknown';
   const who = (await sha(`${ip}|${redisToken}`)).slice(0, 20);
   const now = new Date();
   const day = now.toISOString().slice(0, 10);
   const minute = now.toISOString().slice(0, 16);
+  const month = now.toISOString().slice(0, 7);
   const k = (s: string) => `cg:ask:${s}`;
 
   let kb: string;
   try {
-    const [blocked, perMinute, , perDay, , siteDay, , sheet] = await redis([
+    const [blocked, perMinute, , perDay, , siteDay, , siteMonth, , sheet] = await redis([
       ['GET', k(`block:${who}`)],
       ['INCR', k(`m:${who}:${minute}`)],
       ['EXPIRE', k(`m:${who}:${minute}`), 90],
@@ -117,12 +126,15 @@ export default async function handler(req: Request) {
       ['EXPIRE', k(`d:${who}:${day}`), 172800],
       ['INCR', k(`site:${day}`)],
       ['EXPIRE', k(`site:${day}`), 172800],
+      ['INCR', k(`site:${month}`)],
+      ['EXPIRE', k(`site:${month}`), 3456000],
       ['GET', k('kb')],
     ]);
     if (blocked) return json(403, 'blocked');
     if (Number(perMinute) > PER_MINUTE) return json(429, 'slow');
     if (Number(perDay) > PER_DAY) return json(429, 'limit');
     if (Number(siteDay) > SITE_PER_DAY) return json(429, 'limit');
+    if (Number(siteMonth) > SITE_PER_MONTH) return json(429, 'limit');
     if (typeof sheet !== 'string' || !sheet) return json(503, 'off');
     kb = sheet;
   } catch {

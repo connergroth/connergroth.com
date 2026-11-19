@@ -16,6 +16,12 @@ function devAsk(): Plugin {
     configureServer(server) {
       Object.assign(process.env, loadEnv('development', process.cwd(), ''));
       server.middlewares.use('/api/ask', async (req, res) => {
+        // A GET can't carry a body into Request(); answer it here like production does.
+        if (req.method !== 'POST') {
+          res.statusCode = 405;
+          res.setHeader('Content-Type', 'application/json');
+          return res.end('{"code":"method"}');
+        }
         const chunks: Buffer[] = [];
         for await (const c of req) chunks.push(c as Buffer);
         const live =
