@@ -28,10 +28,10 @@ const link =
 const PROJECTS: { name: string; href: string; blurb: ReactNode }[] = [
   // The repo link goes live when the public remote flips — the entry ships now
   // because the one-liner is the pitch, and the link follows within days.
-  { name: 'fig', href: 'https://github.com/connergroth/fig', blurb: 'a personal agent with its own mac, apple id, and phone number' },
-  { name: 'sift', href: 'https://usesift.app', blurb: 'an AI iMessage assistant for school' },
+  { name: 'fig', href: 'https://github.com/connergroth/fig', blurb: 'a personal agent with its own Mac, Apple ID, and phone number' },
+  { name: 'Sift', href: 'https://usesift.app', blurb: 'an AI iMessage assistant for school' },
   {
-    name: 'seqimprove',
+    name: 'SeqImprove',
     href: 'https://seqimprove.synbiohub.org',
     // Attribution matters here: this is lab work, not a Lucence product. The
     // paper link replaces nothing — it gets appended once it's published.
@@ -44,7 +44,7 @@ const PROJECTS: { name: string; href: string; blurb: ReactNode }[] = [
       </>
     ),
   },
-  { name: 'lucence', href: 'https://lucence.so', blurb: 'my studio building custom AI software for small businesses' },
+  { name: 'Lucence', href: 'https://lucence.so', blurb: 'my studio building custom AI software for small businesses' },
 ];
 
 /* Stagger slot for the .reveal load-in (globals.css). */
