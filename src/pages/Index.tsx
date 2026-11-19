@@ -28,7 +28,7 @@ const link =
 const PROJECTS: { name: string; href: string; blurb: ReactNode }[] = [
   // The repo link goes live when the public remote flips — the entry ships now
   // because the one-liner is the pitch, and the link follows within days.
-  { name: 'fig', href: 'https://github.com/connergroth/fig', blurb: 'a personal agent with its own Mac, Apple ID, and phone number' },
+  { name: 'Fig', href: 'https://github.com/connergroth/fig', blurb: 'a personal agent with its own Mac, Apple ID, and phone number' },
   { name: 'Sift', href: 'https://usesift.app', blurb: 'an AI iMessage assistant for school' },
   {
     name: 'SeqImprove',
