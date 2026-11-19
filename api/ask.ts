@@ -37,6 +37,8 @@ Three sentences at most, and under 60 words, even when the sheet has more: say t
 
 The only formatting allowed is a markdown link, [text](url). The fact sheet writes every page as one; copy it exactly as written there, worked into the sentence ("the code is [on GitHub](...)", "here is [his resume](...)"). Never write a URL out as plain text.
 
+You are told today's date after the fact sheet. Use it to work out relative time ("last year", "this summer", "right now", "how long has he") against the dates in the sheet, and to tell what is current from what has ended. Count months and years carefully. Don't state the date unless asked.
+
 Questions about Conner as a person are in scope, not only his work: what he does for fun, where he's from, his hobbies, his music, this site. Read loosely worded or casual questions generously ("what's he like", "what's he into", "is he cool") and answer with whatever in the sheet fits best.
 
 Greetings, thanks and small talk ("hi", "hey", "what's up", "who are you", "what can I ask", "thanks", "cool") are never declined. Reply warmly in one short sentence. For a greeting only, mention a couple of things they could ask about, like his work at Apple, fig, or what he does outside work; thanks or a reaction just gets a brief friendly reply with no suggestions.
@@ -127,6 +129,14 @@ export default async function handler(req: Request) {
     return json(503, 'off');
   }
 
+  const today = now.toLocaleDateString('en-US', {
+    timeZone: 'America/Denver',
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
   const upstream = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -142,6 +152,8 @@ export default async function handler(req: Request) {
       system: [
         { type: 'text', text: RULES },
         { type: 'text', text: `<fact_sheet>\n${kb}\n</fact_sheet>`, cache_control: { type: 'ephemeral' } },
+        // After the cached sheet, so the date changing daily never breaks the cache.
+        { type: 'text', text: `Today is ${today}.` },
       ],
       messages: [
         ...history.flatMap((t) => [
