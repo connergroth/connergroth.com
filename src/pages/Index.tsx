@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import AltTellMe from '@/components/AltTellMe';
 import AltAskAi from '@/components/AltAskAi';
 import SEO from '../components/SEO';
@@ -50,6 +50,7 @@ const PROJECTS: { name: string; href: string; blurb: ReactNode }[] = [
 const at = (i: number) => ({ '--i': i }) as CSSProperties;
 
 export default function AltIndex() {
+  const [weather, setWeather] = useState('');
   return (
     <>
       <SEO
@@ -63,13 +64,18 @@ export default function AltIndex() {
           always clears the top edge instead of getting cropped. */}
       <SkyBand
         className="reveal-sky h-[clamp(104px,calc(100vw/12+40px),190px)]"
-        captionClassName="reveal-sky mx-auto w-full max-w-[520px] px-6 pt-2"
+        onCaption={setWeather}
       />
 
       <main className="mx-auto w-full max-w-[520px] px-6 pt-8 sm:pt-10 pb-24">
-        <h1 style={at(0)} className="reveal font-serif text-[1.55rem] font-medium tracking-[-0.01em] text-stone-900">
-          Conner Groth
-        </h1>
+        {/* The live weather shares the name's baseline, so the eye makes one stop
+            under the sky instead of two. */}
+        <div style={at(0)} className="reveal flex items-baseline justify-between gap-4">
+          <h1 className="font-serif text-[1.55rem] font-medium tracking-[-0.01em] text-stone-900">
+            Conner Groth
+          </h1>
+          <span className="truncate text-[0.75rem] text-stone-400">{weather}</span>
+        </div>
 
         {/* Tense is deliberately past-and-durable: the internship ends Aug 7,
             2026, and "most recently" stays true until the next role instead of
@@ -77,7 +83,18 @@ export default function AltIndex() {
         <div style={at(1)} className="reveal mt-7 space-y-4 text-[0.94rem] leading-[1.75] text-stone-700">
           <p>
             I&rsquo;m a software engineer and CS student at CU Boulder, graduating
-            May 2027. Most recently I was at Apple on the Screen Time team, where
+            May 2027. Most recently I was at{' '}
+            <span className="whitespace-nowrap">
+              Apple
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                className="ml-[0.2em] inline-block h-[0.8em] w-[0.8em] -translate-y-[0.1em] fill-current text-stone-500"
+              >
+                <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
+              </svg>
+            </span>{' '}
+            on the Screen Time team, where
             I built agents that turn feature specs into passing tests.
           </p>
         </div>

@@ -113,6 +113,16 @@ const hash = (a: number, b: number) => {
   return v - Math.floor(v);
 };
 
+/* Seeded PRNG. The sky effect re-runs when the weather lands and on every
+   resize, so anything placed with Math.random (stars, grain, flakes) used to
+   reshuffle mid-load and visibly jump. Same seed, same sky, every run. */
+const mulberry = (seed: number) => () => {
+  seed = (seed + 0x6d2b79f5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+
 /* 4x4 Bayer, centred on zero — same matrix the build-time script uses on the
    mountains, which is what makes the two layers read as one print. */
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => v / 16 - 0.5);
@@ -404,7 +414,7 @@ function Ridge({ snow, sky }: { snow: boolean; sky: Sky }) {
   );
 }
 
-export default function SkyBand({ className = '', captionClassName = '' }: { className?: string; captionClassName?: string }) {
+export default function SkyBand({ className = '', onCaption }: { className?: string; onCaption?: (caption: string) => void }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const frontRef = useRef<HTMLCanvasElement | null>(null);
   const skyRef = useRef<Sky>(sunTimes());
@@ -417,6 +427,9 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
       .catch(() => {});
     return () => { alive = false; };
   }, []);
+
+  const caption = captionFor(weather);
+  useEffect(() => { onCaption?.(caption); }, [caption, onCaption]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -450,13 +463,16 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
       img = ctx.createImageData(w, h);
       // static grain field — regenerating it per frame makes the print sizzle
       noise = new Float32Array(w * h);
-      for (let i = 0; i < noise.length; i++) noise[i] = (Math.random() - 0.5) * 0.22;
+      const grain = mulberry(7);
+      for (let i = 0; i < noise.length; i++) noise[i] = (grain() - 0.5) * 0.22;
       // stars as a flat index set so the pixel loop stays O(1) per pixel
       starAt = new Set();
       const n = Math.round(w * h * 0.004);
+      // placed as fractions of the band, so a resize keeps each star where it was
+      const starRng = mulberry(1214);
       for (let i = 0; i < n; i++) {
-        const sx = Math.floor(Math.random() * w);
-        const sy = Math.floor(Math.random() * h * 0.82);
+        const sx = Math.floor(starRng() * w);
+        const sy = Math.floor(starRng() * h * 0.82);
         starAt.add(sy * w + sx);
       }
       // which plate each sky pixel landed on, so rain can step off it
@@ -470,7 +486,8 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
       // downpour is capped here and can't turn the print into static.
       // per particle: x, y, speed, sway phase, all 0-1
       fall = new Float32Array(Math.round(w * h * 0.006) * 4);
-      for (let i = 0; i < fall.length; i++) fall[i] = Math.random();
+      const fallRng = mulberry(42);
+      for (let i = 0; i < fall.length; i++) fall[i] = fallRng();
     };
 
     const draw = (tMs: number) => {
@@ -769,11 +786,6 @@ export default function SkyBand({ className = '', captionClassName = '' }: { cla
           style={{ imageRendering: 'pixelated' }}
         />
       </div>
-      {/* Always one line tall, so the weather landing changes the words and
-          nothing else on the page. */}
-      <p className={`font-mono text-[0.63rem] leading-[1.4] text-stone-400 ${captionClassName}`}>
-        {captionFor(weather)}
-      </p>
     </>
   );
 }
