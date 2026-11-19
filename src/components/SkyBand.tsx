@@ -783,6 +783,11 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
                 if (t2 < top[x]) top[x] = t2;
               }
             }
+            // the bank is solid under its puffs: where two small neighbours
+            // don't quite meet, the crest bottoms out here instead of leaving
+            // an open column for the bank behind to show through
+            const floor = h * row.cy + R * 0.3;
+            for (let x = 0; x < w; x++) if (top[x] > floor) top[x] = floor;
           }
           // each bank's crest line smoothed out: where the shadow of the bank
           // behind it settles, so it pools in the dips between billows and
