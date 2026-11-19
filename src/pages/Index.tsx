@@ -21,7 +21,7 @@ const LINKS = [
 ];
 
 const link =
-  'text-stone-900 underline decoration-stone-300 underline-offset-[3px] hover:decoration-stone-600 transition-colors';
+  'text-stone-900 underline decoration-stone-300 decoration-1 underline-offset-4 [text-decoration-skip-ink:none] hover:decoration-stone-600 transition-colors';
 
 /* Every project points at the real thing, not a case-study page on this site.
    One page, and the links leave. */

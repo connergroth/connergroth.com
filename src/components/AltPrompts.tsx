@@ -107,7 +107,7 @@ const AltPrompts: React.FC<{ onAsk: () => void }> = ({ onAsk }) => {
             type="button"
             tabIndex={isClosed ? 0 : -1}
             onClick={() => setMode('tell')}
-            className="text-stone-700 underline decoration-stone-300 decoration-1 underline-offset-4 transition-colors hover:decoration-stone-500"
+            className="text-stone-700 underline decoration-stone-300 decoration-1 underline-offset-4 [text-decoration-skip-ink:none] transition-colors hover:decoration-stone-500"
           >
             Tell me something.
           </button>
@@ -115,7 +115,7 @@ const AltPrompts: React.FC<{ onAsk: () => void }> = ({ onAsk }) => {
             type="button"
             tabIndex={isClosed ? 0 : -1}
             onClick={onAsk}
-            className="text-stone-500 underline decoration-stone-300 decoration-1 underline-offset-4 transition-colors hover:text-stone-900 hover:decoration-stone-500"
+            className="text-stone-500 underline decoration-stone-300 decoration-1 underline-offset-4 [text-decoration-skip-ink:none] transition-colors hover:text-stone-900 hover:decoration-stone-500"
           >
             Or ask an AI about me.
           </button>
