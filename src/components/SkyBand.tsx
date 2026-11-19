@@ -130,6 +130,34 @@ const ICE: [number, number, number] = [158, 206, 255];
 const ICE_DEEP: [number, number, number] = [96, 146, 226];
 const CROSS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
 
+/* Bird sprites, 'x' = ink. The hawk soars on long flat wings with upturned
+   tips; the flock birds are the classic flapping silhouette in three poses
+   (up, arched glide, down), plus 3-wide versions for when they're far off. */
+const HAWK = [
+  'xx.........xx',
+  '..xxx...xxx..',
+  '....xxxxx....',
+  '.....xxx.....',
+  '......x......',
+] as const;
+const HAWK_FLAP = [
+  '.............',
+  '.............',
+  '....xxxxx....',
+  '..xx.xxx.xx..',
+  'xx....x....xx',
+] as const;
+const BIRD = [
+  ['x...x', '.x.x.', '..x..'],
+  ['.x.x.', 'x.x.x', '.....'],
+  ['.....', '.x.x.', 'x.x.x'],
+] as const;
+const BIRD_FAR = [
+  ['x.x', '.x.'],
+  ['xxx', '...'],
+  ['...', 'x.x'],
+] as const;
+
 /* 4x4 Bayer, centred on zero — same matrix the build-time script uses on the
    mountains, which is what makes the two layers read as one print. */
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => v / 16 - 0.5);
@@ -861,6 +889,17 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
         const o = (y * w + x) * 4;
         data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
       };
+      // stamps a pixel sprite centred on (x, y); slope tips it into a bank
+      const sprite = (rows: readonly string[], x: number, y: number, c: Palette[number], slope: number) => {
+        const cxs = (rows[0].length - 1) / 2;
+        for (let r = 0; r < rows.length; r++) {
+          const row = rows[r];
+          for (let q = 0; q < row.length; q++) {
+            if (row[q] !== 'x') continue;
+            dot(x + q - Math.round(cxs), y + r - 1 + Math.round((q - cxs) * slope), c);
+          }
+        }
+      };
 
       // Hawk: wide thermal circles (seen at a slant, so an ellipse) around a
       // centre that drifts across in ~2 min; as one leaves, the next comes in.
@@ -875,10 +914,11 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
         const oy = h * (0.2 + 0.12 * hash(k, 8.1)) + Math.sin(at * 0.07 + k) * h * 0.03;
         const th = spin * at * 2 * Math.PI / (13 + 4 * hash(k, 9.2)) + 6.28 * hash(k, 3.4);
         const hx = Math.round(ox + R * Math.cos(th)), hy = Math.round(oy + R * 0.32 * Math.sin(th));
-        const tilt = Math.cos(th);                       // + at the right of the loop: left wing low
-        dot(hx, hy, ink);
-        dot(hx - 1, hy - (tilt > 0.45 ? 0 : 1), ink);
-        dot(hx + 1, hy - (tilt < -0.45 ? 0 : 1), ink);
+        // a soaring hawk from below: long broad wings with the tips turned up,
+        // a short fanned tail. it banks into the turn by dropping the inside wing.
+        // now and then a couple of slow wingbeats between glides
+        const flap = Math.sin(at * 0.9 + k) > 0.93 && Math.sin(at * 9) > 0;
+        sprite(flap ? HAWK_FLAP : HAWK, hx, hy, ink, 0);
       }
 
       // Flock: every so often 4-7 birds in a loose V or a ragged line come in
@@ -894,17 +934,20 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
           const dir = hash(k, 3.3) < 0.5 ? -1 : 1, vee = hash(k, 4.4) < 0.55;
           const lx = (dir > 0 ? -8 : w + 8) + dir * w * (0.6 + 0.3 * hash(k, 5.5)) * age;
           // in the afterglow band, where the dark ink reads, not the near-night top
-          const y0 = h * (0.26 + 0.12 * hash(k, 6.6)), y1 = h * 0.76;
+          const y0 = h * (0.42 + 0.1 * hash(k, 6.6)), y1 = h * 0.78;
           const ly = y0 + (y1 - y0) * age * age;
-          const near = 1 - age, gap = 2 + 2.2 * near;
+          const near = 1 - age, gap = 4 + 4 * near;
           for (let j = 0; j < n; j++) {
             if (age > 0.7 && hash(k, j + 0.9) < (age - 0.7) / 0.3) continue;
             const rank = vee ? Math.ceil(j / 2) : j, side = j % 2 ? -1 : 1;
             const bx = Math.round(lx - dir * rank * gap * (vee ? 1 : 1.1) + Math.sin(at * 0.7 + j * 2.1) * 0.6);
             const by = Math.round(ly + (vee ? side * rank * gap * 0.55 : (hash(k, j + 0.5) - 0.5) * gap * 1.2 + j * 0.3)
               + Math.sin(at * 0.9 + j * 1.3) * 0.5);
-            dot(bx, by, ink);
-            if (near > 0.35 && Math.sin(at * 2 * Math.PI * (2.6 + 0.6 * hash(k, j)) + j) > 0) dot(bx + 1, by, ink);
+            // the classic flapping bird: wings up, arched glide, wings down, glide.
+            // close in it's the 5-wide shape, far off the 3-wide one
+            const beat = (at * (2.4 + 0.6 * hash(k, j)) + hash(k, j + 3.7)) % 4;
+            const f = beat < 1 ? 0 : beat < 2 || beat >= 3 ? 1 : 2;
+            sprite(near > 0.4 ? BIRD[f] : BIRD_FAR[f], bx, by, ink, 0);
           }
         }
       }
