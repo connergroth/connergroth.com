@@ -315,7 +315,7 @@ const snowy = (w: Weather) => w.ground || w.falling === 'snow';
 
 /* The ambient layer, so a calm clear sky still has something alive in it. Per
    time of day, one thing you'd notice moving plus at most one quiet one:
-     day    a hawk circling over the ridge, under a cirrus wisp on the real wind
+     day    cumulus drifting on the real wind (always on, see the cloud pass)
      dusk   a small flock heading in toward the ridge; stars come out one by one
      night  a shooting star every 20-40s, over a few stars twinkling
    Rain or snow is the motion when it's falling, so the layer stands down.
@@ -332,8 +332,9 @@ function ambientFor(hour: number, { sunset }: Sky, isDay: boolean, calm: boolean
   // dusk runs from half an hour before sunset to a bit over an hour after
   const sinceSet = (((hour - sunset) % 24) + 24) % 24;
   const tod = sinceSet >= 23.5 || sinceSet < 1.2 ? 'dusk' : isDay ? 'day' : 'night';
-  let loud: Loud = !calm ? '' : tod === 'day' ? 'hawk' : tod === 'dusk' ? 'flock' : 'meteor';
-  let quiet: Quiet = !calm ? '' : tod === 'day' ? 'wisp' : tod === 'night' ? 'twinkle' : '';
+  // day belongs to the clouds; the hawk and the wisp only come out when forced
+  let loud: Loud = !calm ? '' : tod === 'day' ? '' : tod === 'dusk' ? 'flock' : 'meteor';
+  let quiet: Quiet = !calm ? '' : tod === 'night' ? 'twinkle' : '';
   if (forced === 'hawk' || forced === 'flock' || forced === 'meteor') loud = forced;
   else if (forced === 'wisp' || forced === 'twinkle') { loud = ''; quiet = forced; }
   else if (forced === 'off') { loud = ''; quiet = ''; }
@@ -730,6 +731,65 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
 
           const o = i * 4;
           data[o] = r; data[o + 1] = g; data[o + 2] = b; data[o + 3] = 255;
+        }
+      }
+
+      // Clouds: real cumulus shapes, a row of overlapping puffs on a flat base,
+      // lit plate on top and a dithered shadow plate along the belly. How many
+      // follows the real cloud cover: a few small ones on a clear day, a broken
+      // field when it's partly cloudy, and a stacked deck that all but closes the
+      // sky when it's overcast. They ride the real wind, the bigger (nearer)
+      // ones faster. Waits for the live weather and dithers in, so nothing
+      // jumps when the fetch lands.
+      if (weather.windKnown && forcedAmb !== 'off') {
+        const over = cloud >= 85;
+        const perBand = cloud < 25 ? 2 : cloud < 60 ? 4 : over ? 30 : 8;
+        const n = Math.round(perBand * Math.max(1, w / 240));
+        const lit = pal[isDay || sinceSet < 1.2 || sinceSet > 23 ? 3 : 2];
+        const shade = pal[isDay || sinceSet < 1.2 || sinceSet > 23 ? 2 : 1];
+        const litIdx = lit === pal[3] ? 3 : 2;
+        const fadeIn = Math.min(1, (performance.now() - ranAt) / 1500);
+        const atc = reduced ? 0 : at;
+        const m = h * 1.2, span = w + 2 * m;
+        for (let j = 0; j < n; j++) {
+          const sz = (over ? 1.7 : 1) * (0.65 + 0.75 * hash(j, 1.1));
+          const R = Math.max(3, h * 0.085 * sz);
+          const np = 3 + Math.floor(hash(j, 2.2) * 3);
+          const speed = (1.5 + 5 * across) * (0.5 + 0.5 * sz) * (h / 60);
+          // spread evenly along the band, then jittered, so they never all bunch up
+          const raw = ((j * 0.618034) % 1 + (hash(j, 5.5) - 0.5) * 0.12) * span + lean * speed * atc;
+          const ccx = ((raw % span) + span) % span - m;
+          const by = Math.round(h * (over ? 0.12 + 0.8 * hash(j, 6.6) : 0.2 + 0.34 * hash(j, 6.6)));
+          const pxs: number[] = [], pys: number[] = [], prs: number[] = [];
+          let half = 0, top = by;
+          for (let i = 0; i < np; i++) {
+            const bump = Math.sin(Math.PI * (i + 0.5) / np) + (hash(j, i + 3.3) - 0.5) * 0.35;
+            const pr = R * (0.7 + 0.6 * bump);
+            const ox = (i - (np - 1) / 2) * R * 1.05;
+            pxs.push(ccx + ox); pys.push(by - pr * 0.5); prs.push(pr);
+            half = Math.max(half, Math.abs(ox) + pr);
+            top = Math.min(top, by - pr * 1.5);
+          }
+          const x0 = Math.max(0, Math.floor(ccx - half)), x1 = Math.min(w - 1, Math.ceil(ccx + half));
+          if (x1 < 0 || x0 >= w) continue;
+          for (let y = Math.max(0, Math.floor(top)); y <= by && y < h; y++) {
+            for (let x = x0; x <= x1; x++) {
+              let inside = false;
+              for (let i = 0; i < np; i++) {
+                const ddx = x - pxs[i], ddy = y - pys[i];
+                if (ddx * ddx + ddy * ddy <= prs[i] * prs[i]) { inside = true; break; }
+              }
+              if (!inside) continue;
+              const bay = BAYER[(y & 3) * 4 + (x & 3)];
+              if (fadeIn < 1 && fadeIn < bay + 0.5) continue;
+              // belly shadow: solid along the base, dithering up into the lit top
+              const up = (by - y) / (R * 0.95);
+              const dark = up < 0.42 + bay * 0.5;
+              const c = dark ? shade : lit, i2 = y * w + x, o = i2 * 4;
+              data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
+              plateAt[i2] = dark ? litIdx - 1 : litIdx;
+            }
+          }
         }
       }
 
