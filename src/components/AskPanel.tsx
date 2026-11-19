@@ -79,6 +79,9 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
   const [answer, setAnswer] = useState('');
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
+  // A starter question was tapped: the list and the field's hint fade out
+  // before the question takes their place, instead of swapping in one frame.
+  const [leaving, setLeaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const history = useRef<Turn[]>([]);
   const abort = useRef<AbortController | null>(null);
@@ -115,7 +118,12 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
 
   async function ask(preset?: string) {
     const q = (preset ?? question).trim();
-    if (!q || busy) return;
+    if (!q || busy || leaving) return;
+    if (preset && !asked) {
+      setLeaving(true);
+      await new Promise((r) => setTimeout(r, 170));
+      setLeaving(false);
+    }
     abort.current?.abort();
     const ctl = new AbortController();
     abort.current = ctl;
@@ -185,7 +193,7 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
           placeholder={asked ? 'Ask another.' : 'Ask anything about Conner.'}
           aria-label="Ask a question about Conner"
           enterKeyHint="send"
-          className={FIELD}
+          className={`${FIELD} placeholder:transition-opacity placeholder:duration-150 ${leaving ? 'placeholder:opacity-0' : ''}`}
         />
         <div className="flex shrink-0 items-center gap-3 font-mono text-[0.65rem] text-stone-400">
           <button type="button" tabIndex={open ? 0 : -1} onClick={close} className="transition-colors hover:text-stone-600">
@@ -235,7 +243,11 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
       ) : (
         /* An empty page with one field is a hard place to start, so it opens
            with a few things worth asking. They go once a question is asked. */
-        <ul className="pt-4 space-y-1 text-[0.8rem] leading-[1.6] text-stone-400">
+        <ul
+          className={`pt-4 space-y-1 text-[0.8rem] leading-[1.6] text-stone-400 transition-opacity duration-150 ease-out motion-reduce:transition-none ${
+            leaving ? 'opacity-0' : 'opacity-100'
+          }`}
+        >
           {HINTS.map((h) => (
             <li key={h}>
               <button
