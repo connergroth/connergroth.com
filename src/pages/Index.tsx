@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import AltTellMe from '@/components/AltTellMe';
 import AltAskAi from '@/components/AltAskAi';
 import SEO from '../components/SEO';
@@ -50,7 +50,6 @@ const PROJECTS: { name: string; href: string; blurb: ReactNode }[] = [
 const at = (i: number) => ({ '--i': i }) as CSSProperties;
 
 export default function AltIndex() {
-  const [weather, setWeather] = useState('');
   return (
     <>
       <SEO
@@ -64,18 +63,12 @@ export default function AltIndex() {
           always clears the top edge instead of getting cropped. */}
       <SkyBand
         className="reveal-sky h-[clamp(104px,calc(100vw/12+40px),190px)]"
-        onCaption={setWeather}
       />
 
       <main className="mx-auto w-full max-w-[520px] px-6 pt-8 sm:pt-10 pb-24">
-        {/* The live weather shares the name's baseline, so the eye makes one stop
-            under the sky instead of two. */}
-        <div style={at(0)} className="reveal flex items-baseline justify-between gap-4">
-          <h1 className="font-serif text-[1.55rem] font-medium tracking-[-0.01em] text-stone-900">
-            Conner Groth
-          </h1>
-          <span className="truncate text-[0.75rem] text-stone-400">{weather}</span>
-        </div>
+        <h1 style={at(0)} className="reveal font-serif text-[1.55rem] font-medium tracking-[-0.01em] text-stone-900">
+          Conner Groth
+        </h1>
 
         {/* Tense is deliberately past-and-durable: the internship ends Aug 7,
             2026, and "most recently" stays true until the next role instead of
