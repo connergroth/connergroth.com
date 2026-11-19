@@ -123,6 +123,13 @@ const mulberry = (seed: number) => () => {
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 };
 
+/* The one colour family outside the sky's own plates: the cool light blue of
+   a star glint and a meteor's burn. Core, body, fading tip. */
+const ICE_CORE: [number, number, number] = [236, 246, 255];
+const ICE: [number, number, number] = [158, 206, 255];
+const ICE_DEEP: [number, number, number] = [96, 146, 226];
+const CROSS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
+
 /* 4x4 Bayer, centred on zero — same matrix the build-time script uses on the
    mountains, which is what makes the two layers read as one print. */
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => v / 16 - 0.5);
@@ -567,15 +574,25 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
         ? { loud: '' as Loud, quiet: '' as Quiet }
         : ambientFor(hour, skyRef.current, isDay, falling === 'none', forcedAmb);
       const at = (Date.now() - AMB_EPOCH) / 1000;   // the ambient clock, s
-      // twinkle: every 12s each star has a ~1-in-3 chance of a 1.2s flicker
-      // (dim plate, gone, dim plate, back), so a few are going at any moment
-      const TW = 12;
+      // twinkle, two layers. the field: every 7s each star has a ~1-in-4 chance
+      // of dipping to the dim plate for a beat, so the whole sky shimmers softly.
+      // the sparkles: a few stars at a time flare into a cool-white pixel cross
+      // that grows its arms and pulls them back in (drawn after the sky, below).
+      const TW = 7, SP = 5, SPD = 1.5;
       const twinkleAt = (s: number) => {
         const tt = at + s * 1000;
         const k = Math.floor(tt / TW);
-        if (hash(s * 1000, k) > 0.35) return 0;
-        const u = (tt - k * TW) / 1.2;
-        return u > 1 ? 0 : u < 0.3 || u > 0.7 ? 1 : 2;
+        if (hash(s * 1000, k) > 0.25) return 0;
+        const u = (tt - k * TW) / 0.5;
+        return u > 1 ? 0 : 1;
+      };
+      // 0-1 flare strength for a star right now, 0 when it isn't sparkling
+      const sparkleAt = (s: number) => {
+        const tt = at + s * 977;
+        const k = Math.floor(tt / SP);
+        if (hash(s * 733, k) > 0.09) return 0;
+        const u = (tt - k * SP) / SPD;
+        return u > 1 ? 0 : Math.sin(Math.PI * u);
       };
       // a night with something falling is cloud-lit, not black: lift the ramp
       // so flakes fall through murk instead of sitting on a clear starry sky
@@ -679,7 +696,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
             const s = starAt.get(i);
             if (s !== undefined && s < starsOut) {
               const tw = quiet === 'twinkle' ? twinkleAt(s) : 0;
-              if (tw < 2) { const c = pal[tw === 0 ? 3 : 2]; r = c[0]; g = c[1]; b = c[2]; }
+              const c = pal[tw === 0 ? 3 : 2]; r = c[0]; g = c[1]; b = c[2];
             }
           }
 
@@ -892,6 +909,22 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
         }
       }
 
+      // Sparkles: the classic pixel star glint. Core goes cool white, then a
+      // light-blue cross grows out one pixel, then two (the outer tips a deeper
+      // blue), and folds back in. Skips anything near the moon.
+      if (quiet === 'twinkle' && stars) {
+        for (const [i, s] of starAt) {
+          if (s >= starsOut) continue;
+          const f = sparkleAt(s);
+          if (f < 0.12) continue;
+          const x = i % w, y = (i / w) | 0;
+          if ((x - cx) ** 2 + (y - cy) ** 2 < (rad + 4) ** 2) continue;
+          dot(x, y, f > 0.3 ? ICE_CORE : pal[3]);
+          if (f > 0.4) for (const [dx, dy] of CROSS) dot(x + dx, y + dy, ICE);
+          if (f > 0.78) for (const [dx, dy] of CROSS) dot(x + 2 * dx, y + 2 * dy, ICE_DEEP);
+        }
+      }
+
       // Shooting star: one every 20-40s (every 3s when forced), a bright head
       // with a dithered tail crossing a small patch of sky in under a second,
       // dithering out as it burns up. Passes behind the moon.
@@ -912,7 +945,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
             // solid up front, dithering out down the back half (and all of it as it burns out)
             if (Math.max(0, q - 0.45) * 2.2 + fade * 1.2 > BAYER[(y & 3) * 4 + (x & 3)] + 0.5 + (s < 1 ? 0.6 : 0)) continue;
             if ((x - cx) ** 2 + (y - cy) ** 2 < rad * rad) continue;
-            dot(x, y, pal[q < 0.55 ? 3 : 2]);
+            dot(x, y, s < 1 ? ICE_CORE : q < 0.5 ? ICE : ICE_DEEP);
           }
         }
       }
