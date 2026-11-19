@@ -79,8 +79,8 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
   const [answer, setAnswer] = useState('');
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
-  // A starter question was tapped: the list and the field's hint fade out
-  // before the question takes their place, instead of swapping in one frame.
+  // A starter question was tapped: it lands in the field as if it had been
+  // typed and the list fades, then it sends down the same path as a typed one.
   const [leaving, setLeaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const history = useRef<Turn[]>([]);
@@ -121,7 +121,8 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
     if (!q || busy || leaving) return;
     if (preset && !asked) {
       setLeaving(true);
-      await new Promise((r) => setTimeout(r, 170));
+      setQuestion(q);
+      await new Promise((r) => setTimeout(r, 240));
       setLeaving(false);
     }
     abort.current?.abort();
@@ -183,6 +184,7 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
           value={question}
           maxLength={MAX_QUESTION}
           tabIndex={open ? 0 : -1}
+          readOnly={leaving}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
@@ -193,7 +195,7 @@ const AskPanel = forwardRef<AskHandle, { open: boolean; onClose: () => void }>((
           placeholder={asked ? 'Ask another.' : 'Ask anything about Conner.'}
           aria-label="Ask a question about Conner"
           enterKeyHint="send"
-          className={`${FIELD} placeholder:transition-opacity placeholder:duration-150 ${leaving ? 'placeholder:opacity-0' : ''}`}
+          className={FIELD}
         />
         <div className="flex shrink-0 items-center gap-3 font-mono text-[0.65rem] text-stone-400">
           <button type="button" tabIndex={open ? 0 : -1} onClick={close} className="transition-colors hover:text-stone-600">
