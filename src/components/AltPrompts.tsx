@@ -68,7 +68,16 @@ function pieces(raw: string): Piece[] {
       if (mail) {
         out.push({ text: mail[1], href: `mailto:${mail[1]}` });
         if (mail[2]) out.push({ text: mail[2] });
-      } else out.push({ text: w });
+        continue;
+      }
+      // A bare address the model wrote out: linked, shown without the scheme.
+      const url = /^(https?:\/\/[^\s]*?[\w/])([.,;:!?)]*)$/.exec(w);
+      if (url) {
+        out.push({ text: url[1].replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''), href: url[1] });
+        if (url[2]) out.push({ text: url[2] });
+        continue;
+      }
+      out.push({ text: w });
     }
   };
   const re = /\[([^\]]+)\]\(((?:https?:\/\/|mailto:)[^)\s]+)\)/g;
