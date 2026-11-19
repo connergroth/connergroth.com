@@ -1,6 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
-import AltTellMe from '@/components/AltTellMe';
-import AltAskAi from '@/components/AltAskAi';
+import AltPrompts from '@/components/AltPrompts';
 import SEO from '../components/SEO';
 import SkyBand from '../components/SkyBand';
 import NowPlaying from '../components/NowPlaying';
@@ -125,9 +124,7 @@ export default function AltIndex() {
             so opening the field cross-fades the whole row as one thing instead
             of unmounting the link out from under it. */}
         <div style={at(4 + PROJECTS.length)} className="reveal mt-4 text-[0.94rem] leading-[1.75]">
-          <AltTellMe>
-            <AltAskAi />
-          </AltTellMe>
+          <AltPrompts />
         </div>
 
         <div style={at(5 + PROJECTS.length)} className="reveal">
