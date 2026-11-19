@@ -140,6 +140,7 @@ interface Weather {
   slant: number;                      // -1..1, wind across the view, + blows left to right
   wind: number;                       // 0-1 gustiness: 0 under ~20 mph gusts, 1 at ~45+
   live: boolean;                      // real (or forced) data, not the pre-fetch default
+  windKnown: boolean;                 // slant is off the network, so a cirrus can ride it without jumping when it lands
 }
 
 /* Today's sunrise/sunset at HOME, in HOME's local hours, from the NOAA solar
@@ -177,7 +178,7 @@ function sunTimes(): { sunrise: number; sunset: number } {
 /* Until the fetch lands, and for good if it fails: the sky as it was before it
    knew about weather. A few clouds, nothing falling, bare rock. */
 const FALLBACK: Weather = {
-  cloud: 25, tempF: null, falling: 'none', rate: 0, fog: false, ground: false, slant: 0.3, wind: 0, live: false,
+  cloud: 25, tempF: null, falling: 'none', rate: 0, fog: false, ground: false, slant: 0.3, wind: 0, live: false, windKnown: false,
 };
 
 /* Real lunar phase from the synodic clock — 0 = new, 0.5 = full. Anchored to
@@ -241,6 +242,7 @@ async function fetchWeather(): Promise<Weather> {
     slant: Math.min(1, Math.max(-1, across / 30)),
     wind: Math.min(1, Math.max(0, (gustMph - 20) / 25)),
     live: true,
+    windKnown: true,
   };
 }
 
@@ -275,6 +277,33 @@ function withForced(w: Weather): Weather {
 
 /* Snow shows on the ridge when it's lying there or actively coming down. */
 const snowy = (w: Weather) => w.ground || w.falling === 'snow';
+
+/* The ambient layer, so a calm clear sky still has something alive in it. Per
+   time of day, one thing you'd notice moving plus at most one quiet one:
+     day    a hawk circling over the ridge, under a cirrus wisp on the real wind
+     dusk   a small flock heading in toward the ridge; stars come out one by one
+     night  a shooting star every 20-40s, over a few stars twinkling
+   Rain or snow is the motion when it's falling, so the layer stands down.
+   Everything is a pure function of the wall clock and seeded hashes, so a
+   re-run (weather landing, resize) picks up mid-flight instead of jumping.
+     ?amb=hawk|flock|meteor   force that one in, whatever the hour or weather
+     ?amb=wisp|twinkle        just the quiet one, on its own
+     ?amb=off                 none of it
+   Reduced motion gets none of it: still stars, no birds, no meteors. */
+type Loud = 'hawk' | 'flock' | 'meteor' | '';
+type Quiet = 'wisp' | 'twinkle' | '';
+const AMB_EPOCH = Date.UTC(2026, 0, 1);   // keeps the clock's seconds small enough to hash cleanly
+function ambientFor(hour: number, { sunset }: Sky, isDay: boolean, calm: boolean, forced: string): { loud: Loud; quiet: Quiet } {
+  // dusk runs from half an hour before sunset to a bit over an hour after
+  const sinceSet = (((hour - sunset) % 24) + 24) % 24;
+  const tod = sinceSet >= 23.5 || sinceSet < 1.2 ? 'dusk' : isDay ? 'day' : 'night';
+  let loud: Loud = !calm ? '' : tod === 'day' ? 'hawk' : tod === 'dusk' ? 'flock' : 'meteor';
+  let quiet: Quiet = !calm ? '' : tod === 'day' ? 'wisp' : tod === 'night' ? 'twinkle' : '';
+  if (forced === 'hawk' || forced === 'flock' || forced === 'meteor') loud = forced;
+  else if (forced === 'wisp' || forced === 'twinkle') { loud = ''; quiet = forced; }
+  else if (forced === 'off') { loud = ''; quiet = ''; }
+  return { loud, quiet };
+}
 
 /* The line under the band. Just the place until there's something real to say. */
 function captionFor(w: Weather): string {
@@ -440,7 +469,11 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const SCALE = 2;                       // draw at half res, upscale hard
     let w = 0, h = 0, img: ImageData | null = null, noise: Float32Array | null = null;
-    let starAt: Set<number> = new Set();
+    // pixel index → that star's own seeded 0-1 (its turn at dusk, its twinkle schedule)
+    let starAt: Map<number, number> = new Map();
+    const forcedAmb = new URLSearchParams(window.location.search).get('amb') ?? '';
+    // this run is the one the weather just landed on; the wisp fades in from here
+    const ranAt = performance.now();
     let plateAt: Uint8Array | null = null, fall: Float32Array | null = null;
     // the nearest snowflakes fall in front of the ridge — stars never do, which
     // is the surest tell between the two. their own transparent layer over the
@@ -466,14 +499,16 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       const grain = mulberry(7);
       for (let i = 0; i < noise.length; i++) noise[i] = (grain() - 0.5) * 0.22;
       // stars as a flat index set so the pixel loop stays O(1) per pixel
-      starAt = new Set();
+      starAt = new Map();
       const n = Math.round(w * h * 0.004);
       // placed as fractions of the band, so a resize keeps each star where it was
       const starRng = mulberry(1214);
+      // a stream of its own, so the positions above come out exactly as before
+      const starOrd = mulberry(1215);
       for (let i = 0; i < n; i++) {
         const sx = Math.floor(starRng() * w);
         const sy = Math.floor(starRng() * h * 0.82);
-        starAt.add(sy * w + sx);
+        starAt.set(sy * w + sx, starOrd());
       }
       // which plate each sky pixel landed on, so rain can step off it
       plateAt = new Uint8Array(w * h);
@@ -523,6 +558,25 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       const amp = 0.22 + (cloud / 100) * 0.85;   // overcast = more, heavier bands
       // stars only once the sun is actually down, and not through weather
       const stars = !isDay && falling === 'none';
+      // ...and at dusk they come out one at a time: each star's seeded order
+      // against how far past sunset it is, all of them out by 1.5h after
+      const sinceSet = (((hour - sunset) % 24) + 24) % 24;
+      const starsOut = Math.min(1, sinceSet / 1.5);
+
+      const { loud, quiet } = reduced
+        ? { loud: '' as Loud, quiet: '' as Quiet }
+        : ambientFor(hour, skyRef.current, isDay, falling === 'none', forcedAmb);
+      const at = (Date.now() - AMB_EPOCH) / 1000;   // the ambient clock, s
+      // twinkle: every 12s each star has a ~1-in-3 chance of a 1.2s flicker
+      // (dim plate, gone, dim plate, back), so a few are going at any moment
+      const TW = 12;
+      const twinkleAt = (s: number) => {
+        const tt = at + s * 1000;
+        const k = Math.floor(tt / TW);
+        if (hash(s * 1000, k) > 0.35) return 0;
+        const u = (tt - k * TW) / 1.2;
+        return u > 1 ? 0 : u < 0.3 || u > 0.7 ? 1 : 2;
+      };
       // a night with something falling is cloud-lit, not black: lift the ramp
       // so flakes fall through murk instead of sitting on a clear starry sky
       // (weighted to the top, so the horizon doesn't wash up into the light plate)
@@ -558,9 +612,40 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
         g3[y] = Math.exp(-((v - 0.70) ** 2) / 0.024);
       }
 
+      const lean = slant < 0 ? -1 : 1, across = Math.abs(slant);
+
+      // Cirrus wisp: a thin fibrous streak high up, drifting across on the real
+      // wind (faster when it's blowing harder), then a gap before the next one.
+      // It's only a small lift on the sky's value, so the dither breaks it into a
+      // sparse one-plate-lighter streak: very low alpha, in the same inks.
+      // Waits for the real wind so its place never jumps when the fetch lands.
+      let wHalf = 0, wx = 0, wy = 0, wSlope = 0, wSeed = 0, wA = 0, wy0 = 0, wy1 = -1;
+
+      if (quiet === 'wisp' && weather.windKnown) {
+        const cross = 260 - 170 * across, every = forcedAmb === 'wisp' ? cross : cross * 1.6;
+        const k = Math.floor(at / every), p = (at - k * every) / cross;
+        if (p <= 1) {
+          wHalf = w * (0.15 + 0.08 * hash(k, 1.3));
+          wx = lean > 0 ? -wHalf + (w + 2 * wHalf) * p : w + wHalf - (w + 2 * wHalf) * p;
+          wy = h * (0.1 + 0.18 * hash(k, 2.9));
+          wSlope = (hash(k, 4.1) - 0.5) * 0.08;
+          wSeed = hash(k, 5.7) * 6.28;
+          wA = 0.55 * Math.min(1, (performance.now() - ranAt) / 4000);
+          wy0 = Math.floor(wy - Math.abs(wSlope) * wHalf - 5);
+          wy1 = Math.ceil(wy + Math.abs(wSlope) * wHalf + 5);
+        }
+      }
+
       for (let y = 0; y < h; y++) {
         for (let x = 0; x < w; x++) {
           let f = base[y] + s1[x] * g1[y] + s2[x] * g2[y] + s3[x] * g3[y];
+
+          if (y >= wy0 && y <= wy1 && x >= wx - wHalf && x <= wx + wHalf) {
+            const a = (x - wx) / wHalf;                    // -1..1 along the streak
+            const off = y - wy - wSlope * (x - wx) - Math.sin(a * 2.4 + wSeed) * 1.2;
+            f += wA * (1 - a * a) * Math.exp(-(off * off) / 3)
+              * (0.6 + 0.4 * Math.sin((x - wx) * 0.45 + off * 1.3));   // the fibres
+          }
 
           const dx = x - cx, dy = y - cy;
           const d = Math.sqrt(dx * dx + dy * dy);
@@ -589,9 +674,13 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
 
           plateAt[i] = idx;
 
-          // flat star dots
-          if (stars && idx <= 1 && starAt.has(i)) {
-            r = pal[3][0]; g = pal[3][1]; b = pal[3][2];
+          // flat star dots; a twinkling one steps down a plate, then out, then back
+          if (stars && idx <= 1) {
+            const s = starAt.get(i);
+            if (s !== undefined && s < starsOut) {
+              const tw = quiet === 'twinkle' ? twinkleAt(s) : 0;
+              if (tw < 2) { const c = pal[tw === 0 ? 3 : 2]; r = c[0]; g = c[1]; b = c[2]; }
+            }
           }
 
           const o = i * 4;
@@ -600,7 +689,6 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       }
 
       const t = reduced ? 0 : tMs / 1000;
-      const lean = slant < 0 ? -1 : 1, across = Math.abs(slant);
 
       // Gusts shove whatever's falling sideways: every few seconds a ~0.9s
       // burst of extra travel. It's the running total of those bursts, so it's
@@ -743,6 +831,88 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
               const i = yy * w + x, c = pal[plateAt[i] < 3 ? plateAt[i] + 1 : 2], o = i * 4;
               data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
             }
+          }
+        }
+      }
+
+      // Birds are inked in the ridge's own shadow plate, the darkest ink in the
+      // print. They go into the sky buffer, so the ridge canvas covers them
+      // wherever they dip below its line.
+      const ink = ridgePaletteAt(hour, skyRef.current, false)[0];
+      const dot = (x: number, y: number, c: Palette[number]) => {
+        if (x < 0 || x >= w || y < 0 || y >= h) return;
+        const o = (y * w + x) * 4;
+        data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
+      };
+
+      // Hawk: wide thermal circles (seen at a slant, so an ellipse) around a
+      // centre that drifts across in ~2 min; as one leaves, the next comes in.
+      // Three pixels, a shallow V that banks toward the middle of its circle at
+      // the turns and flattens out on the straights.
+      if (loud === 'hawk') {
+        const every = 110, k = Math.floor(at / every), p = at / every - k;
+        const dir = hash(k, 7.7) < 0.5 ? -1 : 1, spin = hash(k, 9.9) < 0.5 ? 1 : -1;
+        const R = Math.max(6, Math.min(18, h * 0.22));
+        const span = w + 4 * R;
+        const ox = dir > 0 ? -2 * R + span * p : w + 2 * R - span * p;
+        const oy = h * (0.2 + 0.12 * hash(k, 8.1)) + Math.sin(at * 0.07 + k) * h * 0.03;
+        const th = spin * at * 2 * Math.PI / (13 + 4 * hash(k, 9.2)) + 6.28 * hash(k, 3.4);
+        const hx = Math.round(ox + R * Math.cos(th)), hy = Math.round(oy + R * 0.32 * Math.sin(th));
+        const tilt = Math.cos(th);                       // + at the right of the loop: left wing low
+        dot(hx, hy, ink);
+        dot(hx - 1, hy - (tilt > 0.45 ? 0 : 1), ink);
+        dot(hx + 1, hy - (tilt < -0.45 ? 0 : 1), ink);
+      }
+
+      // Flock: every so often 4-7 birds in a loose V or a ragged line come in
+      // off one edge and glide down toward the ridge, closing up and
+      // shrinking to single pixels as they go, the stragglers dropping out
+      // last. Wingbeats flick each bird between 2px (wings out) and 1px.
+      if (loud === 'flock') {
+        const fly = 18, every = forcedAmb === 'flock' ? fly + 2 : 42;
+        const k = Math.floor(at / every);
+        const age = (at - k * every - (forcedAmb === 'flock' ? 0 : hash(k, 1.1) * (every - fly))) / fly;
+        if (age >= 0 && age <= 1) {
+          const n = 4 + Math.floor(hash(k, 2.2) * 4);
+          const dir = hash(k, 3.3) < 0.5 ? -1 : 1, vee = hash(k, 4.4) < 0.55;
+          const lx = (dir > 0 ? -8 : w + 8) + dir * w * (0.6 + 0.3 * hash(k, 5.5)) * age;
+          // in the afterglow band, where the dark ink reads, not the near-night top
+          const y0 = h * (0.26 + 0.12 * hash(k, 6.6)), y1 = h * 0.76;
+          const ly = y0 + (y1 - y0) * age * age;
+          const near = 1 - age, gap = 2 + 2.2 * near;
+          for (let j = 0; j < n; j++) {
+            if (age > 0.7 && hash(k, j + 0.9) < (age - 0.7) / 0.3) continue;
+            const rank = vee ? Math.ceil(j / 2) : j, side = j % 2 ? -1 : 1;
+            const bx = Math.round(lx - dir * rank * gap * (vee ? 1 : 1.1) + Math.sin(at * 0.7 + j * 2.1) * 0.6);
+            const by = Math.round(ly + (vee ? side * rank * gap * 0.55 : (hash(k, j + 0.5) - 0.5) * gap * 1.2 + j * 0.3)
+              + Math.sin(at * 0.9 + j * 1.3) * 0.5);
+            dot(bx, by, ink);
+            if (near > 0.35 && Math.sin(at * 2 * Math.PI * (2.6 + 0.6 * hash(k, j)) + j) > 0) dot(bx + 1, by, ink);
+          }
+        }
+      }
+
+      // Shooting star: one every 20-40s (every 3s when forced), a bright head
+      // with a dithered tail crossing a small patch of sky in under a second,
+      // dithering out as it burns up. Passes behind the moon.
+      if (loud === 'meteor') {
+        const every = forcedAmb === 'meteor' ? 3 : 30;
+        const k = Math.floor(at / every);
+        const dur = 0.45 + 0.3 * hash(k, 2.3);
+        const age = (at - k * every - (forcedAmb === 'meteor' ? 0 : hash(k, 1.7) * 10)) / dur;
+        if (age >= 0 && age <= 1) {
+          const x0 = w * (0.1 + 0.8 * hash(k, 3.1)), y0 = h * (0.04 + 0.3 * hash(k, 4.2));
+          const ang = 0.35 + 0.45 * hash(k, 6.4), dir = hash(k, 5.3) < 0.5 ? -1 : 1;
+          const ux = dir * Math.cos(ang), uy = Math.sin(ang);
+          const head = Math.min(w * 0.18, 26 + 16 * hash(k, 7.5)) * age;
+          const tail = Math.min(13, head), fade = age > 0.7 ? (age - 0.7) / 0.3 : 0;
+          for (let s = 0; s <= tail; s += 0.5) {
+            const x = Math.floor(x0 + ux * (head - s)), y = Math.floor(y0 + uy * (head - s));
+            const q = tail > 0 ? s / tail : 0;
+            // solid up front, dithering out down the back half (and all of it as it burns out)
+            if (Math.max(0, q - 0.45) * 2.2 + fade * 1.2 > BAYER[(y & 3) * 4 + (x & 3)] + 0.5 + (s < 1 ? 0.6 : 0)) continue;
+            if ((x - cx) ** 2 + (y - cy) ** 2 < rad * rad) continue;
+            dot(x, y, pal[q < 0.55 ? 3 : 2]);
           }
         }
       }
