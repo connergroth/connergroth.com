@@ -983,16 +983,9 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
               if (y === forkY && seed === 0) forkX = x;
             }
           };
-          const y0 = Math.round(h * 0.12), forkY = Math.round(h * (0.42 + 0.2 * hash(k, 6.6)));
+          const y0 = Math.round(h * 0.06), forkY = Math.round(h * (0.25 + 0.2 * hash(k, 6.6)));
           let forkX = -1;
-          // lightning finds high ground: of three places it could come down,
-          // it takes the one where the ridge stands tallest
-          let sx = 0, best = 1e9;
-          for (let c = 0; c < 3; c++) {
-            const x = Math.min(w - 1, Math.round(w * (0.08 + 0.84 * hash(k, 3.3 + c))));
-            if (skyl[x] < best) { best = skyl[x]; sx = x; }
-          }
-          walk(sx + Math.round((hash(k, 2.7) - 0.5) * h * 0.3), y0, h, 0, h > 70);
+          walk(Math.round(w * (0.08 + 0.84 * hash(k, 3.3))), y0, h, 0, h > 70);
           if (forkX >= 0) walk(forkX, forkY, Math.min(h, forkY + Math.round(h * 0.28)), 17, false);
         }
       }
