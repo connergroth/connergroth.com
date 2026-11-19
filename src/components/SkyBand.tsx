@@ -445,11 +445,27 @@ let ridgeLine: Float32Array | null = null;
 
 function Ridge({ snow, sky }: { snow: boolean; sky: Sky }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
-  const snowRef = useRef(snow);
+  // 0 bare rock … 1 snowed over. Right from the first frame if it's already
+  // known; when the weather lands with snow (or it melts) the plates cross
+  // over about a second instead of swapping in one frame.
+  const mixRef = useRef(snow ? 1 : 0);
   const paintRef = useRef<(() => void) | null>(null);
 
-  // snow arriving (or melting) repaints now instead of on the next 1s tick
-  useEffect(() => { snowRef.current = snow; paintRef.current?.(); }, [snow]);
+  useEffect(() => {
+    const to = snow ? 1 : 0, from = mixRef.current;
+    if (from === to) return;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const t0 = performance.now();
+    let raf = 0;
+    const step = () => {
+      const k = still ? 1 : Math.min(1, (performance.now() - t0) / 1200);
+      mixRef.current = from + (to - from) * k;
+      paintRef.current?.();
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    step();
+    return () => cancelAnimationFrame(raf);
+  }, [snow]);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -500,7 +516,10 @@ function Ridge({ snow, sky }: { snow: boolean; sky: Sky }) {
 
       let lastKey = '';
       const paint = () => {
-        const pal = ridgePaletteAt(homeHour(), sky, snowRef.current);
+        const hr = homeHour(), m = mixRef.current;
+        const bare = ridgePaletteAt(hr, sky, false), white = ridgePaletteAt(hr, sky, true);
+        const pal = m <= 0 ? bare : m >= 1 ? white
+          : bare.map((c, i) => c.map((v, k) => Math.round(v + (white[i][k] - v) * m))) as Palette;
         const key = pal.join('|');
         if (key === lastKey) return;
         lastKey = key;
@@ -547,12 +566,16 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
   const frontRef = useRef<HTMLCanvasElement | null>(null);
   const skyRef = useRef<Sky>(sunTimes());
   const [weather, setWeather] = useState<Weather>(() => withForced(FALLBACK));
+  // what the sky is showing right now of the things that would otherwise snap
+  // when the weather lands; each frame walks them toward the real figures
+  const easeRef = useRef<{ closed: number; wet: number; murk: number; cloud: number; t: number } | null>(null);
 
   useEffect(() => {
     let alive = true;
     fetchWeather()
       .then((w) => { if (alive) setWeather(withForced(w)); })
-      .catch(() => {});
+      // no weather: the fallback sky is the sky, so let its clouds drift
+      .catch(() => { if (alive) setWeather((w) => ({ ...w, windKnown: true })); });
     return () => { alive = false; };
   }, []);
 
@@ -652,15 +675,41 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // the gaps beside it or the sky flattens into one slab of horizon colour.
       const horizon = h;
       const { sunrise, sunset } = skyRef.current;
-      const { cloud, falling, rate, slant, wind } = weather;
+      const { rate, slant } = weather;
+      // Nothing that moves with the wind is drawn until the real wind is in:
+      // rain, snow and gusts started on a guessed direction would swing round
+      // a beat after the page loads. They dither in once it lands instead.
+      const falling = weather.windKnown ? weather.falling : 'none';
+      const wind = weather.windKnown ? weather.wind : 0;
       const hour = homeHour();
       // how closed the sky is: blue up to broken cloud, paling through
       // mostly-cloudy, white-grey once it's overcast. Anything falling or fog
       // closes it outright.
       const shut = falling !== 'none' || weather.fog;
       const cu = shut ? 1 : Math.min(1, Math.max(0, (weather.opaque - 55) / 35));
-      const closed = cu * cu * (3 - 2 * cu);
-      const pal = paletteAt(hour, skyRef.current, closed, falling !== 'none' ? 1 : 0);
+      const sunFrac = (hour - skyRef.current.sunrise) / Math.max(0.5, skyRef.current.sunset - skyRef.current.sunrise);
+      const want = {
+        closed: cu * cu * (3 - 2 * cu),
+        wet: falling !== 'none' ? 1 : 0,
+        // a night with something falling is cloud-lit, not black (used below)
+        murk: (sunFrac < 0 || sunFrac > 1) && falling !== 'none' ? 0.6 * (weather.cloud / 100) : 0,
+        cloud: weather.cloud,
+      };
+      // the sky's colour and banding walk to the real figures over most of a
+      // second instead of jumping the frame the weather lands
+      const nowMs = performance.now();
+      let ez = easeRef.current;
+      if (!ez || reduced) ez = easeRef.current = { ...want, t: nowMs };
+      else {
+        const step = Math.min(1, (nowMs - ez.t) / 900);
+        const walk = (v: number, to: number, full: number) => v + Math.max(-step * full, Math.min(step * full, to - v));
+        ez = easeRef.current = {
+          closed: walk(ez.closed, want.closed, 1), wet: walk(ez.wet, want.wet, 1),
+          murk: walk(ez.murk, want.murk, 0.6), cloud: walk(ez.cloud, want.cloud, 100), t: nowMs,
+        };
+      }
+      const closed = ez.closed, cloud = ez.cloud;
+      const pal = paletteAt(hour, skyRef.current, closed, ez.wet);
       const data = img.data;
       // the layer in front of the ridge, wiped every frame
       const fd = frontImg ? frontImg.data : null;
@@ -691,7 +740,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       const phase = reduced ? 0 : (tMs / 1000) * 0.055;
       const amp = 0.22 + (cloud / 100) * 0.85;   // overcast = more, heavier bands
       // stars only once the sun is actually down, and not through weather
-      const stars = !isDay && falling === 'none';
+      const stars = !isDay && closed < 1;
       // ...and at dusk they come out one at a time: each star's seeded order
       // against how far past sunset it is, all of them out by 1.5h after
       const sinceSet = (((hour - sunset) % 24) + 24) % 24;
@@ -717,7 +766,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // a night with something falling is cloud-lit, not black: lift the ramp
       // so flakes fall through murk instead of sitting on a clear starry sky
       // (weighted to the top, so the horizon doesn't wash up into the light plate)
-      const murk = !isDay && falling !== 'none' ? 0.6 * (cloud / 100) : 0;
+      const murk = ez.murk;
 
       // the real moon tonight: which side is lit and how much. cos(2πp) is the
       // terminator's projected half-width — +1 new, 0 quarter, −1 full. waxing
@@ -814,7 +863,8 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
           // flat star dots; a twinkling one steps down a plate, then out, then back
           if (stars && idx <= 1) {
             const s = starAt.get(i);
-            if (s !== undefined && s < starsOut) {
+            // a closing sky takes them a few at a time, same order they came out in
+            if (s !== undefined && s < starsOut * (1 - closed)) {
               const tw = quiet === 'twinkle' ? twinkleAt(s) : 0;
               const c = pal[tw === 0 ? 3 : 2]; r = c[0]; g = c[1]; b = c[2];
             }
@@ -1058,7 +1108,8 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // particle's place is a pure function of the clock (no state to step), so
       // reduced motion is just the clock held at zero: a still, sparser field.
       if (falling !== 'none') {
-        const count = Math.round((fall.length / 4) * rate * (reduced ? 0.5 : 1));
+        // thickens in over a second from the moment the weather landed
+        const count = Math.round((fall.length / 4) * rate * (reduced ? 0.5 : Math.min(1, (performance.now() - ranAt) / 1100)));
         // a flake pixel: the lightest plate, or a dim one on the third plate
         // (the second where the sky already is the third) — on the dark night
         // plates a one-step shift would vanish
@@ -1323,7 +1374,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
 
     resize();
     measure();
-    draw(0);
+    draw(performance.now());
     if (!reduced) raf = requestAnimationFrame(loop);
 
     const ro = new ResizeObserver(() => { resize(); measure(); draw(performance.now()); });
