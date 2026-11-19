@@ -507,6 +507,8 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
     let w = 0, h = 0, img: ImageData | null = null, noise: Float32Array | null = null;
     // pixel index → that star's own seeded 0-1 (its turn at dusk, its twinkle schedule)
     let starAt: Map<number, number> = new Map();
+    // the stars high enough to be clear of the ridge: the only ones that sparkle
+    let glints: number[] = [];
     const forcedAmb = new URLSearchParams(window.location.search).get('amb') ?? '';
     // this run is the one the weather just landed on; the wisp fades in from here
     const ranAt = performance.now();
@@ -536,6 +538,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       for (let i = 0; i < noise.length; i++) noise[i] = (grain() - 0.5) * 0.22;
       // stars as a flat index set so the pixel loop stays O(1) per pixel
       starAt = new Map();
+      glints = [];
       const n = Math.round(w * h * 0.004);
       // placed as fractions of the band, so a resize keeps each star where it was
       const starRng = mulberry(1214);
@@ -545,6 +548,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
         const sx = Math.floor(starRng() * w);
         const sy = Math.floor(starRng() * h * 0.82);
         starAt.set(sy * w + sx, starOrd());
+        if (sy < h * 0.5) glints.push(sy * w + sx);
       }
       // which plate each sky pixel landed on, so rain can step off it
       plateAt = new Uint8Array(w * h);
@@ -603,25 +607,18 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
         ? { loud: '' as Loud, quiet: '' as Quiet }
         : ambientFor(hour, skyRef.current, isDay, falling === 'none', forcedAmb);
       const at = (Date.now() - AMB_EPOCH) / 1000;   // the ambient clock, s
-      // twinkle, two layers. the field: every 7s each star has a ~1-in-4 chance
-      // of dipping to the dim plate for a beat, so the whole sky shimmers softly.
-      // the sparkles: a few stars at a time flare into a cool-white pixel cross
-      // that grows its arms and pulls them back in (drawn after the sky, below).
-      const TW = 7, SP = 5, SPD = 1.5;
+      // twinkle, kept calm. the field: every 7s each star has a ~1-in-30 chance
+      // of dipping to the dim plate for a beat, a rare flicker rather than a
+      // shimmer. the sparkles: two slots on their own slow cycles, each picking
+      // one star to flare into a cool-white pixel cross, so there are never
+      // more than two going and usually one or none (drawn after the sky, below).
+      const TW = 7;
       const twinkleAt = (s: number) => {
         const tt = at + s * 1000;
         const k = Math.floor(tt / TW);
-        if (hash(s * 1000, k) > 0.18) return 0;
+        if (hash(s * 1000, k) > 0.035) return 0;
         const u = (tt - k * TW) / 0.5;
         return u > 1 ? 0 : 1;
-      };
-      // 0-1 flare strength for a star right now, 0 when it isn't sparkling
-      const sparkleAt = (s: number) => {
-        const tt = at + s * 977;
-        const k = Math.floor(tt / SP);
-        if (hash(s * 733, k) > 0.06) return 0;
-        const u = (tt - k * SP) / SPD;
-        return u > 1 ? 0 : Math.sin(Math.PI * u);
       };
       // a night with something falling is cloud-lit, not black: lift the ramp
       // so flakes fall through murk instead of sitting on a clear starry sky
@@ -743,7 +740,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // jumps when the fetch lands.
       if (weather.windKnown && forcedAmb !== 'off') {
         const over = cloud >= 85;
-        const perBand = cloud < 25 ? 2 : cloud < 60 ? 4 : over ? 30 : 8;
+        const perBand = cloud < 25 ? 2 : cloud < 60 ? 4 : 8;
         const n = Math.round(perBand * Math.max(1, w / 240));
         const lit = pal[isDay || sinceSet < 1.2 || sinceSet > 23 ? 3 : 2];
         const shade = pal[isDay || sinceSet < 1.2 || sinceSet > 23 ? 2 : 1];
@@ -751,15 +748,67 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
         const fadeIn = Math.min(1, (performance.now() - ranAt) / 1500);
         const atc = reduced ? 0 : at;
         const m = h * 1.2, span = w + 2 * m;
+        // Overcast is one merged deck, not a crowd of separate clouds: three
+        // continuous banks stacked back to front, each a run of overlapping
+        // puffs sharing a single base and a single belly shadow, so the tops
+        // of the nearer bank billow up over the shadow of the one behind. The
+        // back bank runs off the top of the band and breaks now and then to
+        // let a little blue through.
+        if (over) {
+          const top = new Float32Array(w), bot = new Float32Array(w);
+          const ROWS = [
+            { base: 0.33, R: 0.36, gap: 0.08, sp: 0.55 },
+            { base: 0.63, R: 0.21, gap: 0, sp: 0.75 },
+            { base: 0.90, R: 0.19, gap: 0, sp: 1 },
+          ];
+          for (let r = 0; r < ROWS.length; r++) {
+            const row = ROWS[r];
+            const R = Math.max(3, h * row.R), baseY = h * row.base;
+            const m2 = R * 2, span2 = w + 2 * m2;
+            const nr = Math.max(4, Math.round(span2 / (R * 0.8)));
+            const drift = lean * (1.5 + 5 * across) * row.sp * (h / 60) * atc;
+            top.fill(1e9); bot.fill(-1);
+            for (let k = 0; k < nr; k++) {
+              // a break in the bank: a couple of neighbours sit out together
+              if (row.gap > 0 && hash(Math.floor(k / 2), r + 7.7) < row.gap) continue;
+              const pr = R * (0.6 + 0.75 * hash(k, r + 1.1));
+              const raw = ((k + (hash(k, r + 2.2) - 0.5) * 0.5) / nr) * span2 + drift;
+              const pcx = ((raw % span2) + span2) % span2 - m2;
+              // the shared base rolls a little along the bank
+              const by = baseY + R * (0.28 * Math.sin((k / nr) * 6.283 * 2 + r * 2.1) + 0.14 * Math.sin((k / nr) * 6.283 * 5 + r * 4.3));
+              const pcy = by - pr * 0.15;
+              const xa = Math.max(0, Math.ceil(pcx - pr)), xb = Math.min(w - 1, Math.floor(pcx + pr));
+              for (let x = xa; x <= xb; x++) {
+                const dxp = x - pcx, rise = Math.sqrt(pr * pr - dxp * dxp);
+                if (pcy - rise < top[x]) top[x] = pcy - rise;
+                const low = Math.min(by, pcy + rise);
+                if (low > bot[x]) bot[x] = low;
+              }
+            }
+            for (let x = 0; x < w; x++) {
+              if (bot[x] < 0) continue;
+              const yb = Math.min(h - 1, Math.round(bot[x]));
+              for (let y = Math.max(0, Math.round(top[x])); y <= yb; y++) {
+                const bay = BAYER[(y & 3) * 4 + (x & 3)];
+                if (fadeIn < 1 && fadeIn < bay + 0.5) continue;
+                const up = (bot[x] - y) / (R * 0.95);
+                const dark = up < 0.5 + bay * 0.6;
+                const c = dark ? shade : lit, i2 = y * w + x, o = i2 * 4;
+                data[o] = c[0]; data[o + 1] = c[1]; data[o + 2] = c[2];
+                plateAt[i2] = dark ? litIdx - 1 : litIdx;
+              }
+            }
+          }
+        } else
         for (let j = 0; j < n; j++) {
-          const sz = (over ? 1.7 : 1) * (0.65 + 0.75 * hash(j, 1.1));
+          const sz = 0.65 + 0.75 * hash(j, 1.1);
           const R = Math.max(3, h * 0.085 * sz);
           const np = 3 + Math.floor(hash(j, 2.2) * 3);
           const speed = (1.5 + 5 * across) * (0.5 + 0.5 * sz) * (h / 60);
           // spread evenly along the band, then jittered, so they never all bunch up
           const raw = ((j * 0.618034) % 1 + (hash(j, 5.5) - 0.5) * 0.12) * span + lean * speed * atc;
           const ccx = ((raw % span) + span) % span - m;
-          const by = Math.round(h * (over ? 0.12 + 0.8 * hash(j, 6.6) : 0.2 + 0.34 * hash(j, 6.6)));
+          const by = Math.round(h * (0.2 + 0.34 * hash(j, 6.6)));
           const pxs: number[] = [], pys: number[] = [], prs: number[] = [];
           let half = 0, top = by;
           for (let i = 0; i < np; i++) {
@@ -1016,9 +1065,14 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       // light-blue cross grows out one pixel, then two (the outer tips a deeper
       // blue), and folds back in. Skips anything near the moon.
       if (quiet === 'twinkle' && stars) {
-        for (const [i, s] of starAt) {
-          if (s >= starsOut) continue;
-          const f = sparkleAt(s);
+        const SLOTS = [[4.6, 0], [7.3, 2.9]], SPD = 1.8;
+        for (let sl = 0; sl < SLOTS.length && glints.length; sl++) {
+          const tt = at + SLOTS[sl][1], k = Math.floor(tt / SLOTS[sl][0]);
+          const u = (tt - k * SLOTS[sl][0]) / SPD;
+          if (u > 1) continue;
+          const i = glints[Math.floor(hash(sl + 0.5, k) * glints.length) % glints.length];
+          if ((starAt.get(i) ?? 1) >= starsOut || plateAt[i] > 1) continue;
+          const f = Math.sin(Math.PI * u);
           if (f < 0.12) continue;
           const x = i % w, y = (i / w) | 0;
           if ((x - cx) ** 2 + (y - cy) ** 2 < (rad + 4) ** 2) continue;
