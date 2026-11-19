@@ -62,25 +62,23 @@ function lerpKeys(keys: { h: number; p: Palette }[], hour: number): Palette {
   ) as Palette;
 }
 
-/* Snow on the ridge: the same plate swap with two plates changed. The sunlit
-   face goes to snow and the rock goes partway to a cold pale (dusted, not
-   buried); trees and shadow keep their ink. One [rock, face] pair per
-   RIDGE_KEYS entry, so the snow is lit by the same clock as everything else —
-   at night it's moonlit blue-grey, never white. */
-const RIDGE_SNOW: [Palette[number], Palette[number]][] = [
-  [[76, 84, 112], [148, 162, 198]],    // night
-  [[164, 146, 152], [226, 216, 224]],  // dawn
-  [[204, 190, 184], [240, 242, 244]],  // morning
-  [[204, 194, 192], [236, 241, 248]],  // midday — a shade under the page's paper, so the band keeps its bottom edge
-  [[218, 182, 156], [255, 242, 218]],  // golden
-  [[150, 110, 120], [228, 180, 166]],  // dusk — alpenglow on the snow
-  [[76, 84, 112], [148, 162, 198]],    // night
-  [[76, 84, 112], [148, 162, 198]],
+/* Snow on the ridge: the same plate swap, all four plates. Off real photos of
+   the Flatirons under snow: nothing stays warm. The slabs go white, the rock
+   between them a pale blue, the frosted pines slate blue instead of green,
+   and the shadows deep navy, so the whole ridge reads blue and white against
+   the sky. One palette per RIDGE_KEYS entry, so the snow is lit by the same
+   clock as everything else: moonlit blue-grey at night, never white. */
+const RIDGE_SNOW: Palette[] = [
+  [[10, 12, 24], [22, 30, 52], [62, 74, 108], [148, 162, 198]],     // night
+  [[24, 26, 44], [54, 64, 94], [138, 144, 176], [226, 216, 224]],   // dawn
+  [[28, 36, 60], [66, 86, 120], [160, 180, 212], [240, 242, 246]],  // morning
+  [[28, 38, 62], [68, 90, 124], [158, 180, 212], [236, 241, 248]],  // midday — a shade under the page's paper, so the band keeps its bottom edge
+  [[28, 32, 56], [66, 78, 110], [170, 170, 196], [255, 242, 218]],  // golden
+  [[20, 18, 40], [44, 48, 82], [114, 104, 144], [228, 180, 166]],   // dusk — alpenglow on the snow
+  [[10, 12, 24], [22, 30, 52], [62, 74, 108], [148, 162, 198]],     // night
+  [[10, 12, 24], [22, 30, 52], [62, 74, 108], [148, 162, 198]],
 ];
-const RIDGE_SNOW_KEYS = RIDGE_KEYS.map((k, i) => ({
-  h: k.h,
-  p: [k.p[0], k.p[1], RIDGE_SNOW[i][0], RIDGE_SNOW[i][1]] as Palette,
-}));
+const RIDGE_SNOW_KEYS = RIDGE_KEYS.map((k, i) => ({ h: k.h, p: RIDGE_SNOW[i] }));
 
 /* The keyframe hours above are a midsummer day (sunrise ~6:10, sunset ~7:55).
    Each one is really tied to the sun — dawn an hour before sunrise, dusk on
