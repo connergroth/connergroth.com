@@ -61,11 +61,19 @@
   to   { opacity: 1; transform: none; filter: none; }
 }
 
+/* A streamed answer arrives a word at a time; each word settles in the same way
+   the page's blocks do, just smaller. */
+.ask-word { animation: ask-word 480ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes ask-word {
+  from { opacity: 0; filter: blur(2px); }
+  to   { opacity: 1; filter: none; }
+}
+
 @keyframes reveal-sky {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal, .reveal-sky { animation: none; }
+  .reveal, .reveal-sky, .ask-word { animation: none; }
 }
