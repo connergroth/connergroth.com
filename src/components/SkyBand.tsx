@@ -582,7 +582,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       const twinkleAt = (s: number) => {
         const tt = at + s * 1000;
         const k = Math.floor(tt / TW);
-        if (hash(s * 1000, k) > 0.25) return 0;
+        if (hash(s * 1000, k) > 0.18) return 0;
         const u = (tt - k * TW) / 0.5;
         return u > 1 ? 0 : 1;
       };
@@ -590,7 +590,7 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
       const sparkleAt = (s: number) => {
         const tt = at + s * 977;
         const k = Math.floor(tt / SP);
-        if (hash(s * 733, k) > 0.09) return 0;
+        if (hash(s * 733, k) > 0.06) return 0;
         const u = (tt - k * SP) / SPD;
         return u > 1 ? 0 : Math.sin(Math.PI * u);
       };
