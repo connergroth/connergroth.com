@@ -1,4 +1,7 @@
-export const config = { runtime: 'edge' };
+// Pinned east: from Vercel's sfo1 edge the call to Open-Meteo hangs until it
+// times out, while iad1 gets an answer in well under a second. The response is
+// cached at every edge, so where it runs only matters on a refresh.
+export const config = { runtime: 'edge', regions: ['iad1'] };
 
 /* Boulder's current weather for the header sky, fetched here so every visitor
    gets a copy that's already sitting at the edge instead of waiting on their
