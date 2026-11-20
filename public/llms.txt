@@ -9,6 +9,7 @@
 
 - Software Engineer Intern at **Apple** — Screen Time, Test Engineering (May–Aug 2026, San Diego). Built an agentic system that generates, runs, and repairs XCTests from manual test plans until they pass.
 - B.S. Computer Science, Business minor at the **University of Colorado Boulder** — expected May 2027.
+- AI Engineer at **OptiCommerceAI** (remote, Sep 2026 – present), building production voice agents and client software.
 - Undergraduate researcher at the **Genetic Logic Lab** at CU Boulder (https://geneticlogiclab.org), May 2025 – present.
 - Runs **Lucence Labs** (https://lucence.so), his studio building custom AI software for small businesses: voice agents, automations and small apps.
 - Based in Boulder, CO.
@@ -35,21 +36,27 @@ something people depend on.
 - Shipped 200+ generated cases into Screen Time's regression suite, covering feature areas with no prior automation and cutting each manual pass from a full-time engineer to ~30 minutes of triage.
 - Implemented a persistent knowledge layer that reuses verified UI hierarchies and captures step-level failure traces; merged into the team's daily automation and adopted by 5+ engineers.
 
+### OptiCommerceAI — AI Engineer
+**Sep 2026 – Present · Remote**
+
+- Client-facing engineer across 6 accounts in retail, home services, healthcare and e-commerce, scoping builds on calls with client owners and shipping production voice-agent services and a marketplace launch.
+- Took over a 35+-location med spa's outbound speed-to-lead voice agent (CRM write-back, live pricing lookup, sales-team transfers) under HIPAA, tuning it for booked transfers as it scales ~10x to full rollout.
+- Hardened a live auction marketplace (Next.js, Postgres, Stripe) for launch: break-tested bidding and payments as buyer and admin, caught a double-charge race, and shipped 5 production fixes.
+
+### IM — Founding Software Engineer
+**Conversational voice AI for older adults · Oct 2025 – Mar 2026 · Boulder, CO**
+
+- Built the MVP as first engineer: a real-time voice agent on ElevenLabs, sub-second across 5,000+ sessions.
+- Shipped ETL pipelines turning raw call transcripts into structured, queryable analytics datasets.
+- Hand-wrote the memory and steering layers: RAG over user memories plus mid-call instruction injection.
+
 ### Genetic Logic Lab, CU Boulder — Undergraduate Researcher
 **Synthetic biology tooling · May 2025 – Present · Boulder, CO**
 
-- Lead full-stack developer on SeqImprove, an AI-assisted synthetic-bio curation tool adopted by 3 research labs.
-- Designed and implemented a multi-algorithm sequence hashing system, reducing annotation time by 75%.
-- Engineered backend APIs and data models supporting cross-platform integration of biological sequence workflows.
+- Lead full-stack developer on SeqImprove, a React/Flask synthetic-bio curation tool adopted by 3 research labs.
+- Shipped the cross-repo SeqImprove–SynBioSuite integration, making the tool a live part of the lab's design suite.
+- Designed and implemented a multi-algorithm sequence hashing system, cutting annotation time by 75%.
 - Research publications in progress — links will be added here as they're published.
-
-### IM — Founding Software Engineer
-**AI messaging platform · Oct 2025 – Mar 2026 · Boulder, CO**
-
-- First engineer on the team; built the MVP.
-- Designed and shipped a real-time conversational backend handling 5,000+ sessions with sub-second responses.
-- Shipped ETL pipelines transforming unstructured conversation data into structured analytics datasets.
-- Built the vector retrieval and Redis caching layer that let conversations resume with prior context instead of cold.
 
 ### Sorcea Labs — Software Engineer Intern
 **Remote · Sep 2025 – Dec 2025**
@@ -93,9 +100,9 @@ adopted by 3 research labs.
 ## Technical Skills
 
 **Languages:** Python, TypeScript, JavaScript, Swift, C++, SQL
-**AI / backend:** Claude Agent SDK, tool-using agents, PyTorch, FastAPI, PostgreSQL, Redis, pgvector, retrieval-augmented generation
+**AI / backend:** Claude Agent SDK, tool-using agents, voice agents (ElevenLabs), PyTorch, FastAPI, Flask, PostgreSQL, Redis, pgvector, retrieval-augmented generation
 **Dev / test infra:** SwiftUI, XCTest, Xcode, Docker, AWS (Lambda, S3, DynamoDB, SageMaker), CI/CD, Git, Sentry
-**Web:** React, Node.js, REST and RPC design
+**Web:** React, Next.js, Node.js, Supabase, Stripe, REST and RPC design
 
 ## Interests
 
