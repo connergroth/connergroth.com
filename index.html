@@ -17,7 +17,9 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Conner Groth" />
     <meta property="og:description" content="Software engineer and CS student at CU Boulder, most recently SWE at Apple on the Screen Time team." />
-    <meta property="og:image" content="/assets/images/favicon.png?v=3" />
+    <meta property="og:url" content="https://www.connergroth.com/" />
+    <meta property="og:site_name" content="Conner Groth" />
+    <meta property="og:image" content="https://www.connergroth.com/assets/images/favicon.png?v=3" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary" />
@@ -33,12 +35,79 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 
     <link rel="alternate" type="text/markdown" href="/llms.txt" title="LLM-readable profile" />
+    <link rel="canonical" href="https://www.connergroth.com/" />
     <title>Conner Groth</title>
     <meta name="author" content="Conner Groth" />
+
+    <!-- Who this page is about, in the form search engines read. Facts only, and
+         only ones already on the page. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://www.connergroth.com/#site",
+          "url": "https://www.connergroth.com/",
+          "name": "Conner Groth"
+        },
+        {
+          "@type": "ProfilePage",
+          "@id": "https://www.connergroth.com/#page",
+          "url": "https://www.connergroth.com/",
+          "name": "Conner Groth",
+          "isPartOf": { "@id": "https://www.connergroth.com/#site" },
+          "mainEntity": { "@id": "https://www.connergroth.com/#conner" }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://www.connergroth.com/#conner",
+          "name": "Conner Groth",
+          "url": "https://www.connergroth.com/",
+          "jobTitle": "Software Engineer",
+          "description": "Software engineer and CS student at CU Boulder, graduating May 2027. Most recently a software engineering intern at Apple on the Screen Time team.",
+          "homeLocation": { "@type": "Place", "name": "Boulder, Colorado" },
+          "affiliation": {
+            "@type": "CollegeOrUniversity",
+            "name": "University of Colorado Boulder",
+            "url": "https://www.colorado.edu/"
+          },
+          "sameAs": [
+            "https://github.com/connergroth",
+            "https://linkedin.com/in/connergroth",
+            "https://x.com/connermgroth"
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
 
   <body style="background-color:#FBFBFA">
     <div id="root"></div>
+    <!-- The page is drawn by script. This is the same page in plain HTML for
+         anything that doesn't run it: a browser with scripts off, a crawler that
+         only reads the source. Keep it word for word with src/pages/Index.tsx. -->
+    <noscript>
+      <main style="max-width:520px;margin:0 auto;padding:40px 24px 96px;font-family:Inter,system-ui,sans-serif;font-size:15px;line-height:1.75;color:#44403c">
+        <h1 style="font-family:'Crimson Pro',Georgia,serif;font-size:25px;font-weight:500;color:#1c1917;margin:0">Conner Groth</h1>
+        <p>I&rsquo;m a software engineer and CS student at CU Boulder, graduating May 2027. Most recently I was at Apple on the Screen Time team, where I built agents that turn feature specs into passing tests.</p>
+        <p>A few things I&rsquo;ve built:</p>
+        <ul>
+          <li><a href="https://github.com/connergroth/fig">Fig</a> &mdash; a personal agent with its own Mac, Apple ID, and phone number</li>
+          <li><a href="https://usesift.app">Sift</a> &mdash; an AI iMessage assistant for school</li>
+          <li><a href="https://seqimprove.synbiohub.org">SeqImprove</a> &mdash; AI-assisted sequence annotation for synthetic biology, built at CU Boulder&rsquo;s <a href="https://geneticlogiclab.org">Genetic Logic Lab</a></li>
+          <li><a href="https://lucence.so">Lucence</a> &mdash; my studio building custom AI software for small businesses</li>
+        </ul>
+        <p>
+          <a href="https://github.com/connergroth">GitHub</a> &middot;
+          <a href="https://linkedin.com/in/connergroth">LinkedIn</a> &middot;
+          <a href="https://x.com/connermgroth">X</a> &middot;
+          <a href="mailto:conner@lucence.so">Email</a> &middot;
+          <a href="/assets/documents/Conner-Groth-Resume.pdf">Resume</a>
+        </p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

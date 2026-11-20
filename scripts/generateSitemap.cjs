@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 // Define your website URL
-const WEBSITE_URL = "https://connergroth.com";
+const WEBSITE_URL = "https://www.connergroth.com";
 
 // Get current date in YYYY-MM-DD format
 const currentDate = new Date().toISOString().split("T")[0];

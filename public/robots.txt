@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://connergroth.com/sitemap.xml 
+Sitemap: https://www.connergroth.com/sitemap.xml 

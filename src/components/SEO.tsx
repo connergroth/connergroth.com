@@ -15,8 +15,10 @@ interface SEOProps {
 const SEO: React.FC<SEOProps> = ({
   description = "Conner Groth - Software Engineer, Software Research Assistant at CU Boulder",
   keywords = "software engineer, web development, portfolio, react, frontend, CS student",
-  ogImage = "/assets/images/favicon.png",
-  ogUrl = window.location.href,
+  ogImage = "https://www.connergroth.com/assets/images/favicon.png?v=3",
+  // One fixed address, never the address bar: ?sky=noon and friends are the
+  // same page, and the site lives on www.
+  ogUrl = "https://www.connergroth.com/",
   ogType = "website",
   twitterCard = "summary_large_image",
 }) => {

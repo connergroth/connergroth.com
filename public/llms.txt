@@ -113,8 +113,8 @@ adopted by 3 research labs.
 ## Contact
 
 - Email: conner@lucence.so
-- Website: https://connergroth.com
-- Resume: https://connergroth.com/assets/documents/Conner-Groth-Resume.pdf
+- Website: https://www.connergroth.com
+- Resume: https://www.connergroth.com/assets/documents/Conner-Groth-Resume.pdf
 - GitHub: https://github.com/connergroth
 - LinkedIn: https://linkedin.com/in/connergroth
 - X / Twitter: https://x.com/connermgroth
