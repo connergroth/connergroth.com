@@ -30,7 +30,7 @@ const NOTES: Record<string, string> = {
 type Turn = { q: string; a: string };
 
 const FIELD =
-  'w-full bg-transparent text-[0.94rem] leading-[1.75] text-stone-800 placeholder:text-stone-400 focus:outline-none';
+  'w-full bg-transparent text-[0.94rem] [@media(pointer:coarse)]:text-[16px] leading-[1.75] text-stone-800 placeholder:text-stone-400 focus:outline-none';
 const LINK =
   'text-stone-900 underline decoration-stone-300 decoration-1 underline-offset-4 [text-decoration-skip-ink:none] transition-colors hover:decoration-stone-600';
 

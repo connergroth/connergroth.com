@@ -30,7 +30,7 @@ const HIDDEN = 'pointer-events-none opacity-0 translate-y-[2px] duration-100';
 const SHOWN = 'opacity-100 translate-y-0 duration-150 delay-[110ms]';
 
 const FIELD =
-  'w-full bg-transparent text-[0.94rem] leading-[1.75] text-stone-800 placeholder:text-stone-400 read-only:opacity-50 focus:outline-none';
+  'w-full bg-transparent text-[0.94rem] [@media(pointer:coarse)]:text-[16px] leading-[1.75] text-stone-800 placeholder:text-stone-400 read-only:opacity-50 focus:outline-none';
 
 const AltPrompts: React.FC<{ onAsk: () => void }> = ({ onAsk }) => {
   const [mode, setMode] = useState<Mode>('closed');
