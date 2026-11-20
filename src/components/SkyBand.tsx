@@ -1077,6 +1077,20 @@ export default function SkyBand({ className = '', onCaption }: { className?: str
             // an open column for the bank behind to show through
             const floor = h * row.cy + R * 0.3;
             for (let x = 0; x < w; x++) if (top[x] > floor) top[x] = floor;
+            // ...and no crest line drops into a slot a pixel or two wide. Where
+            // two billows only just touch, the column between them fell all
+            // the way to the floor: a hairline that flickered as the deck
+            // drifted, dark below the shadow or light straight through it.
+            // A dip has to be at least three columns wide to count.
+            const raised = new Float32Array(w);
+            for (let x = 0; x < w; x++) raised[x] = Math.min(top[Math.max(0, x - 1)], top[x], top[Math.min(w - 1, x + 1)]);
+            for (let x = 0; x < w; x++) top[x] = Math.max(raised[Math.max(0, x - 1)], raised[x], raised[Math.min(w - 1, x + 1)]);
+          }
+          // a bank never dips below the crest of the bank in front of it, so
+          // the shadow behind it always pools against the same neighbour and
+          // can't flip to the next bank down for a single column
+          for (let r = ROWS.length - 2; r >= 0; r--) {
+            for (let x = 0; x < w; x++) if (tops[r][x] > tops[r + 1][x]) tops[r][x] = tops[r + 1][x];
           }
           // each bank's crest line smoothed out: where the shadow of the bank
           // behind it settles, so it pools in the dips between billows and
