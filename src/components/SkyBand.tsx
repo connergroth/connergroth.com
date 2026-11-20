@@ -308,15 +308,35 @@ const WMO_RATE: Record<number, number> = {
 const WMO_SNOW = [71, 73, 75, 77, 85, 86];
 const WMO_FOG = [45, 48];
 
-/* Only the weather comes off the network — the sun's place never waits on it. */
+/* Only the weather comes off the network — the sun's place never waits on it.
+   It's asked of our own /api/sky first, which the edge keeps a few minutes
+   fresh so it's there the moment the page opens. If that's down or slow, the
+   browser asks Open-Meteo itself. Both are on a clock: a request that just
+   hangs would leave the sky waiting on its clouds forever, so past the limit
+   it's dropped (not left to land late and re-deal the clouds mid-view) and the
+   fallback sky stands. */
+const METEO =
+  `https://api.open-meteo.com/v1/forecast?latitude=${HOME.lat}&longitude=${HOME.lon}` +
+  `&current=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,temperature_2m,precipitation,rain,snowfall,weather_code,snow_depth,` +
+  `wind_speed_10m,wind_direction_10m,wind_gusts_10m&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`;
+
+async function currentFrom(url: string, ms: number): Promise<Record<string, unknown>> {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), ms);
+  try {
+    const r = await fetch(url, { signal: ctl.signal });
+    if (!r.ok) throw new Error('sky fetch failed');
+    const c = (await r.json())?.current;
+    if (!c || typeof c !== 'object') throw new Error('sky fetch empty');
+    return c;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function fetchWeather(): Promise<Weather> {
-  const url =
-    `https://api.open-meteo.com/v1/forecast?latitude=${HOME.lat}&longitude=${HOME.lon}` +
-    `&current=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,temperature_2m,precipitation,rain,snowfall,weather_code,snow_depth,` +
-    `wind_speed_10m,wind_direction_10m,wind_gusts_10m&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`;
-  const r = await fetch(url);
-  if (!r.ok) throw new Error('sky fetch failed');
-  const c = (await r.json()).current;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const c: any = await currentFrom('/api/sky', 2500).catch(() => currentFrom(METEO, 4000));
   const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
 
   // amounts are totals over the reporting interval (15 min); put them per hour
